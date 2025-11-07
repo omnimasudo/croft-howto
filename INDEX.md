@@ -4,10 +4,11 @@ This document provides a complete index of all example files organized by featur
 
 ## Summary Statistics
 
-- **Total Files**: 71 files
-- **Categories**: 6 feature categories
+- **Total Files**: 90+ files
+- **Categories**: 9 feature categories
 - **Plugins**: 3 complete plugins
 - **Skills**: 3 complete skills
+- **Hooks**: 6 example hooks
 - **Ready to Use**: All examples
 
 ---
@@ -234,7 +235,121 @@ documentation/
 
 ---
 
-## 📚 Documentation Files (7 files)
+## ⚙️ 07. Hooks (7 files)
+
+Event-driven automation scripts that execute automatically.
+
+| File | Description | Event | Use Case |
+|------|-------------|-------|----------|
+| `format-code.sh` | Auto-format code | PreToolUse:Write | Code formatting |
+| `pre-commit.sh` | Run tests before commit | PreCommit | Test automation |
+| `security-scan.sh` | Security scanning | PostToolUse:Write | Security checks |
+| `log-bash.sh` | Log bash commands | PostToolUse:Bash | Command logging |
+| `validate-prompt.sh` | Validate prompts | UserPromptSubmit | Input validation |
+| `notify-team.sh` | Send notifications | PostPush | Team notifications |
+| `README.md` | Documentation | - | Setup and usage guide |
+
+**Installation Path**: `~/.claude/hooks/`
+
+**Usage**: Configured in settings, executed automatically
+
+**Hook Types**:
+- Tool Hooks: PreToolUse:*, PostToolUse:*
+- Session Hooks: UserPromptSubmit, SessionStart, SessionEnd
+- Git Hooks: PreCommit, PostCommit, PrePush
+
+---
+
+## 💾 08. Checkpoints and Rewind (3 files)
+
+Save conversation state and explore alternative approaches.
+
+| File | Description | Content |
+|------|-------------|---------|
+| `README.md` | Documentation | Comprehensive checkpoint guide |
+| `checkpoint-examples.md` | Real-world examples | Database migration, performance optimization, UI iteration, debugging |
+| | | |
+
+**Key Concepts**:
+- **Checkpoint**: Snapshot of conversation state
+- **Rewind**: Return to previous checkpoint
+- **Branch Point**: Explore multiple approaches
+
+**Usage**:
+```
+/checkpoint save "Before refactoring"
+/checkpoint list
+/checkpoint rewind "Before refactoring"
+/checkpoint diff checkpoint-1 checkpoint-2
+```
+
+**Use Cases**:
+- Try different implementations
+- Recover from mistakes
+- Safe experimentation
+- Compare solutions
+- A/B testing
+
+---
+
+## 🚀 09. Advanced Features (4 files)
+
+Advanced capabilities for complex workflows.
+
+| File | Description | Features |
+|------|-------------|----------|
+| `README.md` | Complete guide | All advanced features documentation |
+| `config-examples.json` | Configuration examples | 10+ use-case-specific configurations |
+| `planning-mode-examples.md` | Planning examples | REST API, database migration, refactoring |
+| | | |
+
+**Advanced Features Covered**:
+
+### Planning Mode
+- Create detailed implementation plans
+- Time estimates and risk assessment
+- Systematic task breakdown
+
+### Extended Thinking
+- Deep reasoning for complex problems
+- Architectural decision analysis
+- Trade-off evaluation
+
+### Background Tasks
+- Long-running operations without blocking
+- Parallel development workflows
+- Task management and monitoring
+
+### Permission Modes
+- **Unrestricted**: Full access (default)
+- **Confirm**: Ask before actions
+- **Read-only**: Analysis only
+- **Custom**: Granular control
+
+### Headless Mode
+- CI/CD integration
+- Automated task execution
+- Batch processing
+
+### Session Management
+- Multiple work sessions
+- Session switching and saving
+- Session persistence
+
+### Interactive Features
+- Keyboard shortcuts
+- Command history
+- Tab completion
+- Multi-line input
+
+### Configuration
+- Comprehensive settings management
+- Environment-specific configs
+- Per-project customization
+
+---
+
+## 📚 Documentation Files (11 files)
 
 | File | Location | Description |
 |------|----------|-------------|
@@ -246,6 +361,10 @@ documentation/
 | `README.md` | `/04-mcp/` | MCP guide |
 | `README.md` | `/05-skills/` | Skills guide |
 | `README.md` | `/06-plugins/` | Plugins guide |
+| `README.md` | `/07-hooks/` | Hooks guide |
+| `README.md` | `/08-checkpoints/` | Checkpoints guide |
+| `README.md` | `/09-advanced-features/` | Advanced features guide |
+| `QUICK_REFERENCE.md` | `/` | Quick reference card |
 
 ---
 
@@ -305,61 +424,79 @@ claude-howto/
 │   │   └── generate-docs.py
 │   └── README.md
 │
-└── 06-plugins/                                  # Plugins
-    ├── pr-review/
-    │   ├── plugin.yaml
-    │   ├── commands/
-    │   │   ├── review-pr.md
-    │   │   ├── check-security.md
-    │   │   └── check-tests.md
-    │   ├── agents/
-    │   │   ├── security-reviewer.md
-    │   │   ├── test-checker.md
-    │   │   └── performance-analyzer.md
-    │   ├── mcp/
-    │   │   └── github-config.json
-    │   ├── hooks/
-    │   │   └── pre-review.js
-    │   └── README.md
-    ├── devops-automation/
-    │   ├── plugin.yaml
-    │   ├── commands/
-    │   │   ├── deploy.md
-    │   │   ├── rollback.md
-    │   │   ├── status.md
-    │   │   └── incident.md
-    │   ├── agents/
-    │   │   ├── deployment-specialist.md
-    │   │   ├── incident-commander.md
-    │   │   └── alert-analyzer.md
-    │   ├── mcp/
-    │   │   └── kubernetes-config.json
-    │   ├── hooks/
-    │   │   ├── pre-deploy.js
-    │   │   └── post-deploy.js
-    │   ├── scripts/
-    │   │   ├── deploy.sh
-    │   │   ├── rollback.sh
-    │   │   └── health-check.sh
-    │   └── README.md
-    ├── documentation/
-    │   ├── plugin.yaml
-    │   ├── commands/
-    │   │   ├── generate-api-docs.md
-    │   │   ├── generate-readme.md
-    │   │   ├── sync-docs.md
-    │   │   └── validate-docs.md
-    │   ├── agents/
-    │   │   ├── api-documenter.md
-    │   │   ├── code-commentator.md
-    │   │   └── example-generator.md
-    │   ├── mcp/
-    │   │   └── github-docs-config.json
-    │   ├── templates/
-    │   │   ├── api-endpoint.md
-    │   │   ├── function-docs.md
-    │   │   └── adr-template.md
-    │   └── README.md
+├── 06-plugins/                                  # Plugins
+│   ├── pr-review/
+│   │   ├── plugin.yaml
+│   │   ├── commands/
+│   │   │   ├── review-pr.md
+│   │   │   ├── check-security.md
+│   │   │   └── check-tests.md
+│   │   ├── agents/
+│   │   │   ├── security-reviewer.md
+│   │   │   ├── test-checker.md
+│   │   │   └── performance-analyzer.md
+│   │   ├── mcp/
+│   │   │   └── github-config.json
+│   │   ├── hooks/
+│   │   │   └── pre-review.js
+│   │   └── README.md
+│   ├── devops-automation/
+│   │   ├── plugin.yaml
+│   │   ├── commands/
+│   │   │   ├── deploy.md
+│   │   │   ├── rollback.md
+│   │   │   ├── status.md
+│   │   │   └── incident.md
+│   │   ├── agents/
+│   │   │   ├── deployment-specialist.md
+│   │   │   ├── incident-commander.md
+│   │   │   └── alert-analyzer.md
+│   │   ├── mcp/
+│   │   │   └── kubernetes-config.json
+│   │   ├── hooks/
+│   │   │   ├── pre-deploy.js
+│   │   │   └── post-deploy.js
+│   │   ├── scripts/
+│   │   │   ├── deploy.sh
+│   │   │   ├── rollback.sh
+│   │   │   └── health-check.sh
+│   │   └── README.md
+│   ├── documentation/
+│   │   ├── plugin.yaml
+│   │   ├── commands/
+│   │   │   ├── generate-api-docs.md
+│   │   │   ├── generate-readme.md
+│   │   │   ├── sync-docs.md
+│   │   │   └── validate-docs.md
+│   │   ├── agents/
+│   │   │   ├── api-documenter.md
+│   │   │   ├── code-commentator.md
+│   │   │   └── example-generator.md
+│   │   ├── mcp/
+│   │   │   └── github-docs-config.json
+│   │   ├── templates/
+│   │   │   ├── api-endpoint.md
+│   │   │   ├── function-docs.md
+│   │   │   └── adr-template.md
+│   │   └── README.md
+│   └── README.md
+│
+├── 07-hooks/                                    # Hooks
+│   ├── format-code.sh
+│   ├── pre-commit.sh
+│   ├── security-scan.sh
+│   ├── log-bash.sh
+│   ├── validate-prompt.sh
+│   ├── notify-team.sh
+│   └── README.md
+│
+├── 08-checkpoints/                              # Checkpoints
+│   ├── checkpoint-examples.md
+│   └── README.md
+│
+└── 09-advanced-features/                        # Advanced Features
+    ├── config-examples.json
+    ├── planning-mode-examples.md
     └── README.md
 ```
 
@@ -421,20 +558,62 @@ export DATABASE_URL="postgresql://..."
 cp 04-mcp/multi-mcp.json .claude/mcp.json
 ```
 
+### Automation & Validation
+```bash
+# Install hooks
+mkdir -p ~/.claude/hooks
+cp 07-hooks/*.sh ~/.claude/hooks/
+chmod +x ~/.claude/hooks/*.sh
+
+# Configure hooks in settings
+# See 07-hooks/README.md
+```
+
+### Safe Experimentation
+```bash
+# Checkpoints are auto-enabled
+# Use in your workflow:
+/checkpoint save "Before refactoring"
+/checkpoint list
+/checkpoint rewind "Before refactoring"
+
+# See 08-checkpoints/README.md for examples
+```
+
+### Advanced Workflows
+```bash
+# Configure advanced features
+# See 09-advanced-features/config-examples.json
+
+# Use planning mode
+/plan Implement feature X
+
+# Use permission modes
+/permission readonly    # For code review
+/permission confirm     # For learning
+
+# Run background tasks
+Run tests in background
+
+# See 09-advanced-features/README.md for complete guide
+```
+
 ---
 
 ## 📊 Feature Coverage Matrix
 
-| Category | Commands | Agents | MCP | Hooks | Scripts | Templates | Total |
-|----------|----------|--------|-----|-------|---------|-----------|-------|
-| **Slash Commands** | 3 | - | - | - | - | - | **3** |
-| **Subagents** | - | 5 | - | - | - | - | **5** |
-| **Memory** | - | - | - | - | - | 3 | **3** |
-| **MCP** | - | - | 4 | - | - | - | **4** |
-| **Skills** | - | - | - | - | 3 | 7 | **10** |
-| **Plugins** | 11 | 9 | 3 | 3 | 3 | 3 | **32** |
-| **Docs** | - | - | - | - | - | 8 | **8** |
-| **TOTAL** | **14** | **14** | **7** | **3** | **6** | **21** | **65** |
+| Category | Commands | Agents | MCP | Hooks | Scripts | Templates | Docs | Examples | Total |
+|----------|----------|--------|-----|-------|---------|-----------|------|----------|-------|
+| **Slash Commands** | 3 | - | - | - | - | - | 1 | - | **4** |
+| **Subagents** | - | 5 | - | - | - | - | 1 | - | **6** |
+| **Memory** | - | - | - | - | - | 3 | 1 | - | **4** |
+| **MCP** | - | - | 4 | - | - | - | 1 | - | **5** |
+| **Skills** | - | - | - | - | 3 | 7 | 1 | - | **11** |
+| **Plugins** | 11 | 9 | 3 | 3 | 3 | 3 | 4 | - | **36** |
+| **Hooks** | - | - | - | 6 | - | - | 1 | - | **7** |
+| **Checkpoints** | - | - | - | - | - | - | 1 | 1 | **2** |
+| **Advanced** | - | - | - | - | - | - | 1 | 2 | **3** |
+| **TOTAL** | **14** | **14** | **7** | **9** | **6** | **13** | **12** | **3** | **78** |
 
 ---
 
@@ -458,6 +637,14 @@ cp 04-mcp/multi-mcp.json .claude/mcp.json
 3. ✅ Create custom subagent
 4. ✅ Create custom skill
 5. ✅ Build your own plugin
+
+### Expert (Week 5+)
+1. ✅ Set up hooks for automation
+2. ✅ Use checkpoints for experimentation
+3. ✅ Configure planning mode
+4. ✅ Use permission modes effectively
+5. ✅ Set up headless mode for CI/CD
+6. ✅ Master session management
 
 ---
 
@@ -487,6 +674,27 @@ cp 04-mcp/multi-mcp.json .claude/mcp.json
 ### Deployment
 - `06-plugins/devops-automation/` - Complete DevOps solution
 
+### Automation
+- `07-hooks/` - Event-driven automation
+- `07-hooks/pre-commit.sh` - Pre-commit automation
+- `07-hooks/format-code.sh` - Auto-formatting
+- `09-advanced-features/` - Headless mode for CI/CD
+
+### Validation
+- `07-hooks/security-scan.sh` - Security validation
+- `07-hooks/validate-prompt.sh` - Prompt validation
+
+### Experimentation
+- `08-checkpoints/` - Safe experimentation with rewind
+- `08-checkpoints/checkpoint-examples.md` - Real-world examples
+
+### Planning
+- `09-advanced-features/planning-mode-examples.md` - Planning mode examples
+- `09-advanced-features/README.md` - Extended thinking
+
+### Configuration
+- `09-advanced-features/config-examples.json` - Configuration examples
+
 ---
 
 ## 📝 Notes
@@ -512,6 +720,8 @@ Want to add more examples? Follow the structure:
 ---
 
 **Last Updated**: November 2025
-**Total Examples**: 71 files
-**Categories**: 6 features
+**Total Examples**: 90+ files
+**Categories**: 9 features
+**Hooks**: 6 automation scripts
+**Configuration Examples**: 10+ scenarios
 **Ready to Use**: ✅ All examples

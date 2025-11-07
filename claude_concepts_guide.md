@@ -11,7 +11,11 @@ A comprehensive reference guide covering Slash Commands, Subagents, Memory, MCP 
 3. [Memory](#memory)
 4. [MCP Protocol](#mcp-protocol)
 5. [Agent Skills](#agent-skills)
-6. [Comparison & Integration](#comparison--integration)
+6. [Plugins](#plugins)
+7. [Hooks](#hooks)
+8. [Checkpoints and Rewind](#checkpoints-and-rewind)
+9. [Advanced Features](#advanced-features)
+10. [Comparison & Integration](#comparison--integration)
 
 ---
 
@@ -2760,6 +2764,266 @@ graph TD
 
 ---
 
+## Hooks
+
+### Overview
+
+Hooks are event-driven shell commands that execute automatically in response to Claude Code events. They enable automation, validation, and custom workflows without manual intervention.
+
+### Hook Types
+
+| Hook Type | Event | Use Cases |
+|-----------|-------|-----------|
+| **Tool Hooks** | PreToolUse:*, PostToolUse:* | Auto-formatting, validation, logging |
+| **Session Hooks** | UserPromptSubmit, SessionStart, SessionEnd | Input validation, initialization, cleanup |
+| **Git Hooks** | PreCommit, PostCommit, PrePush | Testing, linting, notifications |
+
+### Common Hooks
+
+```bash
+# Pre-commit hook - run tests
+PreCommit: "npm test"
+
+# Post-write hook - format code
+PostToolUse:Write: "prettier --write ${file_path}"
+
+# Pre-tool-use hook - validate
+PreToolUse:Edit: "eslint ${file_path}"
+
+# User prompt validation
+UserPromptSubmit: "~/.claude/hooks/validate-prompt.sh"
+```
+
+### Hook Variables
+
+- `${file_path}` - Path to file being edited/written
+- `${command}` - Command being executed (Bash hooks)
+- `${tool_name}` - Name of tool being used
+- `${session_id}` - Current session identifier
+
+### Best Practices
+
+✅ **Do:**
+- Keep hooks fast (< 1 second)
+- Use hooks for validation and automation
+- Handle errors gracefully
+- Use absolute paths
+
+❌ **Don't:**
+- Make hooks interactive
+- Use hooks for long-running tasks
+- Hardcode credentials
+
+**See**: [07-hooks/](07-hooks/) for detailed examples
+
+---
+
+## Checkpoints and Rewind
+
+### Overview
+
+Checkpoints allow you to save conversation state and rewind to previous points, enabling safe experimentation and exploration of multiple approaches.
+
+### Key Concepts
+
+| Concept | Description |
+|---------|-------------|
+| **Checkpoint** | Snapshot of conversation state including messages, files, and context |
+| **Rewind** | Return to a previous checkpoint, discarding subsequent changes |
+| **Branch Point** | Checkpoint from which multiple approaches are explored |
+
+### Commands
+
+```bash
+# Create checkpoint
+/checkpoint save "Before refactoring"
+
+# List checkpoints
+/checkpoint list
+
+# Rewind to checkpoint
+/checkpoint rewind "Before refactoring"
+
+# Compare checkpoints
+/checkpoint diff checkpoint-1 checkpoint-2
+
+# Delete checkpoint
+/checkpoint delete checkpoint-1
+
+# Export checkpoint
+/checkpoint export "name" ~/checkpoints/backup.json
+```
+
+### Use Cases
+
+| Scenario | Workflow |
+|----------|----------|
+| **Exploring Approaches** | Save → Try A → Save → Rewind → Try B → Compare |
+| **Safe Refactoring** | Save → Refactor → Test → If fail: Rewind |
+| **A/B Testing** | Save → Design A → Save → Rewind → Design B → Compare |
+| **Mistake Recovery** | Notice issue → Rewind to last good state |
+
+### Configuration
+
+```json
+{
+  "checkpoints": {
+    "autoCheckpoint": true,
+    "autoCheckpointInterval": 30,
+    "maxCheckpoints": 20,
+    "compressionEnabled": true
+  }
+}
+```
+
+**See**: [08-checkpoints/](08-checkpoints/) for detailed examples
+
+---
+
+## Advanced Features
+
+### Planning Mode
+
+Create detailed implementation plans before coding.
+
+**Activation:**
+```bash
+/plan Implement user authentication system
+```
+
+**Benefits:**
+- Clear roadmap with time estimates
+- Risk assessment
+- Systematic task breakdown
+- Opportunity for review and modification
+
+### Extended Thinking
+
+Deep reasoning for complex problems.
+
+**Activation:**
+```bash
+/think Should we use microservices or monolith?
+```
+
+**Benefits:**
+- Thorough analysis of trade-offs
+- Better architectural decisions
+- Consideration of edge cases
+- Systematic evaluation
+
+### Background Tasks
+
+Run long operations without blocking the conversation.
+
+**Usage:**
+```bash
+User: Run tests in background
+
+Claude: Started task bg-1234
+
+/task list           # Show all tasks
+/task status bg-1234 # Check progress
+/task show bg-1234   # View output
+/task cancel bg-1234 # Cancel task
+```
+
+### Permission Modes
+
+Control what Claude can do.
+
+| Mode | Description | Use Case |
+|------|-------------|----------|
+| **Unrestricted** | Full access (default) | Active development |
+| **Confirm** | Ask before actions | Learning, pair programming |
+| **Read-only** | Analysis only | Code review |
+| **Custom** | Granular permissions | Fine-tuned control |
+
+**Commands:**
+```bash
+/permission readonly    # Code review mode
+/permission confirm     # Learning mode
+/permission unrestricted # Full automation
+```
+
+### Headless Mode
+
+Run Claude Code without interactive input for automation and CI/CD.
+
+**Usage:**
+```bash
+# Run specific task
+claude-code --headless --task "Run all tests"
+
+# From script file
+claude-code --headless --script ./deploy.claude
+
+# CI/CD integration (GitHub Actions)
+- name: AI Code Review
+  run: claude-code --headless --task "Review PR"
+```
+
+### Session Management
+
+Manage multiple work sessions.
+
+**Commands:**
+```bash
+/session list           # Show all sessions
+/session new "Feature"  # Create new session
+/session switch "Bug"   # Switch sessions
+/session save           # Save current state
+/session load "name"    # Load saved session
+```
+
+### Interactive Features
+
+**Keyboard Shortcuts:**
+- `Ctrl + R` - Search command history
+- `Tab` - Autocomplete
+- `↑ / ↓` - Command history
+- `Ctrl + L` - Clear screen
+
+**Multi-line Input:**
+```bash
+User: \
+> Long complex prompt
+> spanning multiple lines
+> \end
+```
+
+### Configuration
+
+Complete configuration example:
+
+```json
+{
+  "planning": {
+    "autoEnter": true,
+    "requireApproval": true
+  },
+  "extendedThinking": {
+    "enabled": true,
+    "showThinkingProcess": true
+  },
+  "backgroundTasks": {
+    "enabled": true,
+    "maxConcurrentTasks": 5
+  },
+  "permissions": {
+    "mode": "unrestricted"
+  },
+  "headless": {
+    "exitOnError": true,
+    "verbose": true
+  }
+}
+```
+
+**See**: [09-advanced-features/](09-advanced-features/) for comprehensive guide
+
+---
+
 ## Resources
 
 - [Claude Documentation](https://docs.claude.com)
@@ -2769,5 +3033,6 @@ graph TD
 
 ---
 
-*Last updated: November 6, 2025*
+*Last updated: November 8, 2025*
 *For Claude Haiku 4.5, Sonnet 4.5, and Opus 4.1*
+*Now includes: Hooks, Checkpoints, Planning Mode, Extended Thinking, Background Tasks, Permission Modes, Headless Mode, and Session Management*

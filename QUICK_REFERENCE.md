@@ -56,6 +56,50 @@ cp -r 05-skills/code-review .claude/skills/
 /plugin install documentation
 ```
 
+### Hooks
+```bash
+# Install hooks
+mkdir -p ~/.claude/hooks
+cp 07-hooks/*.sh ~/.claude/hooks/
+chmod +x ~/.claude/hooks/*.sh
+
+# Configure in settings (.claude/settings.json)
+```
+
+### Checkpoints
+```bash
+# Checkpoints are auto-enabled
+# Use commands:
+/checkpoint save "description"
+/checkpoint list
+/checkpoint rewind "checkpoint-name"
+/checkpoint diff checkpoint-1 checkpoint-2
+```
+
+### Advanced Features
+```bash
+# Configure in settings (.claude/settings.json)
+# See 09-advanced-features/config-examples.json
+
+# Planning mode
+/plan Task description
+
+# Permission modes
+/permission readonly
+/permission confirm
+/permission unrestricted
+
+# Session management
+/session list
+/session new "name"
+/session switch "name"
+
+# Background tasks
+Run command in background
+/task list
+/task status task-id
+```
+
 ---
 
 ## 📋 Feature Cheat Sheet
@@ -68,6 +112,12 @@ cp -r 05-skills/code-review .claude/skills/
 | **MCP** | `.claude/mcp.json` | `/mcp__server__action` |
 | **Skills** | `.claude/skills/*/SKILL.md` | Auto-invoked |
 | **Plugins** | Via `/plugin install` | Bundles all |
+| **Hooks** | `~/.claude/hooks/*.sh` | Event-triggered |
+| **Checkpoints** | Built-in | `/checkpoint <command>` |
+| **Planning Mode** | Built-in | `/plan <task>` |
+| **Permission Modes** | Built-in | `/permission <mode>` |
+| **Sessions** | Built-in | `/session <command>` |
+| **Background Tasks** | Built-in | Run in background |
 
 ---
 
@@ -124,6 +174,61 @@ cp 03-memory/project-CLAUDE.md ./CLAUDE.md
 vim CLAUDE.md
 ```
 
+### Automation & Hooks
+```bash
+# Install hooks
+mkdir -p ~/.claude/hooks
+cp 07-hooks/*.sh ~/.claude/hooks/
+chmod +x ~/.claude/hooks/*.sh
+
+# Examples:
+# - Pre-commit tests: pre-commit.sh
+# - Auto-format code: format-code.sh
+# - Security scanning: security-scan.sh
+```
+
+### Safe Refactoring
+```bash
+# Use checkpoints for safe experimentation
+/checkpoint save "Before refactoring"
+
+# Try refactoring
+# If it works: continue
+# If it fails:
+/checkpoint rewind "Before refactoring"
+```
+
+### Complex Implementation
+```bash
+# Use planning mode
+/plan Implement user authentication system
+
+# Claude creates detailed plan
+# Review and approve
+# Claude implements systematically
+```
+
+### CI/CD Integration
+```bash
+# Run in headless mode
+claude-code --headless --task "Run all tests and generate report"
+
+# With hooks for automation
+# See 09-advanced-features/README.md
+```
+
+### Learning & Experimentation
+```bash
+# Use permission mode
+/permission confirm
+
+# Use checkpoints
+/checkpoint save "Before experiment"
+
+# Experiment safely
+# Rewind if needed
+```
+
 ---
 
 ## 📁 File Locations Reference
@@ -134,7 +239,8 @@ Your Project/
 │   ├── commands/        # Slash commands go here
 │   ├── agents/          # Subagents go here
 │   ├── skills/          # Project skills go here
-│   └── mcp.json         # MCP configuration
+│   ├── mcp.json         # MCP configuration
+│   └── settings.json    # Project settings (hooks, checkpoints, etc.)
 ├── CLAUDE.md            # Project memory
 └── src/
     └── api/
@@ -143,8 +249,11 @@ Your Project/
 User Home/
 └── .claude/
     ├── commands/        # Personal commands
+    ├── agents/          # Personal agents
     ├── skills/          # Personal skills
+    ├── hooks/           # Hook scripts
     ├── mcp.json         # Personal MCP config
+    ├── settings.json    # User settings
     └── CLAUDE.md        # Personal memory
 ```
 

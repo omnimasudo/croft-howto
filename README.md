@@ -14,6 +14,9 @@ Complete collection of examples for some important Claude Code features and conc
 | **MCP Protocol** | External tool access | [04-mcp/](04-mcp/) |
 | **Skills** | Reusable capabilities | [05-skills/](05-skills/) |
 | **Plugins** | Bundled features | [06-plugins/](06-plugins/) |
+| **Hooks** | Event-driven automation | [07-hooks/](07-hooks/) |
+| **Checkpoints** | Session snapshots & rewind | [08-checkpoints/](08-checkpoints/) |
+| **Advanced Features** | Planning, thinking, background tasks | [09-advanced-features/](09-advanced-features/) |
 
 ---
 
@@ -167,6 +170,189 @@ cp -r 05-skills/code-review /path/to/project/.claude/skills/
 
 ---
 
+## 07. Hooks
+
+**Location**: [07-hooks/](07-hooks/)
+
+**What**: Event-driven shell commands that execute automatically in response to Claude Code events
+
+**Examples**:
+- `format-code.sh` - Auto-format code before writing
+- `pre-commit.sh` - Run tests before commits
+- `security-scan.sh` - Scan for security issues
+- `log-bash.sh` - Log all bash commands
+- `validate-prompt.sh` - Validate user prompts
+- `notify-team.sh` - Send notifications on events
+
+**Installation**:
+```bash
+mkdir -p ~/.claude/hooks
+cp 07-hooks/*.sh ~/.claude/hooks/
+chmod +x ~/.claude/hooks/*.sh
+
+# Configure in settings
+echo '{
+  "hooks": {
+    "PreToolUse:Write": "~/.claude/hooks/format-code.sh ${file_path}",
+    "PostToolUse:Write": "~/.claude/hooks/security-scan.sh ${file_path}",
+    "PreCommit": "~/.claude/hooks/pre-commit.sh"
+  }
+}' > ~/.claude/hooks-config.json
+```
+
+**Usage**: Hooks execute automatically on events
+
+**Hook Types**:
+- **Tool Hooks**: `PreToolUse:*`, `PostToolUse:*`
+- **Session Hooks**: `UserPromptSubmit`, `SessionStart`, `SessionEnd`
+- **Git Hooks**: `PreCommit`, `PostCommit`, `PrePush`
+
+---
+
+## 08. Checkpoints and Rewind
+
+**Location**: [08-checkpoints/](08-checkpoints/)
+
+**What**: Save conversation state and rewind to previous points to explore different approaches
+
+**Key Concepts**:
+- **Checkpoint**: Snapshot of conversation state
+- **Rewind**: Return to previous checkpoint
+- **Branch Point**: Explore multiple approaches from same checkpoint
+
+**Usage**:
+```
+# Create checkpoint
+/checkpoint save "Before refactoring"
+
+# List checkpoints
+/checkpoint list
+
+# Rewind to checkpoint
+/checkpoint rewind "Before refactoring"
+
+# Compare checkpoints
+/checkpoint diff checkpoint-1 checkpoint-2
+```
+
+**Use Cases**:
+- Try different implementation approaches
+- Recover from mistakes
+- Safe experimentation
+- Compare alternative solutions
+- A/B testing different designs
+
+**Example Workflow**:
+```
+1. /checkpoint save "Working state"
+2. Try experimental approach
+3. If it works: Continue
+4. If it fails: /checkpoint rewind "Working state"
+```
+
+---
+
+## 09. Advanced Features
+
+**Location**: [09-advanced-features/](09-advanced-features/)
+
+**What**: Advanced capabilities for complex workflows and automation
+
+### Planning Mode
+
+Create detailed implementation plans before coding:
+```
+User: /plan Implement user authentication system
+
+Claude: [Creates comprehensive step-by-step plan]
+
+User: Approve and proceed
+```
+
+**Benefits**: Clear roadmap, time estimates, risk assessment
+
+### Extended Thinking
+
+Deep reasoning for complex problems:
+```
+User: /think Should we use microservices or monolith?
+
+Claude: [Analyzes trade-offs systematically]
+```
+
+**Benefits**: Better architectural decisions, thorough analysis
+
+### Background Tasks
+
+Run long operations without blocking:
+```
+User: Run tests in background
+
+Claude: Started bg-1234, you can continue working
+
+[Later] Test results: 245 passed, 3 failed
+```
+
+**Benefits**: Parallel development, no waiting
+
+### Permission Modes
+
+Control what Claude can do:
+- **Unrestricted**: Full access (default)
+- **Confirm**: Ask before actions
+- **Read-only**: Analysis only, no modifications
+- **Custom**: Granular permissions
+
+```
+/permission readonly    # Code review mode
+/permission confirm     # Learning mode
+/permission unrestricted # Full automation
+```
+
+### Headless Mode
+
+Run Claude Code in CI/CD and automation:
+```bash
+claude-code --headless --task "Run tests and generate report"
+```
+
+**Use Cases**: CI/CD, automated reviews, batch processing
+
+### Session Management
+
+Manage multiple work sessions:
+```
+/session list           # Show all sessions
+/session new "Feature"  # Create new session
+/session switch "Bug"   # Switch sessions
+/session save           # Save current state
+```
+
+### Interactive Features
+
+**Keyboard Shortcuts**: Ctrl+R (search), Tab (complete), ↑/↓ (history)
+
+**Command History**: Access previous commands
+
+**Multi-line Input**: Complex prompts across multiple lines
+
+### Configuration
+
+Customize Claude Code behavior:
+```json
+{
+  "planning": { "autoEnter": true },
+  "extendedThinking": { "enabled": true },
+  "backgroundTasks": { "maxConcurrentTasks": 5 },
+  "permissions": { "mode": "unrestricted" },
+  "checkpoints": { "autoCheckpoint": true }
+}
+```
+
+See [config-examples.json](09-advanced-features/config-examples.json) for complete configurations.
+
+---
+
 ## Feature Comparison
 
 | Feature | Invocation | Persistence | Best For |
@@ -177,6 +363,10 @@ cp -r 05-skills/code-review /path/to/project/.claude/skills/
 | **MCP Protocol** | Auto-queried | Real-time | Live data access |
 | **Skills** | Auto-invoked | Filesystem | Automated workflows |
 | **Plugins** | One command | All features | Complete solutions |
+| **Hooks** | Event-triggered | Configured | Automation & validation |
+| **Checkpoints** | Manual/Auto | Session-based | Safe experimentation |
+| **Planning Mode** | Manual/Auto | Plan phase | Complex implementations |
+| **Background Tasks** | Manual | Task duration | Long-running operations |
 
 ---
 
@@ -252,6 +442,21 @@ cp -r 05-skills/code-review /path/to/project/.claude/skills/
 │   ├── pr-review/
 │   ├── devops-automation/
 │   ├── documentation/
+│   └── README.md
+├── 07-hooks/
+│   ├── format-code.sh
+│   ├── pre-commit.sh
+│   ├── security-scan.sh
+│   ├── log-bash.sh
+│   ├── validate-prompt.sh
+│   ├── notify-team.sh
+│   └── README.md
+├── 08-checkpoints/
+│   ├── checkpoint-examples.md
+│   └── README.md
+├── 09-advanced-features/
+│   ├── config-examples.json
+│   ├── planning-mode-examples.md
 │   └── README.md
 └── README.md (this file)
 ```
@@ -330,6 +535,17 @@ cp -r 05-skills/code-review ~/.claude/skills/
 
 # Plugins
 /plugin install pr-review
+
+# Hooks
+mkdir -p ~/.claude/hooks
+cp 07-hooks/*.sh ~/.claude/hooks/
+chmod +x ~/.claude/hooks/*.sh
+
+# Checkpoints (auto-enabled, configure in settings)
+# See 08-checkpoints/README.md
+
+# Advanced Features (configure in settings)
+# See 09-advanced-features/config-examples.json
 ```
 
 ---
@@ -339,13 +555,17 @@ cp -r 05-skills/code-review ~/.claude/skills/
 | Use Case | Recommended Features |
 |----------|---------------------|
 | **Team Onboarding** | Memory + Slash Commands + Plugins |
-| **Code Quality** | Subagents + Skills + Memory |
+| **Code Quality** | Subagents + Skills + Memory + Hooks |
 | **Documentation** | Skills + Subagents + Plugins |
-| **DevOps** | Plugins + MCP + Hooks |
-| **Security Review** | Subagents + Skills |
+| **DevOps** | Plugins + MCP + Hooks + Background Tasks |
+| **Security Review** | Subagents + Skills + Hooks (read-only mode) |
 | **API Integration** | MCP + Memory |
 | **Quick Tasks** | Slash Commands |
-| **Complex Projects** | All Features |
+| **Complex Projects** | All Features + Planning Mode |
+| **Refactoring** | Checkpoints + Planning Mode + Hooks |
+| **Learning/Experimentation** | Checkpoints + Extended Thinking + Permission Mode |
+| **CI/CD Automation** | Headless Mode + Hooks + Background Tasks |
+| **Performance Optimization** | Planning Mode + Checkpoints + Background Tasks |
 
 ---
 

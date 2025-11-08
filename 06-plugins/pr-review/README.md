@@ -1,3 +1,5 @@
+![Claude How To](../../claude-howto-logo.svg)
+
 # PR Review Plugin
 
 Complete PR review workflow with security, testing, and documentation checks.

@@ -1,3 +1,5 @@
+![Claude How To](../../claude-howto-logo.svg)
+
 # Documentation Plugin
 
 Comprehensive documentation generation and maintenance for your project.

@@ -1,3 +1,5 @@
+![Claude How To](../claude-howto-logo.svg)
+
 # Claude Code Plugins
 
 This folder contains complete plugin examples that bundle multiple Claude Code features into cohesive, installable packages.

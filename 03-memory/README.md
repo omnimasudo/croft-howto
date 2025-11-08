@@ -1,3 +1,5 @@
+![Claude How To](../claude-howto-logo.svg)
+
 # Memory Guide
 
 Memory enables Claude to retain context across sessions and conversations. It exists in two forms: automatic synthesis in claude.ai, and filesystem-based CLAUDE.md in Claude Code.
@@ -291,17 +293,16 @@ Separate concerns (Controllers, Services, Repositories).
 
 ## Project Organization
 I organize my projects as:
-```
-project/
-  ├── src/
-  │   ├── api/
-  │   ├── services/
-  │   ├── models/
-  │   └── utils/
-  ├── tests/
-  ├── docs/
-  └── docker/
-```
+
+   project/
+   ├── src/
+   │   ├── api/
+   │   ├── services/
+   │   ├── models/
+   │   └── utils/
+   ├── tests/
+   ├── docs/
+   └── docker/
 
 ## Tooling
 - **IDE**: VS Code with vim keybindings
@@ -310,6 +311,14 @@ project/
 - **Linter**: ESLint with airbnb config
 - **Test Framework**: Jest with React Testing Library
 ```
+
+_My Test_
+Ask Claude to save a new rule
+
+![Ask Claude to save a new rule](memory-ask-claude.png)
+Claude has not save the rule because I did not have any `Claude.md` file anywhere. Then asked Claude to confirm the location.
+
+![Ask Claude to save a new rule](memory-saved.png)
 
 ### Example 4: Memory Update During Session
 

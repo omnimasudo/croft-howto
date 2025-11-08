@@ -1,3 +1,5 @@
+![Claude How To](../claude-howto-logo.svg)
+
 # Checkpoints and Rewind
 
 Checkpoints allow you to save conversation state and rewind to previous points in your Claude Code session. This is invaluable for exploring different approaches, recovering from mistakes, or comparing alternative solutions.

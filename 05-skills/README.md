@@ -1,3 +1,5 @@
+![Claude How To](../claude-howto-logo.svg)
+
 # Agent Skills Guide
 
 Agent Skills are reusable, model-invoked capabilities packaged as folders containing instructions, scripts, and resources. Claude automatically detects and uses relevant skills.

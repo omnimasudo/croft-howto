@@ -1,3 +1,5 @@
+![Claude How To](../claude-howto-logo.svg)
+
 # Advanced Features
 
 Comprehensive guide to Claude Code's advanced capabilities including planning mode, extended thinking, background tasks, permission modes, headless operation, session management, interactive features, and configuration.

@@ -1,3 +1,5 @@
+![Claude How To](../claude-howto-logo.svg)
+
 # Subagents - Complete Reference Guide
 
 Subagents are specialized AI assistants with isolated context windows and customized system prompts. They enable delegated task execution while maintaining clean separation of concerns.

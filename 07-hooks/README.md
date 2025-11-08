@@ -1,3 +1,5 @@
+![Claude How To](../claude-howto-logo.svg)
+
 # Hooks
 
 Hooks are event-driven shell commands that execute automatically in response to Claude Code events. They enable automation, validation, and custom workflows without manual intervention.

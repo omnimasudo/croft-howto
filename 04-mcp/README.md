@@ -1,3 +1,5 @@
+![Claude How To](../claude-howto-logo.svg)
+
 # MCP (Model Context Protocol)
 
 This folder contains comprehensive documentation and examples for MCP server configurations and usage with Claude Code.

@@ -1,3 +1,5 @@
+![Claude How To](../../claude-howto-logo.svg)
+
 # DevOps Automation Plugin
 
 Complete DevOps automation for deployment, monitoring, and incident response.

@@ -1,3 +1,5 @@
+![Claude How To](../claude-howto-logo.svg)
+
 # Slash Commands
 
 ## Overview

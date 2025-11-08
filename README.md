@@ -43,6 +43,8 @@ cp 01-slash-commands/*.md /path/to/project/.claude/commands/
 /generate-api-docs
 ```
 
+**Learn More**: [Discovering Claude Code Slash Commands](https://medium.com/@luongnv89/discovering-claude-code-slash-commands-cdc17f0dfb29)
+
 ---
 
 ## 02. Subagents

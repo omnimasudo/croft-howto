@@ -45,3 +45,4 @@ yarn-error.log*
 *.temp
 # Keep .claude/ clean for hand-on section
 .claude/
+blog-posts/

@@ -411,6 +411,7 @@ Access with: `/deploy/production`, `/test/unit`, `/docs/api`
 
 ## Resources
 
+- [Discovering Claude Code Slash Commands](https://medium.com/@luongnv89/discovering-claude-code-slash-commands-cdc17f0dfb29) - Comprehensive blog post exploring slash commands
 - [Claude Code Commands Documentation](https://docs.claude.com/en/docs/claude-code/custom-commands)
 - [Markdown Guide](https://www.markdownguide.org/)
 - [Command Examples Repository](https://github.com/anthropics/claude-code-examples)

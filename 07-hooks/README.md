@@ -1,15 +1,25 @@
 # Hooks
 
-Hooks are shell commands that execute automatically in response to specific events in Claude Code. They enable custom workflows, validation, and automation.
+Hooks are event-driven shell commands that execute automatically in response to Claude Code events. They enable automation, validation, and custom workflows without manual intervention.
 
-## What Are Hooks?
+## Overview
 
-Hooks are event-driven scripts that run at specific points during Claude Code's operation:
+Hooks are shell commands that execute automatically in response to specific events in Claude Code. They enable custom workflows, validation, and automation. Hooks are triggered by:
 - **Pre-hooks**: Run before an action
 - **Post-hooks**: Run after an action
 - **Validation hooks**: Check conditions before proceeding
 
-## Available Hook Types
+Hooks enable you to automate repetitive tasks, enforce code quality standards, and create seamless development workflows.
+
+## Hook Types
+
+| Hook Type | Event | Use Cases |
+|-----------|-------|-----------|
+| **Tool Hooks** | PreToolUse:*, PostToolUse:* | Auto-formatting, validation, logging |
+| **Session Hooks** | UserPromptSubmit, SessionStart, SessionEnd | Input validation, initialization, cleanup |
+| **Git Hooks** | PreCommit, PostCommit, PrePush | Testing, linting, notifications |
+
+## Available Hook Types (Detailed)
 
 ### 1. Tool Hooks
 Execute before/after tool usage:
@@ -29,6 +39,30 @@ Execute during git operations:
 - `PostCommit` - After commit completes
 - `PrePush` - Before pushing to remote
 
+## Common Hooks
+
+```bash
+# Pre-commit hook - run tests
+PreCommit: "npm test"
+
+# Post-write hook - format code
+PostToolUse:Write: "prettier --write ${file_path}"
+
+# Pre-tool-use hook - validate
+PreToolUse:Edit: "eslint ${file_path}"
+
+# User prompt validation
+UserPromptSubmit: "~/.claude/hooks/validate-prompt.sh"
+```
+
+## Hook Variables
+
+Available variables in hook commands:
+- `${file_path}` - Path to file being edited/written
+- `${command}` - Command being executed (Bash hooks)
+- `${tool_name}` - Name of the tool being used
+- `${session_id}` - Current session identifier
+
 ## Configuration
 
 Hooks are configured in Claude Code settings:
@@ -43,14 +77,6 @@ Hooks are configured in Claude Code settings:
   }
 }
 ```
-
-## Hook Variables
-
-Available variables in hook commands:
-- `${file_path}` - Path to file being edited/written
-- `${command}` - Command being executed (Bash hooks)
-- `${tool_name}` - Name of the tool being used
-- `${session_id}` - Current session identifier
 
 ## Examples
 
@@ -224,19 +250,20 @@ Hooks communicate results via exit codes:
 ## Best Practices
 
 ### Do's ✅
-- Keep hooks fast (< 1 second when possible)
+- Keep hooks fast (< 1 second)
 - Use hooks for validation and automation
+- Handle errors gracefully
+- Use absolute paths
 - Log important events
 - Make hooks idempotent
-- Handle errors gracefully
-- Use absolute paths in hooks
+- Test hooks independently before deploying
 
 ### Don'ts ❌
-- Don't make hooks interactive (no user input)
-- Don't use hooks for long-running tasks
-- Don't hardcode credentials in hooks
-- Don't ignore hook failures silently
-- Don't modify files unexpectedly
+- Make hooks interactive
+- Use hooks for long-running tasks
+- Hardcode credentials
+- Ignore hook failures silently
+- Modify files unexpectedly
 
 ## Common Use Cases
 
@@ -296,21 +323,44 @@ View hook execution logs:
 tail -f ~/.claude/hooks.log
 ```
 
-## Installation
+## Installation Instructions
 
-1. Create hooks directory:
+### Step 1: Create Hooks Directory
 ```bash
 mkdir -p ~/.claude/hooks
 ```
 
-2. Copy example hooks:
+### Step 2: Copy Example Hooks
 ```bash
 cp 07-hooks/*.sh ~/.claude/hooks/
 chmod +x ~/.claude/hooks/*.sh
 ```
 
-3. Configure in settings:
-Edit `~/.claude/settings.json` to add hook configurations.
+### Step 3: Configure in Settings
+Edit `~/.claude/settings.json` to add hook configurations:
+
+```json
+{
+  "hooks": {
+    "PreToolUse:Write": "~/.claude/hooks/format-code.sh ${file_path}",
+    "PostToolUse:Write": "~/.claude/hooks/security-scan.sh ${file_path}",
+    "PreCommit": "~/.claude/hooks/pre-commit.sh",
+    "UserPromptSubmit": "~/.claude/hooks/validate-prompt.sh"
+  }
+}
+```
+
+### Step 4: Make Scripts Executable
+```bash
+chmod +x ~/.claude/hooks/*.sh
+```
+
+### Step 5: Test Your Hooks
+```bash
+# Enable debug mode for testing
+# Set "debug": true in hooks configuration
+tail -f ~/.claude/hooks.log
+```
 
 ## Troubleshooting
 
@@ -341,3 +391,12 @@ See the example files in this directory:
 - `log-bash.sh` - Log all bash commands
 - `validate-prompt.sh` - Validate user prompts
 - `notify-team.sh` - Send notifications on events
+
+## Related Concepts
+
+For more information on related Claude Code features, see:
+- **[Checkpoints and Rewind](../08-checkpoints/)** - Save and restore conversation state
+- **[Custom Commands](../06-commands/)** - Create custom slash commands
+- **[Settings Configuration](../settings/)** - Configure Claude Code behavior
+- **[Advanced Features](../advanced-features/)** - Explore advanced Claude Code capabilities
+- **[Main Concepts Guide](../claude_concepts_guide.md)** - Complete reference documentation

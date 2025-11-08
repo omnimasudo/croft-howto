@@ -2,24 +2,47 @@
 
 Checkpoints allow you to save conversation state and rewind to previous points in your Claude Code session. This is invaluable for exploring different approaches, recovering from mistakes, or comparing alternative solutions.
 
-## What Are Checkpoints?
+## Overview
 
-Checkpoints are snapshots of your conversation state, including:
+Checkpoints allow you to save conversation state and rewind to previous points, enabling safe experimentation and exploration of multiple approaches. They are snapshots of your conversation state, including:
 - All messages exchanged
 - File modifications made
 - Tool usage history
 - Session context
 
+Checkpoints are invaluable when exploring different approaches, recovering from mistakes, or comparing alternative solutions.
+
 ## Key Concepts
 
-### Checkpoint
-A saved point in your conversation that you can return to later.
+| Concept | Description |
+|---------|-------------|
+| **Checkpoint** | Snapshot of conversation state including messages, files, and context |
+| **Rewind** | Return to a previous checkpoint, discarding subsequent changes |
+| **Branch Point** | Checkpoint from which multiple approaches are explored |
 
-### Rewind
-The action of returning to a previous checkpoint, discarding all changes made after that point.
+## Commands
 
-### Branch Point
-A checkpoint where you explored multiple different approaches.
+All checkpoint operations are performed using the `/checkpoint` command:
+
+```bash
+# Create checkpoint
+/checkpoint save "Before refactoring"
+
+# List checkpoints
+/checkpoint list
+
+# Rewind to checkpoint
+/checkpoint rewind "Before refactoring"
+
+# Compare checkpoints
+/checkpoint diff checkpoint-1 checkpoint-2
+
+# Delete checkpoint
+/checkpoint delete checkpoint-1
+
+# Export checkpoint
+/checkpoint export "name" ~/checkpoints/backup.json
+```
 
 ## Creating Checkpoints
 
@@ -40,6 +63,15 @@ User: /checkpoint save "Before API refactor"
 ```
 User: /checkpoint create pre-deployment
 ```
+
+## Use Cases
+
+| Scenario | Workflow |
+|----------|----------|
+| **Exploring Approaches** | Save → Try A → Save → Rewind → Try B → Compare |
+| **Safe Refactoring** | Save → Refactor → Test → If fail: Rewind |
+| **A/B Testing** | Save → Design A → Save → Rewind → Design B → Compare |
+| **Mistake Recovery** | Notice issue → Rewind to last good state |
 
 ## Using Checkpoints
 
@@ -308,7 +340,7 @@ Poor checkpoint names:
 
 ## Configuration
 
-Configure checkpoint behavior in settings:
+Configure checkpoint behavior in settings. Here's the comprehensive configuration with all available options:
 
 ```json
 {
@@ -324,11 +356,11 @@ Configure checkpoint behavior in settings:
 
 ### Configuration Options
 
-- `autoCheckpoint`: Enable automatic checkpoints
-- `autoCheckpointInterval`: Minutes between auto-checkpoints
-- `maxCheckpoints`: Maximum number of checkpoints to retain
-- `compressionEnabled`: Compress checkpoint data
-- `includeFileContents`: Include full file contents in checkpoints
+- `autoCheckpoint`: Enable automatic checkpoints (default: true)
+- `autoCheckpointInterval`: Minutes between auto-checkpoints (default: 30)
+- `maxCheckpoints`: Maximum number of checkpoints to retain (default: 20)
+- `compressionEnabled`: Compress checkpoint data to save space (default: true)
+- `includeFileContents`: Include full file contents in checkpoints (default: true)
 
 ## Limitations
 
@@ -424,3 +456,24 @@ Use both together:
 5. Verify system works
 6. Proceed cautiously
 ```
+
+## Related Concepts
+
+- **[Planning Mode](../07-planning/)** - Create detailed implementation plans before coding
+- **[Memory Management](../06-memory/)** - Managing conversation history and context
+- **[Code Navigation](../05-code-navigation/)** - Understanding and navigating your codebase
+- **[Real-time Collaboration](../09-collaboration/)** - Working with teams using Claude Code
+- **[Error Handling](../10-error-handling/)** - Handling and recovering from errors
+- **[Best Practices](../11-best-practices/)** - General best practices for Claude Code usage
+
+## Summary
+
+Checkpoints are a powerful feature for safe exploration and experimentation in Claude Code. By combining checkpoints with your development workflow, you can:
+
+- Experiment fearlessly with multiple approaches
+- Quickly recover from mistakes without losing work
+- Compare different solutions side-by-side
+- Maintain clean, organized development sessions
+- Integrate safely with version control systems
+
+The key to effective checkpoint usage is creating them at meaningful points in your work and using descriptive names that make it easy to find and rewind to the right state when needed.

@@ -4,14 +4,33 @@ Comprehensive guide to Claude Code's advanced capabilities including planning mo
 
 ## Table of Contents
 
-1. [Planning Mode](#planning-mode)
-2. [Extended Thinking](#extended-thinking)
-3. [Background Tasks](#background-tasks)
-4. [Permission Mode](#permission-mode)
-5. [Headless Mode](#headless-mode)
-6. [Session Management](#session-management)
-7. [Interactive Features](#interactive-features)
-8. [Configuration and Settings](#configuration-and-settings)
+1. [Overview](#overview)
+2. [Planning Mode](#planning-mode)
+3. [Extended Thinking](#extended-thinking)
+4. [Background Tasks](#background-tasks)
+5. [Permission Mode](#permission-mode)
+6. [Headless Mode](#headless-mode)
+7. [Session Management](#session-management)
+8. [Interactive Features](#interactive-features)
+9. [Configuration and Settings](#configuration-and-settings)
+10. [Best Practices](#best-practices)
+11. [Related Concepts](#related-concepts)
+
+---
+
+## Overview
+
+Advanced features in Claude Code extend the core capabilities with planning, reasoning, automation, and control mechanisms. These features enable sophisticated workflows for complex development tasks, code review, automation, and multi-session management.
+
+**Key advanced features include:**
+- **Planning Mode**: Create detailed implementation plans before coding
+- **Extended Thinking**: Deep reasoning for complex problems
+- **Background Tasks**: Run long operations without blocking the conversation
+- **Permission Modes**: Control what Claude can do (unrestricted, confirm, read-only, custom)
+- **Headless Mode**: Run Claude Code without interactive input for automation and CI/CD
+- **Session Management**: Manage multiple work sessions
+- **Interactive Features**: Keyboard shortcuts, multi-line input, and command history
+- **Configuration**: Customize behavior with JSON configuration files
 
 ---
 
@@ -43,8 +62,8 @@ Planning mode is a two-phase approach:
 ### Activating Planning Mode
 
 **Explicit activation**:
-```
-User: /plan implement user authentication system
+```bash
+/plan Implement user authentication system
 ```
 
 **Automatic activation**:
@@ -55,6 +74,13 @@ User: Refactor the entire API to use microservices architecture
 Claude: This is a complex task. Let me create a plan first...
 [Enters planning mode]
 ```
+
+### Benefits of Planning Mode
+
+- **Clear roadmap with time estimates**: Detailed breakdown of implementation steps
+- **Risk assessment**: Identify potential issues before implementation
+- **Systematic task breakdown**: Organized phases and milestones
+- **Opportunity for review and modification**: Approve or adjust the plan before execution
 
 ### Example: Feature Implementation
 
@@ -142,12 +168,19 @@ Extended thinking is a deliberate, step-by-step reasoning process where Claude:
 ### Activating Extended Thinking
 
 **Explicit activation**:
-```
-User: /think deeply about the best database architecture for this system
+```bash
+/think Should we use microservices or monolith?
 ```
 
 **Automatic activation**:
 For sufficiently complex queries, Claude automatically uses extended thinking.
+
+### Benefits of Extended Thinking
+
+- **Thorough analysis of trade-offs**: Examine pros and cons systematically
+- **Better architectural decisions**: Make informed choices with comprehensive evaluation
+- **Consideration of edge cases**: Think through potential issues and scenarios
+- **Systematic evaluation**: Structured approach to complex problem-solving
 
 ### Example: Architectural Decision
 
@@ -247,6 +280,18 @@ Background tasks run asynchronously while you continue working:
 - Database migrations
 - Deployment scripts
 - Analysis tools
+
+**Basic Usage:**
+```bash
+User: Run tests in background
+
+Claude: Started task bg-1234
+
+/task list           # Show all tasks
+/task status bg-1234 # Check progress
+/task show bg-1234   # View output
+/task cancel bg-1234 # Cancel task
+```
 
 ### Starting Background Tasks
 
@@ -352,6 +397,23 @@ Claude: [Shows linter output from bg-5002]
 
 Permission mode controls what actions Claude can take without explicit approval.
 
+### Permission Modes Table
+
+| Mode | Description | Use Case |
+|------|-------------|----------|
+| **Unrestricted** | Full access (default) | Active development |
+| **Confirm** | Ask before actions | Learning, pair programming |
+| **Read-only** | Analysis only | Code review |
+| **Custom** | Granular permissions | Fine-tuned control |
+
+### Permission Commands
+
+```bash
+/permission readonly      # Code review mode
+/permission confirm       # Learning mode
+/permission unrestricted  # Full automation
+```
+
 ### Permission Levels
 
 #### 1. Unrestricted Mode (Default)
@@ -453,7 +515,21 @@ Headless mode enables:
 ### Running in Headless Mode
 
 ```bash
-# Run a specific task
+# Run specific task
+claude-code --headless --task "Run all tests"
+
+# From script file
+claude-code --headless --script ./deploy.claude
+
+# CI/CD integration (GitHub Actions)
+- name: AI Code Review
+  run: claude-code --headless --task "Review PR"
+```
+
+### Additional Headless Usage Examples
+
+```bash
+# Run a specific task with output capture
 claude-code --headless --task "Run all tests and generate coverage report"
 
 # Run from a script file
@@ -540,7 +616,17 @@ claude-code --headless --script deploy.claude
 
 Manage multiple Claude Code sessions effectively.
 
-### Session Commands
+### Session Management Commands
+
+```bash
+/session list           # Show all sessions
+/session new "Feature"  # Create new session
+/session switch "Bug"   # Switch sessions
+/session save           # Save current state
+/session load "name"    # Load saved session
+```
+
+### Session Commands Details
 
 **List sessions**:
 ```
@@ -616,6 +702,14 @@ claude-code --new
 
 Claude Code supports keyboard shortcuts for efficiency:
 
+**Basic Navigation and Input:**
+- `Ctrl + R` - Search command history
+- `Tab` - Autocomplete
+- `↑ / ↓` - Command history
+- `Ctrl + L` - Clear screen
+
+**Extended Shortcuts:**
+
 | Shortcut | Action |
 |----------|--------|
 | `Ctrl + C` | Cancel current operation |
@@ -668,6 +762,15 @@ User: Ctrl+R  # Search history
 
 For complex queries, use multi-line mode:
 
+```bash
+User: \
+> Long complex prompt
+> spanning multiple lines
+> \end
+```
+
+**Example:**
+
 ```
 User: \
 > Implement a user authentication system
@@ -702,6 +805,34 @@ User: Deploy to prodcution<Backspace><Backspace>uction
 3. **User config**: `~/.config/claude-code/settings.json`
 
 ### Complete Configuration Example
+
+**Core advanced features configuration:**
+
+```json
+{
+  "planning": {
+    "autoEnter": true,
+    "requireApproval": true
+  },
+  "extendedThinking": {
+    "enabled": true,
+    "showThinkingProcess": true
+  },
+  "backgroundTasks": {
+    "enabled": true,
+    "maxConcurrentTasks": 5
+  },
+  "permissions": {
+    "mode": "unrestricted"
+  },
+  "headless": {
+    "exitOnError": true,
+    "verbose": true
+  }
+}
+```
+
+**Extended configuration example:**
 
 ```json
 {
@@ -897,3 +1028,17 @@ Create `.claude/config.json` in your project:
 - ✅ Save important session states
 - ✅ Clean up old sessions
 - ❌ Don't mix unrelated work in one session
+
+---
+
+## Related Concepts
+
+For more information about Claude Code and related features, see:
+
+- [Main Claude Code Guide](../README.md)
+- [Claude Code Basics](../01-basics/)
+- [Advanced Code Analysis](../02-code-analysis/)
+- [Collaboration Features](../03-collaboration/)
+- [Troubleshooting Guide](../troubleshooting.md)
+- [Claude Documentation](https://docs.claude.com)
+- [MCP GitHub Servers](https://github.com/modelcontextprotocol/servers)

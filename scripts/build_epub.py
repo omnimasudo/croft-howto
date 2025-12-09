@@ -4,8 +4,32 @@
 # ///
 """
 Build an EPUB from the Claude How-To markdown files.
-Chapters are organized by folder structure.
-Renders mermaid diagrams using Kroki.io API.
+
+Usage:
+    Run from the repository root directory:
+        ./scripts/build_epub.py
+
+    Or run directly with Python/uv:
+        uv run scripts/build_epub.py
+        python scripts/build_epub.py
+
+    The script uses inline script dependencies (PEP 723), so uv will
+    automatically install required packages in an isolated environment.
+
+Output:
+    Creates 'claude-howto-guide.epub' in the repository root directory.
+
+Features:
+    - Organizes chapters by folder structure (01-slash-commands, etc.)
+    - Renders Mermaid diagrams as PNG images via Kroki.io API
+    - Generates a cover image from the project logo
+    - Converts internal markdown links to EPUB chapter references
+    - Handles SVG images by replacing with alt text (unsupported in EPUB)
+
+Requirements:
+    - uv (recommended) or Python 3.10+ with dependencies installed
+    - Internet connection for Mermaid diagram rendering
+    - Repository structure with markdown files and claude-howto-logo.png
 """
 
 import base64
@@ -14,15 +38,18 @@ import zlib
 from pathlib import Path
 import httpx
 from io import BytesIO
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from ebooklib import epub
 import markdown
 from bs4 import BeautifulSoup
 
 
-# Cache for mermaid images to avoid re-fetching
-_mermaid_cache: dict[str, bytes] = {}
+# Cache for mermaid images to avoid re-fetching (stores (image_data, filename) tuples)
+_mermaid_cache: dict[str, tuple[bytes, str]] = {}
 _mermaid_counter = 0
+
+# Track which mermaid images have been added to the book
+_mermaid_added_to_book: set[str] = set()
 
 # Mapping from source paths to EPUB chapter filenames
 _path_to_chapter: dict[str, str] = {}
@@ -32,11 +59,10 @@ def mermaid_to_image(mermaid_code: str) -> tuple[bytes, str] | None:
     """Convert mermaid code to PNG image using Kroki.io API."""
     global _mermaid_counter
 
-    # Check cache
+    # Check cache - return cached image data and filename to avoid duplicates
     cache_key = mermaid_code.strip()
     if cache_key in _mermaid_cache:
-        _mermaid_counter += 1
-        return _mermaid_cache[cache_key], f"mermaid_{_mermaid_counter}.png"
+        return _mermaid_cache[cache_key]
 
     try:
         # Use Kroki.io API - accepts deflate-compressed, base64-encoded diagrams
@@ -48,8 +74,9 @@ def mermaid_to_image(mermaid_code: str) -> tuple[bytes, str] | None:
         if response.status_code == 200:
             _mermaid_counter += 1
             img_data = response.content
-            _mermaid_cache[cache_key] = img_data
-            return img_data, f"mermaid_{_mermaid_counter}.png"
+            img_name = f"mermaid_{_mermaid_counter}.png"
+            _mermaid_cache[cache_key] = (img_data, img_name)
+            return img_data, img_name
         else:
             print(f"  Warning: Kroki API returned {response.status_code}")
             return None
@@ -81,14 +108,16 @@ def process_mermaid_blocks(md_content: str, book: epub.EpubBook) -> str:
         result = mermaid_to_image(mermaid_code)
         if result:
             img_data, img_name = result
-            # Add image to book
-            img_item = epub.EpubItem(
-                uid=img_name.replace('.', '_'),
-                file_name=f"images/{img_name}",
-                media_type="image/png",
-                content=img_data
-            )
-            book.add_item(img_item)
+            # Only add image to book if not already added
+            if img_name not in _mermaid_added_to_book:
+                img_item = epub.EpubItem(
+                    uid=img_name.replace('.', '_'),
+                    file_name=f"images/{img_name}",
+                    media_type="image/png",
+                    content=img_data
+                )
+                book.add_item(img_item)
+                _mermaid_added_to_book.add(img_name)
             # Return markdown image reference
             return f'\n![Diagram](images/{img_name})\n'
         else:
@@ -98,26 +127,114 @@ def process_mermaid_blocks(md_content: str, book: epub.EpubBook) -> str:
     return re.sub(pattern, replace_mermaid, md_content, flags=re.DOTALL)
 
 
-def create_cover_image(logo_path: Path) -> bytes:
-    """Create a cover image by cropping a square from the left of the logo."""
-    with Image.open(logo_path) as img:
-        # Convert to RGB if necessary (for PNG with transparency)
-        if img.mode in ('RGBA', 'P'):
-            background = Image.new('RGB', img.size, (30, 41, 59))
-            if img.mode == 'P':
-                img = img.convert('RGBA')
-            background.paste(img, mask=img.split()[3] if img.mode == 'RGBA' else None)
-            img = background
+def create_cover_image(logo_path: Path, title: str = "Claude Code\nHow-To Guide") -> bytes:
+    """Create a cover image by composing the logo with title text on top.
 
-        # Crop a square from the left side
-        _, height = img.size
-        square_size = height  # Use height as the square size
-        img = img.crop((0, 0, square_size, square_size))
+    Args:
+        logo_path: Path to the PNG logo file
+        title: Title text to overlay on the cover
 
-        # Save to bytes
-        buffer = BytesIO()
-        img.save(buffer, format='PNG', optimize=True)
-        return buffer.getvalue()
+    Returns:
+        PNG image data as bytes
+    """
+    # Target cover dimensions (standard ebook cover ratio ~1.6:1 height:width)
+    cover_width = 600
+    cover_height = 900
+
+    # Background color matching the logo gradient
+    bg_color = (26, 26, 46)  # #1a1a2e from the logo
+
+    # Create the cover canvas
+    cover = Image.new('RGB', (cover_width, cover_height), bg_color)
+    draw = ImageDraw.Draw(cover)
+
+    # Load and scale the logo
+    with Image.open(logo_path) as logo:
+        # Scale logo to fit cover width with some padding
+        target_width = cover_width - 60  # 30px padding on each side
+        scale_factor = target_width / logo.width
+        new_height = int(logo.height * scale_factor)
+        logo_scaled = logo.resize((target_width, new_height), Image.Resampling.LANCZOS)
+
+        # Handle transparency
+        if logo_scaled.mode == 'RGBA':
+            # Composite onto a background matching cover color
+            logo_bg = Image.new('RGB', logo_scaled.size, bg_color)
+            logo_bg.paste(logo_scaled, mask=logo_scaled.split()[3])
+            logo_scaled = logo_bg
+        elif logo_scaled.mode != 'RGB':
+            logo_scaled = logo_scaled.convert('RGB')
+
+        # Position the logo in the lower portion of the cover
+        logo_x = (cover_width - logo_scaled.width) // 2
+        logo_y = cover_height - logo_scaled.height - 80  # 80px from bottom
+        cover.paste(logo_scaled, (logo_x, logo_y))
+
+    # Add title text at the top
+    # Try to use a nice font, fall back to default
+    font_size = 72
+    font = ImageFont.load_default()
+    try:
+        # Try common system fonts on macOS
+        for font_name in [
+            '/System/Library/Fonts/Supplemental/Arial Bold.ttf',
+            '/System/Library/Fonts/Helvetica.ttc',
+            'Arial Bold',
+            'Helvetica Bold',
+        ]:
+            try:
+                font = ImageFont.truetype(font_name, font_size)
+                break
+            except OSError:
+                continue
+    except Exception:
+        pass
+
+    # Draw title text (centered, near top)
+    title_color = (78, 205, 196)  # #4ecdc4 - teal from the logo gradient
+
+    # Split title into lines and draw each centered
+    lines = title.split('\n')
+    y_offset = 120
+    line_spacing = 90
+
+    for line in lines:
+        bbox = draw.textbbox((0, 0), line, font=font)
+        text_width = bbox[2] - bbox[0]
+        x = (cover_width - text_width) // 2
+        draw.text((x, y_offset), line, font=font, fill=title_color)
+        y_offset += line_spacing
+
+    # Add a subtle subtitle
+    subtitle = "Complete Guide to Claude Code Features"
+    subtitle_font_size = 24
+    subtitle_font = ImageFont.load_default()
+    try:
+        for font_name in [
+            '/System/Library/Fonts/Supplemental/Arial.ttf',
+            '/System/Library/Fonts/Helvetica.ttc',
+            'Arial',
+            'Helvetica',
+        ]:
+            try:
+                subtitle_font = ImageFont.truetype(font_name, subtitle_font_size)
+                break
+            except OSError:
+                continue
+    except Exception:
+        pass
+
+    subtitle_color = (168, 178, 209)  # #a8b2d1 - light gray from logo
+    bbox = draw.textbbox((0, 0), subtitle, font=subtitle_font)
+    subtitle_width = bbox[2] - bbox[0]
+    subtitle_x = (cover_width - subtitle_width) // 2
+    subtitle_y = y_offset + 20
+    draw.text((subtitle_x, subtitle_y), subtitle, font=subtitle_font, fill=subtitle_color)
+
+    # Save to bytes
+    buffer = BytesIO()
+    cover.save(buffer, format='PNG', optimize=True)
+    return buffer.getvalue()
 
 
 def get_chapter_order():
@@ -263,7 +380,7 @@ def create_epub(root_path: Path, output_path: Path):
     book.set_language('en')
     book.add_author('Claude Code Community')
 
-    # Add cover image
+    # Add cover image from PNG logo
     logo_path = root_path / "claude-howto-logo.png"
     if logo_path.exists():
         print("Adding cover image...")

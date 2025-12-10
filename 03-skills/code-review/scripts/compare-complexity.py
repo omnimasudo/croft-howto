@@ -6,14 +6,14 @@ Helps identify if refactoring actually simplifies code structure.
 
 import re
 import sys
-from typing import Dict, Tuple
+
 
 class ComplexityAnalyzer:
     """Analyze code complexity metrics."""
 
     def __init__(self, code: str):
         self.code = code
-        self.lines = code.split('\n')
+        self.lines = code.split("\n")
 
     def calculate_cyclomatic_complexity(self) -> int:
         """
@@ -24,13 +24,13 @@ class ComplexityAnalyzer:
 
         # Count decision points
         decision_patterns = [
-            r'\bif\b',
-            r'\belif\b',
-            r'\bfor\b',
-            r'\bwhile\b',
-            r'\bexcept\b',
-            r'\band\b(?!$)',
-            r'\bor\b(?!$)'
+            r"\bif\b",
+            r"\belif\b",
+            r"\bfor\b",
+            r"\bwhile\b",
+            r"\bexcept\b",
+            r"\band\b(?!$)",
+            r"\bor\b(?!$)",
         ]
 
         for pattern in decision_patterns:
@@ -49,10 +49,10 @@ class ComplexityAnalyzer:
 
         for line in self.lines:
             # Track nesting depth
-            if re.search(r'^\s*(if|for|while|def|class|try)\b', line):
+            if re.search(r"^\s*(if|for|while|def|class|try)\b", line):
                 nesting_depth += 1
                 cognitive += nesting_depth
-            elif re.search(r'^\s*(elif|else|except|finally)\b', line):
+            elif re.search(r"^\s*(elif|else|except|finally)\b", line):
                 cognitive += nesting_depth
 
             # Reduce nesting when unindenting
@@ -74,28 +74,37 @@ class ComplexityAnalyzer:
         cognitive = self.calculate_cognitive_complexity()
 
         # Simplified MI calculation
-        mi = 171 - 5.2 * (cyclomatic / lines) - 0.23 * (cognitive) - 16.2 * (lines / 1000)
+        mi = (
+            171
+            - 5.2 * (cyclomatic / lines)
+            - 0.23 * (cognitive)
+            - 16.2 * (lines / 1000)
+        )
 
         return max(0, min(100, mi))
 
-    def get_complexity_report(self) -> Dict:
+    def get_complexity_report(self) -> dict:
         """Generate comprehensive complexity report."""
         return {
-            'cyclomatic_complexity': self.calculate_cyclomatic_complexity(),
-            'cognitive_complexity': self.calculate_cognitive_complexity(),
-            'maintainability_index': round(self.calculate_maintainability_index(), 2),
-            'lines_of_code': len(self.lines),
-            'avg_line_length': round(sum(len(l) for l in self.lines) / len(self.lines), 2) if self.lines else 0
+            "cyclomatic_complexity": self.calculate_cyclomatic_complexity(),
+            "cognitive_complexity": self.calculate_cognitive_complexity(),
+            "maintainability_index": round(self.calculate_maintainability_index(), 2),
+            "lines_of_code": len(self.lines),
+            "avg_line_length": round(
+                sum(len(l) for l in self.lines) / len(self.lines), 2
+            )
+            if self.lines
+            else 0,
         }
 
 
 def compare_files(before_file: str, after_file: str) -> None:
     """Compare complexity metrics between two code versions."""
 
-    with open(before_file, 'r') as f:
+    with open(before_file) as f:
         before_code = f.read()
 
-    with open(after_file, 'r') as f:
+    with open(after_file) as f:
         after_code = f.read()
 
     before_analyzer = ComplexityAnalyzer(before_code)
@@ -123,10 +132,16 @@ def compare_files(before_file: str, after_file: str) -> None:
     print(f"  Avg Line Length:          {after_metrics['avg_line_length']}")
 
     print("\nCHANGES:")
-    cyclomatic_change = after_metrics['cyclomatic_complexity'] - before_metrics['cyclomatic_complexity']
-    cognitive_change = after_metrics['cognitive_complexity'] - before_metrics['cognitive_complexity']
-    mi_change = after_metrics['maintainability_index'] - before_metrics['maintainability_index']
-    loc_change = after_metrics['lines_of_code'] - before_metrics['lines_of_code']
+    cyclomatic_change = (
+        after_metrics["cyclomatic_complexity"] - before_metrics["cyclomatic_complexity"]
+    )
+    cognitive_change = (
+        after_metrics["cognitive_complexity"] - before_metrics["cognitive_complexity"]
+    )
+    mi_change = (
+        after_metrics["maintainability_index"] - before_metrics["maintainability_index"]
+    )
+    loc_change = after_metrics["lines_of_code"] - before_metrics["lines_of_code"]
 
     print(f"  Cyclomatic Complexity:    {cyclomatic_change:+d}")
     print(f"  Cognitive Complexity:     {cognitive_change:+d}")
@@ -151,7 +166,7 @@ def compare_files(before_file: str, after_file: str) -> None:
     print("=" * 60)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: python compare-complexity.py <before_file> <after_file>")
         sys.exit(1)

@@ -49,3 +49,17 @@ blog-posts/
 
 # EPUB files in root directory
 /*.epub
+
+# Python virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/

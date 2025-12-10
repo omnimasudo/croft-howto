@@ -2,6 +2,14 @@
 
 # Claude How To
 
+## Contributors
+
+Thanks to everyone who has contributed to this project!
+
+| Contributor | PRs |
+|-------------|-----|
+| [wjhrdy](https://github.com/wjhrdy) | [#1 - add a tool to create an epub](https://github.com/luongnv89/claude-howto/pull/1) |
+
 Complete collection of examples for some important Claude Code features and concepts.
 
 ## Quick Navigation
@@ -667,6 +675,20 @@ These examples are provided as-is for educational purposes. Adapt and use them f
 
 ---
 
-**Last Updated**: November 2025
+## EPUB Generation
+
+Want to read this guide offline? Generate an EPUB ebook:
+
+```bash
+uv run scripts/build_epub.py
+```
+
+This creates `claude-howto-guide.epub` with all content, including rendered Mermaid diagrams.
+
+See [scripts/README.md](scripts/README.md) for more options.
+
+---
+
+**Last Updated**: December 2025
 **Claude Code Version**: 1.0+
 **Compatible Models**: Sonnet 4.5, Opus 4.1, Haiku 4.5

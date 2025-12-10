@@ -46,3 +46,6 @@ yarn-error.log*
 # Keep .claude/ clean for hand-on section
 .claude/
 blog-posts/
+
+# EPUB files in root directory
+/*.epub

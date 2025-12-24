@@ -30,6 +30,7 @@ graph TD
     F --> G[7. Plugins<br/>Bundled Solutions]
     G --> H[8. Checkpoints<br/>Safe Experimentation]
     H --> I[9. Advanced Features<br/>Power User Tools]
+    I --> J[10. CLI Reference<br/>Command Mastery]
 
     style A fill:#90EE90
     style B fill:#87CEEB
@@ -40,6 +41,7 @@ graph TD
     style G fill:#FF6347
     style H fill:#FF6347
     style I fill:#8B0000,color:#fff
+    style J fill:#87CEEB
 ```
 
 **Color Legend:**
@@ -65,8 +67,9 @@ graph TD
 | **7** | [Plugins](07-plugins/) | ⭐⭐⭐⭐ Advanced | 2 hours | All previous | Complete solutions | Team onboarding, distribution |
 | **8** | [Checkpoints](08-checkpoints/) | ⭐⭐ Intermediate | 45 min | Session management | Safe exploration | Experimentation, recovery |
 | **9** | [Advanced Features](09-advanced-features/) | ⭐⭐⭐⭐⭐ Advanced | 2-3 hours | All previous | Power user tools | Planning, headless, permissions |
+| **10** | [CLI Reference](10-cli/) | ⭐⭐ Beginner+ | 1 hour | None | CLI mastery | Scripting, CI/CD, automation |
 
-**Total Learning Time**: ~10-12 hours (spread across 4-5 weeks recommended)
+**Total Learning Time**: ~11-13 hours (spread across 4-5 weeks recommended)
 
 ---
 
@@ -268,6 +271,61 @@ Complete this end-to-end workflow:
 
 ---
 
+### Milestone 5: CLI Mastery (Anytime)
+
+**Topics**: CLI Reference
+**Time**: 1 hour
+**Complexity**: ⭐⭐ Beginner+
+**Goal**: Master command-line usage for scripting and automation
+
+#### What You'll Achieve
+✅ Understand all CLI commands and flags
+✅ Use print mode for scripting
+✅ Integrate Claude Code into CI/CD pipelines
+✅ Process files and logs via piping
+✅ Configure custom agents via CLI
+
+#### Hands-on Exercises
+
+```bash
+# Exercise 1: Interactive vs Print mode
+claude "explain this project"           # Interactive
+claude -p "explain this function"       # Print mode
+
+# Exercise 2: Process file content
+cat error.log | claude -p "explain this error"
+
+# Exercise 3: JSON output for scripts
+claude -p --output-format json "list all functions"
+
+# Exercise 4: Session management
+claude -r "feature-auth" "continue implementation"
+
+# Exercise 5: CI/CD integration
+claude -p --max-turns 3 --output-format json "review code"
+```
+
+#### Success Criteria
+- [ ] Used print mode for non-interactive queries
+- [ ] Piped file content to Claude for analysis
+- [ ] Generated JSON output for scripting
+- [ ] Resumed a previous session
+- [ ] Understood permission and tool flags
+
+#### CLI Integration Exercise
+Create a simple CI/CD script:
+1. Use `claude -p` to review changed files
+2. Output results as JSON
+3. Process with `jq` for specific issues
+4. Integrate into GitHub Actions workflow
+
+#### Next Steps
+- Create shell aliases for common commands
+- Set up batch processing scripts
+- Read: [10-cli/README.md](10-cli/README.md)
+
+---
+
 ## ⚡ Quick Start Paths
 
 ### If You Only Have 15 Minutes
@@ -396,10 +454,12 @@ Use this checklist to track your progress:
 ### Week 5+: Mastery
 - [ ] Completed 08-checkpoints
 - [ ] Completed 09-advanced-features
+- [ ] Completed 10-cli
 - [ ] Used planning mode successfully
 - [ ] Set up headless CI/CD
 - [ ] Created team plugin
-- [ ] Milestone 4 achieved
+- [ ] Used CLI for scripting and automation
+- [ ] Milestone 4 & 5 achieved
 
 ---
 
@@ -459,7 +519,7 @@ Once you've completed all milestones:
 
 ---
 
-**Last Updated**: November 2025
+**Last Updated**: December 2025
 **Maintained by**: Claude How-To Contributors
 **License**: Educational purposes, free to use and adapt
 

@@ -25,6 +25,7 @@ Complete collection of examples for some important Claude Code features and conc
 | **Plugins** | Bundled features | [07-plugins/](07-plugins/) |
 | **Checkpoints** | Session snapshots & rewind | [08-checkpoints/](08-checkpoints/) |
 | **Advanced Features** | Planning, thinking, background tasks | [09-advanced-features/](09-advanced-features/) |
+| **CLI Reference** | Commands, flags, and options | [10-cli/](10-cli/) |
 
 ---
 
@@ -43,8 +44,9 @@ Complete collection of examples for some important Claude Code features and conc
 | **7** | [Plugins](07-plugins/) | ⭐⭐⭐⭐ Advanced | 2 hours | Bundles |
 | **8** | [Checkpoints](08-checkpoints/) | ⭐⭐ Intermediate | 45 min | Safe tests |
 | **9** | [Advanced](09-advanced-features/) | ⭐⭐⭐⭐⭐ Advanced | 2-3 hours | Power user |
+| **10** | [CLI Reference](10-cli/) | ⭐⭐ Beginner+ | 1 hour | CLI mastery |
 
-**Total**: ~10-12 hours | 📖 **[Complete Learning Roadmap →](LEARNING-ROADMAP.md)**
+**Total**: ~11-13 hours | 📖 **[Complete Learning Roadmap →](LEARNING-ROADMAP.md)**
 
 ---
 
@@ -64,6 +66,7 @@ Complete collection of examples for some important Claude Code features and conc
 | **Checkpoints** | Manual/Auto | Session-based | Safe experimentation |
 | **Planning Mode** | Manual/Auto | Plan phase | Complex implementations |
 | **Background Tasks** | Manual | Task duration | Long-running operations |
+| **CLI Reference** | Terminal commands | Session/Script | Automation & scripting |
 
 ### Use Case Matrix
 
@@ -79,8 +82,10 @@ Complete collection of examples for some important Claude Code features and conc
 | **Complex Projects** | All Features + Planning Mode |
 | **Refactoring** | Checkpoints + Planning Mode + Hooks |
 | **Learning/Experimentation** | Checkpoints + Extended Thinking + Permission Mode |
-| **CI/CD Automation** | Headless Mode + Hooks + Background Tasks |
+| **CI/CD Automation** | CLI Reference + Hooks + Background Tasks |
 | **Performance Optimization** | Planning Mode + Checkpoints + Background Tasks |
+| **Script Automation** | CLI Reference + Hooks + MCP |
+| **Batch Processing** | CLI Reference + Background Tasks |
 
 ---
 
@@ -454,6 +459,49 @@ See [config-examples.json](09-advanced-features/config-examples.json) for comple
 
 ---
 
+## 10. CLI Reference
+
+**Location**: [10-cli/](10-cli/)
+
+**What**: Complete command-line interface reference for Claude Code
+
+**Key Areas**:
+- CLI commands (`claude`, `claude -p`, `claude -c`, `claude -r`)
+- Core flags (print mode, continue, resume, version)
+- Model & configuration (`--model`, `--agents`)
+- System prompt customization
+- Tool & permission management
+- Output formats (text, JSON, stream-JSON)
+- MCP configuration
+- Session management
+
+**Quick Examples**:
+```bash
+# Interactive mode
+claude "explain this project"
+
+# Print mode (non-interactive)
+claude -p "review this code"
+
+# Process file content
+cat error.log | claude -p "explain this error"
+
+# JSON output for scripts
+claude -p --output-format json "list functions"
+
+# Resume session
+claude -r "feature-auth" "continue implementation"
+```
+
+**Use Cases**:
+- CI/CD pipeline integration
+- Script automation and piping
+- Batch processing
+- Multi-session workflows
+- Custom agent configurations
+
+---
+
 ## Directory Structure
 
 ```
@@ -513,6 +561,8 @@ See [config-examples.json](09-advanced-features/config-examples.json) for comple
 │   ├── config-examples.json
 │   ├── planning-mode-examples.md
 │   └── README.md
+├── 10-cli/
+│   └── README.md
 └── README.md (this file)
 ```
 
@@ -550,6 +600,9 @@ chmod +x ~/.claude/hooks/*.sh
 
 # Advanced Features (configure in settings)
 # See 09-advanced-features/config-examples.json
+
+# CLI Reference (no installation needed)
+# See 10-cli/README.md for usage examples
 ```
 
 ---

@@ -1,8 +1,14 @@
 # Proposal: update-subagents-lesson
 
-## Summary
+## Why
 
-Update the `04-subagents` lesson to align with the official Claude Code documentation at https://code.claude.com/docs/en/sub-agents. The current lesson is missing several key features and uses outdated configuration formats.
+The existing subagents lesson lacks critical features documented in the official docs and uses outdated configuration formats.
+
+## What Changes
+
+- Update README with all official features (built-in subagents, /agents command, CLI config, resumable agents)
+- Update example files to new YAML frontmatter format
+- Add new example subagents (debugger, data-scientist)
 
 ## Motivation
 

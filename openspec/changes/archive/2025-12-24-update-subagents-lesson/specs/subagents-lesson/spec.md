@@ -1,6 +1,6 @@
 # Spec: Subagents Lesson Content
 
-## MODIFIED Requirements
+## ADDED Requirements
 
 ### Requirement: Configuration Format
 

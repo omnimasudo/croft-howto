@@ -104,9 +104,70 @@ Limit which tools Claude can use with a Skill:
 ```yaml
 ---
 name: safe-file-reader
-description: Read files without making changes.
+description: Read files without making changes. Use when users need read-only file access or want to search files safely.
 allowed-tools: Read, Grep, Glob
 ---
+```
+
+**Use cases for `allowed-tools`:**
+- **Read-only Skills**: Prevent accidental file modifications
+- **Security-sensitive workflows**: Limit tool access for sensitive operations
+- **Limited scope Skills**: Restrict to specific tools (e.g., data analysis only)
+
+**Note**: If `allowed-tools` isn't specified, Claude will ask for permission as normal.
+
+## Managing Skills
+
+### Viewing Available Skills
+
+Ask Claude directly:
+```
+What Skills are available?
+```
+
+Or check the filesystem:
+```bash
+# List personal Skills
+ls ~/.claude/skills/
+
+# List project Skills
+ls .claude/skills/
+
+# View specific Skill
+cat ~/.claude/skills/my-skill/SKILL.md
+```
+
+### Testing a Skill
+
+Create the Skill, then ask questions matching its description. Claude autonomously activates it—no explicit invocation needed.
+
+Example: If your description mentions "PDF files":
+```
+Can you help me extract text from this PDF?
+```
+
+### Updating a Skill
+
+Edit the `SKILL.md` file directly:
+```bash
+# Personal Skill
+code ~/.claude/skills/my-skill/SKILL.md
+
+# Project Skill
+code .claude/skills/my-skill/SKILL.md
+```
+
+**Important**: Changes take effect on next Claude Code startup. Restart if already running.
+
+### Removing a Skill
+
+```bash
+# Personal Skill
+rm -rf ~/.claude/skills/my-skill
+
+# Project Skill
+rm -rf .claude/skills/my-skill
+git commit -m "Remove unused Skill"
 ```
 
 ## Practical Examples
@@ -880,6 +941,54 @@ if __name__ == '__main__':
     print(markdown)
 ```
 
+### Example 4: Multi-File Skill (Complex Structure)
+
+For complex skills with multiple reference files, scripts, and templates:
+
+**Directory Structure:**
+
+```
+pdf-processing/
+├── SKILL.md              # Required - main instructions
+├── FORMS.md              # Optional - detailed form-filling guide
+├── REFERENCE.md          # Optional - API reference
+└── scripts/
+    ├── fill_form.py      # Optional - utility scripts
+    └── validate.py
+```
+
+**File:** `pdf-processing/SKILL.md`
+
+```yaml
+---
+name: pdf-processing
+description: Extract text, fill forms, merge PDFs. Use when working with PDF files, forms, or document extraction. Requires pypdf and pdfplumber packages.
+---
+
+# PDF Processing
+
+## Quick Start
+
+Extract text:
+```python
+import pdfplumber
+with pdfplumber.open("doc.pdf") as pdf:
+    text = pdf.pages[0].extract_text()
+```
+
+For form filling, see [FORMS.md](FORMS.md).
+For detailed API reference, see [REFERENCE.md](REFERENCE.md).
+
+## Requirements
+
+Packages must be installed in your environment:
+```bash
+pip install pypdf pdfplumber
+```
+```
+
+**Important**: Claude reads additional files only when needed, using progressive disclosure to manage context efficiently. Reference files with relative links in your SKILL.md.
+
 ## Skill Discovery & Invocation
 
 ```mermaid
@@ -960,7 +1069,24 @@ graph TB
 - Don't create circular dependencies
 - Don't ignore performance implications
 
+### 5. Document Skill Versions
+
+Track changes to your skills over time:
+
+```markdown
+# My Skill
+
+## Version History
+- v2.0.0 (2025-01-15): Breaking changes - new output format
+- v1.1.0 (2025-01-01): Added chart generation feature
+- v1.0.0 (2024-12-01): Initial release
+```
+
+This helps your team understand skill evolution and identify when breaking changes were introduced.
+
 ## Troubleshooting Guide
+
+### Quick Reference
 
 | Issue | Solution |
 |-------|----------|
@@ -968,6 +1094,75 @@ graph TB
 | Skill file not found | Verify path: `~/.claude/skills/name/SKILL.md` or `.claude/skills/name/SKILL.md` |
 | YAML errors | Check opening/closing `---`, indentation, no tabs (spaces only) |
 | Skills conflict | Use distinct trigger terms in descriptions |
+| Scripts not running | Check permissions with `chmod +x` and use forward slashes in paths |
+
+### Debugging Skipped or Non-Functional Skills
+
+#### Claude Doesn't Use My Skill
+
+**Problem: Vague description**
+```yaml
+# Too generic - Claude can't match this to requests
+description: Helps with data
+```
+
+**Solution: Make it specific with triggers**
+```yaml
+description: Analyze Excel spreadsheets, generate pivot tables, create charts. Use when working with Excel files, spreadsheets, or .xlsx files.
+```
+
+**Problem: Invalid YAML frontmatter**
+
+Check your frontmatter:
+```bash
+cat SKILL.md | head -n 10
+```
+
+Ensure:
+- Opening `---` on line 1
+- Closing `---` before Markdown content
+- Valid YAML syntax (no tabs, correct indentation)
+- No special characters that need escaping
+
+**Problem: Wrong file path**
+
+Verify the skill location:
+```bash
+# Personal Skills
+ls ~/.claude/skills/my-skill/SKILL.md
+
+# Project Skills
+ls .claude/skills/my-skill/SKILL.md
+```
+
+#### Skill Has Errors
+
+**Check script permissions:**
+```bash
+chmod +x .claude/skills/my-skill/scripts/*.py
+```
+
+**Use forward slashes in paths:**
+- Correct: `scripts/helper.py`
+- Wrong: `scripts\helper.py` (Windows style)
+
+**Check dependencies:**
+```bash
+# Claude will automatically install or ask for permission
+pip install required-package
+```
+
+#### Multiple Skills Conflict
+
+**Use distinct trigger terms** to help Claude choose the right Skill:
+
+```yaml
+# Skill 1 - Sales analysis
+description: Analyze sales data in Excel files and CRM exports. Use for sales reports, pipeline analysis, and revenue tracking.
+
+# Skill 2 - System logs
+description: Analyze log files and system metrics data. Use for performance monitoring, debugging, and system diagnostics.
+```
 
 ## Sharing Skills with Your Team
 

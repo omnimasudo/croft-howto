@@ -4,7 +4,254 @@
 
 ## Overview
 
-Slash commands are user-invoked shortcuts stored as Markdown files that Claude Code can execute. They enable teams to standardize frequently-used prompts and workflows.
+Slash commands are tools that control Claude's behavior during an interactive session. They enable teams to standardize frequently-used prompts and workflows, and come in several types with different capabilities.
+
+## Types of Slash Commands
+
+| Type | Description | Example |
+|------|-------------|---------|
+| **Built-in** | Commands provided by Claude Code | `/help`, `/clear`, `/model` |
+| **Custom** | User-defined Markdown files | `/optimize`, `/pr` |
+| **Plugin** | Commands from installed plugins | `/frontend-design:frontend-design` |
+| **MCP** | Commands from MCP servers | `/mcp__github__list_prs` |
+
+## Built-in Commands Reference
+
+Claude Code provides these built-in slash commands:
+
+| Command | Purpose |
+|---------|---------|
+| `/add-dir` | Add additional working directories |
+| `/agents` | Manage custom AI subagents for specialized tasks |
+| `/bashes` | List and manage background tasks |
+| `/bug` | Report bugs (sends conversation to Anthropic) |
+| `/clear` | Clear conversation history |
+| `/compact [instructions]` | Compact conversation with optional focus instructions |
+| `/config` | Open the Settings interface (Config tab) |
+| `/context` | Visualize current context usage as a colored grid |
+| `/cost` | Show token usage statistics |
+| `/doctor` | Checks the health of your Claude Code installation |
+| `/exit` | Exit the REPL |
+| `/export [filename]` | Export the current conversation to a file or clipboard |
+| `/help` | Get usage help |
+| `/hooks` | Manage hook configurations for tool events |
+| `/ide` | Manage IDE integrations and show status |
+| `/init` | Initialize project with `CLAUDE.md` guide |
+| `/install-github-app` | Set up Claude GitHub Actions for a repository |
+| `/login` | Switch Anthropic accounts |
+| `/logout` | Sign out from your Anthropic account |
+| `/mcp` | Manage MCP server connections and OAuth authentication |
+| `/memory` | Edit `CLAUDE.md` memory files |
+| `/model` | Select or change the AI model |
+| `/output-style [style]` | Set the output style directly or from a selection menu |
+| `/permissions` | View or update permissions |
+| `/plugin` | Manage Claude Code plugins |
+| `/pr-comments` | View pull request comments |
+| `/privacy-settings` | View and update your privacy settings |
+| `/release-notes` | View release notes |
+| `/rename <name>` | Rename the current session |
+| `/resume [session]` | Resume a conversation by ID or name |
+| `/review` | Request code review |
+| `/rewind` | Rewind the conversation and/or code |
+| `/sandbox` | Enable sandboxed bash tool with filesystem and network isolation |
+| `/security-review` | Complete a security review of pending changes |
+| `/stats` | Visualize daily usage, session history, streaks, and model preferences |
+| `/status` | Open the Settings interface (Status tab) |
+| `/statusline` | Set up Claude Code's status line UI |
+| `/terminal-setup` | Install Shift+Enter key binding for newlines |
+| `/todos` | List current TODO items |
+| `/usage` | Show plan usage limits and rate limit status |
+| `/vim` | Enter vim mode for alternating insert and command modes |
+
+## Custom Slash Commands
+
+Custom slash commands allow you to define frequently used prompts as Markdown files that Claude Code can execute.
+
+### File Locations
+
+| Location | Scope | Label in `/help` | Use Case |
+|----------|-------|------------------|----------|
+| `.claude/commands/` | Project-specific | `(project)` | Team workflows, shared standards |
+| `~/.claude/commands/` | Personal | `(user)` | Personal shortcuts across projects |
+
+**Priority:** Project commands take precedence over personal commands with the same name.
+
+### Namespacing with Subdirectories
+
+Use subdirectories to group related commands:
+
+```
+.claude/commands/
+├── frontend/
+│   └── component.md    → /component (project:frontend)
+├── deploy/
+│   ├── production.md   → /production (project:deploy)
+│   └── staging.md      → /staging (project:deploy)
+└── optimize.md         → /optimize (project)
+```
+
+### Arguments
+
+Commands can receive arguments in two ways:
+
+**All arguments with `$ARGUMENTS`:**
+
+```markdown
+# .claude/commands/fix-issue.md
+Fix issue #$ARGUMENTS following our coding standards
+```
+
+Usage: `/fix-issue 123 high-priority` → `$ARGUMENTS` becomes "123 high-priority"
+
+**Individual arguments with `$1`, `$2`, etc.:**
+
+```markdown
+# .claude/commands/review-pr.md
+Review PR #$1 with priority $2 and assign to $3
+```
+
+Usage: `/review-pr 456 high alice` → `$1`="456", `$2`="high", `$3`="alice"
+
+### Bash Command Execution
+
+Execute bash commands before the slash command runs using the `!` prefix:
+
+```markdown
+---
+allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*)
+description: Create a git commit
+---
+
+## Context
+
+- Current git status: !`git status`
+- Current git diff: !`git diff HEAD`
+- Current branch: !`git branch --show-current`
+- Recent commits: !`git log --oneline -10`
+
+## Your task
+
+Based on the above changes, create a single git commit.
+```
+
+### File References
+
+Include file contents in commands using the `@` prefix:
+
+```markdown
+# Reference a specific file
+Review the implementation in @src/utils/helpers.js
+
+# Reference multiple files
+Compare @src/old-version.js with @src/new-version.js
+```
+
+### Thinking Mode
+
+Slash commands can trigger extended thinking by including extended thinking keywords in the command content.
+
+## Frontmatter
+
+Command files support YAML frontmatter for configuration:
+
+```markdown
+---
+allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*)
+argument-hint: [message]
+description: Create a git commit
+model: claude-3-5-haiku-20241022
+---
+
+Create a git commit with message: $ARGUMENTS
+```
+
+### Frontmatter Fields
+
+| Field | Purpose | Default |
+|-------|---------|---------|
+| `allowed-tools` | List of tools the command can use | Inherits from conversation |
+| `argument-hint` | Expected arguments for auto-completion | None |
+| `description` | Brief description of the command | Uses first line from prompt |
+| `model` | Specific model to use | Inherits from conversation |
+| `disable-model-invocation` | Prevent SlashCommand tool from calling this | `false` |
+
+## Plugin Commands
+
+Plugins can provide custom slash commands that integrate with Claude Code:
+
+```
+/plugin-name:command-name
+```
+
+Or simply `/command-name` when there are no naming conflicts.
+
+**Examples:**
+```bash
+/frontend-design:frontend-design
+/commit-commands:commit
+/code-review:code-review
+```
+
+## MCP Slash Commands
+
+MCP servers can expose prompts as slash commands:
+
+```
+/mcp__<server-name>__<prompt-name> [arguments]
+```
+
+**Examples:**
+```bash
+/mcp__github__list_prs
+/mcp__github__pr_review 456
+/mcp__jira__create_issue "Bug title" high
+```
+
+## SlashCommand Tool
+
+Claude can programmatically invoke custom slash commands using the SlashCommand tool.
+
+### Enabling Programmatic Invocation
+
+Reference the command in your prompt or `CLAUDE.md`:
+
+```markdown
+> Run /write-unit-test when you are about to start writing tests.
+```
+
+### Disabling for Specific Commands
+
+Use the `disable-model-invocation` frontmatter field:
+
+```markdown
+---
+disable-model-invocation: true
+---
+```
+
+Or disable via permissions:
+```
+/permissions
+# Add to deny rules: SlashCommand
+```
+
+### Character Budget
+
+- **Default limit:** 15,000 characters
+- **Custom limit:** Set via `SLASH_COMMAND_TOOL_CHAR_BUDGET` environment variable
+
+## Skills vs Slash Commands
+
+| Aspect | Slash Commands | Skills |
+|--------|----------------|--------|
+| **Best for** | Quick, frequently used prompts | Comprehensive capabilities with structure |
+| **Files** | Single `.md` file | Directory with `SKILL.md` + resources |
+| **Invocation** | Explicit (`/command`) | Automatic (context-based) |
+| **Complexity** | Simple prompts | Complex workflows with multiple steps |
+
+**Use slash commands** when you invoke the same prompt repeatedly and it fits in a single file.
+
+**Use skills** when Claude should discover the capability automatically or multiple files/scripts are needed.
 
 ## Architecture
 
@@ -17,47 +264,25 @@ graph TD
     E -->|Returns| F["Result in Context"]
 ```
 
-## File Structure
+## Command Lifecycle Diagram
 
 ```mermaid
-graph LR
-    A["Project Root"] -->|contains| B[".claude/commands/"]
-    B -->|contains| C["optimize.md"]
-    B -->|contains| D["test.md"]
-    B -->|contains| E["docs/"]
-    E -->|contains| F["generate-api-docs.md"]
-    E -->|contains| G["generate-readme.md"]
+sequenceDiagram
+    participant User
+    participant Claude as Claude Code
+    participant FS as File System
+    participant CLI as Shell/Bash
+
+    User->>Claude: Types /optimize
+    Claude->>FS: Searches .claude/commands/
+    FS-->>Claude: Returns optimize.md
+    Claude->>Claude: Loads Markdown content
+    Claude->>User: Displays prompt context
+    User->>Claude: Provides code to analyze
+    Claude->>CLI: (May execute scripts)
+    CLI-->>Claude: Results
+    Claude->>User: Returns analysis
 ```
-
-### Recommended Structure
-
-```
-project/
-├── .claude/
-│   └── commands/
-│       ├── optimize.md
-│       ├── pr.md
-│       └── docs/
-│           └── generate-api-docs.md
-```
-
-## Command Organization Table
-
-| Location | Scope | Availability | Use Case | Git Tracked |
-|----------|-------|--------------|----------|-------------|
-| `.claude/commands/` | Project-specific | Team members | Team workflows, shared standards | ✅ Yes |
-| `~/.claude/commands/` | Personal | Individual user | Personal shortcuts across projects | ❌ No |
-| Subdirectories | Namespaced | Based on parent | Organize by category | ✅ Yes |
-
-## Features & Capabilities
-
-| Feature | Example | Supported |
-|---------|---------|-----------|
-| Shell script execution | `bash scripts/deploy.sh` | ✅ Yes |
-| File references | `@path/to/file.js` | ✅ Yes |
-| Bash integration | `$(git log --oneline)` | ✅ Yes |
-| Arguments | `/pr --verbose` | ✅ Yes |
-| MCP commands | `/mcp__github__list_prs` | ✅ Yes |
 
 ## Available Commands in This Folder
 
@@ -112,25 +337,18 @@ Generates comprehensive API documentation from source code.
 - Includes request/response schemas
 - Adds error documentation
 
-## Command Lifecycle Diagram
+### 4. `/commit` - Git Commit with Context
+Creates a git commit with dynamic context from your repository.
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Claude as Claude Code
-    participant FS as File System
-    participant CLI as Shell/Bash
-
-    User->>Claude: Types /optimize
-    Claude->>FS: Searches .claude/commands/
-    FS-->>Claude: Returns optimize.md
-    Claude->>Claude: Loads Markdown content
-    Claude->>User: Displays prompt context
-    User->>Claude: Provides code to analyze
-    Claude->>CLI: (May execute scripts)
-    CLI-->>Claude: Results
-    Claude->>User: Returns analysis
+**Usage:**
 ```
+/commit [optional message]
+```
+
+**Features:**
+- Automatically includes git status, diff, and recent commits
+- Uses `allowed-tools` for git operations
+- Supports optional commit message argument
 
 ## Installation
 
@@ -144,9 +362,6 @@ mkdir -p .claude/commands
 
 # Copy command files
 cp 01-slash-commands/*.md .claude/commands/
-
-# Copy subdirectory commands
-cp -r 01-slash-commands/docs .claude/commands/
 ```
 
 ### For Personal Use
@@ -169,9 +384,8 @@ Create a file `.claude/commands/my-command.md`:
 
 ```markdown
 ---
-name: My Command Name
 description: What this command does
-tags: category, task-type
+argument-hint: [optional-args]
 ---
 
 # Command Title
@@ -187,184 +401,42 @@ Output format:
 - What to include
 ```
 
-### Command with Frontmatter
+### Command with Full Frontmatter
 
 ```markdown
 ---
-name: Code Optimization
-description: Analyze code for performance issues and suggest optimizations
-tags: performance, analysis
----
-
-# Code Optimization
-
-Review the provided code for the following issues in order of priority:
-
-1. **Performance bottlenecks** - identify O(n²) operations, inefficient loops
-2. **Memory leaks** - find unreleased resources, circular references
-3. **Algorithm improvements** - suggest better algorithms or data structures
-
-Format your response with:
-- Issue severity (Critical/High/Medium/Low)
-- Location in code
-- Explanation
-- Recommended fix with code example
-```
-
-## Best Practices
-
-| ✅ Do | ❌ Don't |
-|------|---------|
-| Use clear, action-oriented names | Create commands for one-time tasks |
-| Document trigger words in description | Build complex logic in commands |
-| Keep commands focused on single task | Create redundant commands |
-| Version control project commands | Hardcode sensitive information |
-| Organize in subdirectories | Create long lists of commands |
-| Use simple, readable prompts | Use abbreviated or cryptic wording |
-
-## Examples
-
-### Example 1: Simple Task Automation
-
-**File:** `.claude/commands/test.md`
-
-```markdown
----
-name: Run Tests
-description: Execute test suite with coverage report
+allowed-tools: Bash(npm test:*), Bash(npm run lint:*)
+argument-hint: [--verbose] [--coverage]
+description: Run tests with optional coverage report
+model: claude-3-5-haiku-20241022
 ---
 
 # Test Runner
 
-1. Run the test suite: `npm test`
-2. Generate coverage report
-3. Summarize results
-4. Highlight any failures
+Run the project tests with the following options:
+- Arguments provided: $ARGUMENTS
+
+## Context
+- Current branch: !`git branch --show-current`
+- Package.json scripts: @package.json
+
+## Steps
+1. Run `npm test`
+2. If --coverage flag provided, generate coverage report
+3. Summarize results and highlight any failures
 ```
 
-### Example 2: Multi-step Workflow
+## Best Practices
 
-**File:** `.claude/commands/deploy.md`
-
-```markdown
----
-name: Deploy to Production
-description: Complete deployment workflow with checks
----
-
-# Production Deployment
-
-Execute these steps in order:
-
-1. **Pre-deployment checks**
-   - Run `npm run lint`
-   - Run `npm test`
-   - Check git status is clean
-
-2. **Build**
-   - Run `npm run build`
-   - Verify build artifacts
-
-3. **Deploy**
-   - Run `npm run deploy`
-   - Monitor deployment logs
-
-4. **Post-deployment**
-   - Run smoke tests
-   - Verify deployment
-   - Notify team
-```
-
-### Example 3: Code Review Command
-
-**File:** `.claude/commands/review.md`
-
-```markdown
----
-name: Code Review
-description: Comprehensive code review checklist
----
-
-# Code Review
-
-Review the code for:
-
-## Security
-- [ ] No hardcoded credentials
-- [ ] Input validation present
-- [ ] SQL injection prevention
-- [ ] XSS prevention
-
-## Performance
-- [ ] No N+1 queries
-- [ ] Appropriate indexing
-- [ ] Efficient algorithms
-
-## Quality
-- [ ] Clear naming
-- [ ] Proper error handling
-- [ ] Adequate comments
-- [ ] No code duplication
-```
-
-## Advanced Usage
-
-### Using Arguments
-
-Commands can accept arguments:
-
-```bash
-/deploy production
-/review --verbose
-/test --coverage
-```
-
-Handle arguments in your command file:
-
-```markdown
-# Deployment Command
-
-Check the provided argument for environment:
-- If "production", use strict checks
-- If "staging", allow warnings
-- If "development", skip certain validations
-```
-
-### Integrating with MCP
-
-Commands can use MCP tools:
-
-```markdown
-# GitHub PR Command
-
-1. Use MCP to list open PRs: `/mcp__github__list_prs`
-2. Analyze each PR for:
-   - Review status
-   - CI/CD status
-   - Merge conflicts
-3. Provide summary
-```
-
-### Hierarchical Commands
-
-Organize related commands in subdirectories:
-
-```
-.claude/commands/
-├── deploy/
-│   ├── production.md
-│   ├── staging.md
-│   └── rollback.md
-├── test/
-│   ├── unit.md
-│   ├── integration.md
-│   └── e2e.md
-└── docs/
-    ├── api.md
-    └── readme.md
-```
-
-Access with: `/deploy/production`, `/test/unit`, `/docs/api`
+| Do | Don't |
+|------|---------|
+| Use clear, action-oriented names | Create commands for one-time tasks |
+| Include `description` in frontmatter | Build complex logic in commands |
+| Keep commands focused on single task | Create redundant commands |
+| Version control project commands | Hardcode sensitive information |
+| Organize in subdirectories | Create long lists of commands |
+| Use `$ARGUMENTS` or `$1`, `$2` for dynamic input | Use abbreviated or cryptic wording |
+| Use `!` prefix for dynamic context | Assume Claude knows current state |
 
 ## Troubleshooting
 
@@ -387,6 +459,7 @@ Access with: `/deploy/production`, `/test/unit`, `/docs/api`
 - Add more specific instructions
 - Include examples in command file
 - Test with simple inputs first
+- Check `allowed-tools` if using bash commands
 
 ### Personal vs Project Commands
 
@@ -411,10 +484,9 @@ Access with: `/deploy/production`, `/test/unit`, `/docs/api`
 
 ## Resources
 
-- [Discovering Claude Code Slash Commands](https://medium.com/@luongnv89/discovering-claude-code-slash-commands-cdc17f0dfb29) - Comprehensive blog post exploring slash commands
-- [Claude Code Commands Documentation](https://docs.claude.com/en/docs/claude-code/custom-commands)
+- [Claude Code Slash Commands Documentation](https://code.claude.com/docs/en/slash-commands) - Official documentation
+- [Discovering Claude Code Slash Commands](https://medium.com/@luongnv89/discovering-claude-code-slash-commands-cdc17f0dfb29) - Comprehensive blog post
 - [Markdown Guide](https://www.markdownguide.org/)
-- [Command Examples Repository](https://github.com/anthropics/claude-code-examples)
 
 ---
 

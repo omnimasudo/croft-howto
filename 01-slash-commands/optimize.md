@@ -1,7 +1,5 @@
 ---
-name: Code Optimization
 description: Analyze code for performance issues and suggest optimizations
-tags: performance, analysis
 ---
 
 # Code Optimization

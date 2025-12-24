@@ -1,7 +1,5 @@
 ---
-name: Generate API Documentation
 description: Create comprehensive API documentation from source code
-tags: documentation, api
 ---
 
 # API Documentation Generator

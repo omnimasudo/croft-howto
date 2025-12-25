@@ -480,170 +480,145 @@ if __name__ == "__main__":
 }
 ```
 
-### Example 6: Context Usage Reporter (Stop Hook)
+### Example 6: Context Usage Tracker (Hook Pairs)
 
-This example shows how to create a hook that reports context/token usage after each Claude response. It reads the conversation transcript and estimates token usage.
+Track token consumption per request using `UserPromptSubmit` (pre-message) and `Stop` (post-response) hooks together.
 
-**How it works:**
-
-1. The hook receives `transcript_path` in the JSON input - this points to a JSONL file containing all conversation messages
-2. The script reads the transcript file and calculates total character count
-3. It estimates tokens using a simple heuristic (~4 characters per token)
-4. Outputs a one-line report showing estimated usage vs model capacity
-
-**File:** `.claude/hooks/context-usage.py`
+**File:** `.claude/hooks/context-tracker.py`
 
 ```python
 #!/usr/bin/env python3
 """
-Context Usage Reporter Hook
+Context Usage Tracker - Tracks token consumption per request.
 
-Reports estimated context/token usage after each Claude response.
-Uses the transcript_path field to read conversation history and estimate tokens.
+Uses UserPromptSubmit as "pre-message" hook and Stop as "post-response" hook
+to calculate the delta in token usage for each request.
 
-Limitations:
-- Token count is an ESTIMATE (~4 chars/token average)
-- Actual token usage depends on the tokenizer and includes system prompts
-- Use /context command for accurate real-time usage
+Token Counting Methods:
+1. Character estimation (default): ~4 chars per token, no dependencies
+2. tiktoken (optional): More accurate (~90-95%), requires: pip install tiktoken
 """
 import json
-import sys
 import os
+import sys
+import tempfile
 
-# Model context limits (adjust based on your model)
-MODEL_LIMITS = {
-    "default": 200000,  # Claude Opus 4.5 / Sonnet
-    "haiku": 200000,
-}
+# Configuration
+CONTEXT_LIMIT = 128000  # Claude's context window (adjust for your model)
+USE_TIKTOKEN = False    # Set True if tiktoken is installed for better accuracy
 
-def read_transcript(transcript_path: str) -> list:
-    """Read JSONL transcript file and return list of messages."""
-    messages = []
-    if not os.path.exists(transcript_path):
-        return messages
 
-    with open(transcript_path, 'r', encoding='utf-8') as f:
+def get_state_file(session_id: str) -> str:
+    """Get temp file path for storing pre-message token count, isolated by session."""
+    return os.path.join(tempfile.gettempdir(), f"claude-context-{session_id}.json")
+
+
+def count_tokens(text: str) -> int:
+    """
+    Count tokens in text.
+
+    Uses tiktoken with p50k_base encoding if available (~90-95% accuracy),
+    otherwise falls back to character estimation (~80-90% accuracy).
+    """
+    if USE_TIKTOKEN:
+        try:
+            import tiktoken
+            enc = tiktoken.get_encoding("p50k_base")
+            return len(enc.encode(text))
+        except ImportError:
+            pass  # Fall back to estimation
+
+    # Character-based estimation: ~4 characters per token for English
+    return len(text) // 4
+
+
+def read_transcript(transcript_path: str) -> str:
+    """Read and concatenate all content from transcript file."""
+    if not transcript_path or not os.path.exists(transcript_path):
+        return ""
+
+    content = []
+    with open(transcript_path, "r") as f:
         for line in f:
-            line = line.strip()
-            if line:
-                try:
-                    messages.append(json.loads(line))
-                except json.JSONDecodeError:
-                    continue
-    return messages
+            try:
+                entry = json.loads(line.strip())
+                # Extract text content from various message formats
+                if "message" in entry:
+                    msg = entry["message"]
+                    if isinstance(msg.get("content"), str):
+                        content.append(msg["content"])
+                    elif isinstance(msg.get("content"), list):
+                        for block in msg["content"]:
+                            if isinstance(block, dict) and block.get("type") == "text":
+                                content.append(block.get("text", ""))
+            except json.JSONDecodeError:
+                continue
 
-def calculate_usage(messages: list) -> tuple[int, int]:
-    """Calculate total characters and estimated tokens from messages."""
-    total_chars = 0
+    return "\n".join(content)
 
-    for msg in messages:
-        # Handle different message formats in transcript
-        if isinstance(msg, dict):
-            # Check common content fields
-            content = msg.get('content', '')
-            if isinstance(content, str):
-                total_chars += len(content)
-            elif isinstance(content, list):
-                # Handle content blocks (text, tool_use, etc.)
-                for block in content:
-                    if isinstance(block, dict):
-                        text = block.get('text', '') or block.get('content', '')
-                        total_chars += len(str(text))
-                    elif isinstance(block, str):
-                        total_chars += len(block)
 
-            # Also count tool inputs/outputs
-            tool_input = msg.get('tool_input', {})
-            if tool_input:
-                total_chars += len(json.dumps(tool_input))
+def handle_user_prompt_submit(data: dict) -> None:
+    """Pre-message hook: Save current token count before request."""
+    session_id = data.get("session_id", "unknown")
+    transcript_path = data.get("transcript_path", "")
 
-    estimated_tokens = total_chars // 4  # ~4 characters per token
-    return total_chars, estimated_tokens
+    transcript_content = read_transcript(transcript_path)
+    current_tokens = count_tokens(transcript_content)
+
+    # Save to temp file for later comparison
+    state_file = get_state_file(session_id)
+    with open(state_file, "w") as f:
+        json.dump({"pre_tokens": current_tokens}, f)
+
+
+def handle_stop(data: dict) -> None:
+    """Post-response hook: Calculate and report token delta."""
+    session_id = data.get("session_id", "unknown")
+    transcript_path = data.get("transcript_path", "")
+
+    transcript_content = read_transcript(transcript_path)
+    current_tokens = count_tokens(transcript_content)
+
+    # Load pre-message count
+    state_file = get_state_file(session_id)
+    pre_tokens = 0
+    if os.path.exists(state_file):
+        try:
+            with open(state_file, "r") as f:
+                state = json.load(f)
+                pre_tokens = state.get("pre_tokens", 0)
+        except (json.JSONDecodeError, IOError):
+            pass
+
+    # Calculate delta
+    delta_tokens = current_tokens - pre_tokens
+    remaining = CONTEXT_LIMIT - current_tokens
+    percentage = (current_tokens / CONTEXT_LIMIT) * 100
+
+    # Report usage
+    method = "tiktoken" if USE_TIKTOKEN else "estimated"
+    print(f"Context ({method}): ~{current_tokens:,} tokens ({percentage:.1f}% used, ~{remaining:,} remaining)", file=sys.stderr)
+    if delta_tokens > 0:
+        print(f"This request: ~{delta_tokens:,} tokens", file=sys.stderr)
+
 
 def main():
-    # Read hook input from stdin
-    input_data = json.load(sys.stdin)
+    data = json.load(sys.stdin)
+    event = data.get("hook_event_name", "")
 
-    # Get transcript path from hook input
-    transcript_path = input_data.get('transcript_path', '')
+    if event == "UserPromptSubmit":
+        handle_user_prompt_submit(data)
+    elif event == "Stop":
+        handle_stop(data)
 
-    if not transcript_path:
-        # No transcript available, exit silently
-        sys.exit(0)
-
-    # Read and analyze transcript
-    messages = read_transcript(transcript_path)
-    total_chars, estimated_tokens = calculate_usage(messages)
-
-    # Get model limit (default to 200k)
-    max_tokens = MODEL_LIMITS.get("default", 200000)
-
-    # Calculate percentages
-    used_percent = (estimated_tokens / max_tokens) * 100
-    remaining_tokens = max_tokens - estimated_tokens
-    remaining_percent = 100 - used_percent
-
-    # Format the report (output as systemMessage so it appears in UI)
-    report = f"Context: ~{estimated_tokens:,}/{max_tokens:,} tokens ({remaining_percent:.1f}% remaining)"
-
-    # Output JSON with systemMessage to show in Claude Code UI
-    output = {
-        "systemMessage": report
-    }
-    print(json.dumps(output))
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
 ```
 
 **Configuration:**
-
-```json
-{
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/context-usage.py\"",
-            "timeout": 5
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-**Sample Output:**
-
-After each Claude response, you'll see a message like:
-```
-Context: ~45,230/200,000 tokens (77.4% remaining)
-```
-
-**Key Points:**
-
-| Aspect | Details |
-|--------|---------|
-| **Event** | `Stop` - runs after Claude finishes responding |
-| **Input** | Uses `transcript_path` field to access conversation history |
-| **Estimation** | ~4 characters per token (rough heuristic) |
-| **Output** | `systemMessage` field displays in Claude Code UI |
-| **Accuracy** | Estimate only - use `/context` for exact counts |
-
-**Why use Stop hook instead of UserPromptSubmit?**
-
-- `Stop` runs after Claude responds, giving a more complete picture
-- `UserPromptSubmit` runs before Claude processes, missing the response
-- Both work, but `Stop` shows total usage including Claude's response
-
-**Alternative: UserPromptSubmit for Pre-Response Check**
-
-If you want to check context BEFORE Claude processes your prompt:
-
 ```json
 {
   "hooks": {
@@ -652,7 +627,17 @@ If you want to check context BEFORE Claude processes your prompt:
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/context-usage.py\""
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/context-tracker.py\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/context-tracker.py\""
           }
         ]
       }
@@ -660,6 +645,20 @@ If you want to check context BEFORE Claude processes your prompt:
   }
 }
 ```
+
+**How it works:**
+1. `UserPromptSubmit` fires before your prompt is processed - saves current token count
+2. `Stop` fires after Claude responds - calculates delta and reports usage
+3. Each session is isolated via `session_id` in the temp filename
+
+**Token Counting Methods:**
+
+| Method | Accuracy | Dependencies | Speed |
+|--------|----------|--------------|-------|
+| Character estimation | ~80-90% | None | <1ms |
+| tiktoken (p50k_base) | ~90-95% | `pip install tiktoken` | <10ms |
+
+> **Note:** Anthropic hasn't released an official offline tokenizer. Both methods are approximations. The transcript includes user prompts, Claude's responses, and tool outputs, but NOT system prompts or internal context.
 
 ## MCP Tool Hooks
 

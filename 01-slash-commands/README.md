@@ -284,7 +284,7 @@ sequenceDiagram
     Claude->>User: Returns analysis
 ```
 
-## Available Commands in This Folder
+## Available Commands in This Folder (8 Commands)
 
 ### 1. `/optimize` - Code Optimization
 Analyzes code for performance issues, memory leaks, and optimization opportunities.
@@ -349,6 +349,83 @@ Creates a git commit with dynamic context from your repository.
 - Automatically includes git status, diff, and recent commits
 - Uses `allowed-tools` for git operations
 - Supports optional commit message argument
+
+### 5. `/push-all` - Stage, Commit, and Push
+Stages all changes, creates a commit, and pushes to remote with comprehensive safety checks.
+
+**Usage:**
+```
+/push-all
+```
+
+**Workflow:**
+1. Analyzes changes (git status, diff, log)
+2. Runs safety checks for secrets, API keys, large files, build artifacts
+3. Validates API keys are placeholders (not real credentials)
+4. Presents summary and requests confirmation
+5. Stages all changes and generates conventional commit message
+6. Commits and pushes to remote
+
+**Safety Checks:**
+- Secrets: `.env*`, `*.key`, `*.pem`, `credentials.json`, etc.
+- API Keys: Detects real keys vs. placeholders like `your-api-key-here`
+- Large files: `>10MB` without Git LFS
+- Build artifacts: `node_modules/`, `dist/`, `__pycache__/`, etc.
+
+**Caution:** Use only when confident all changes belong together.
+
+### 6. `/doc-refactor` - Documentation Restructuring
+Restructures project documentation for clarity and accessibility, adapting to project type.
+
+**Usage:**
+```
+/doc-refactor
+```
+
+**Features:**
+- Analyzes project type (library, API, web app, CLI, microservices)
+- Centralizes documentation in `docs/` folder
+- Streamlines root README as entry point
+- Creates component-level documentation
+- Generates guides based on project needs (User Guide, API Docs, Development Guide)
+- Uses Mermaid for all diagrams
+
+### 7. `/setup-ci-cd` - CI/CD Pipeline Setup
+Implements pre-commit hooks and GitHub Actions for quality assurance.
+
+**Usage:**
+```
+/setup-ci-cd
+```
+
+**Features:**
+- Detects project language(s), framework, and build system
+- Configures pre-commit hooks with language-specific tools:
+  - Formatting (Prettier, Black, gofmt, rustfmt)
+  - Linting (ESLint, Ruff, golangci-lint, Clippy)
+  - Security scanning (Bandit, gosec, cargo-audit)
+  - Type checking (TypeScript, mypy)
+- Creates GitHub Actions workflows in `.github/workflows/`
+- Verifies pipeline with local tests
+
+### 8. `/unit-test-expand` - Test Coverage Expansion
+Increases test coverage by targeting untested branches and edge cases.
+
+**Usage:**
+```
+/unit-test-expand
+```
+
+**Features:**
+- Analyzes coverage to identify untested branches and low-coverage areas
+- Identifies gaps: error paths, boundary conditions, null/empty inputs
+- Generates tests using project's framework (Jest, pytest, Go testing, Rust)
+- Targets specific scenarios:
+  - Error handling and exceptions
+  - Boundary values (min/max, empty, null)
+  - Edge cases and corner cases
+  - State transitions and side effects
+- Verifies coverage improvement
 
 ## Installation
 
@@ -486,6 +563,7 @@ Run the project tests with the following options:
 
 - [Claude Code Slash Commands Documentation](https://code.claude.com/docs/en/slash-commands) - Official documentation
 - [Discovering Claude Code Slash Commands](https://medium.com/@luongnv89/discovering-claude-code-slash-commands-cdc17f0dfb29) - Comprehensive blog post
+- [4 Essential Slash Commands I Use in Every Project](../blog-post/4-essential-slash-commands.md) - Practical workflow guide
 - [Markdown Guide](https://www.markdownguide.org/)
 
 ---

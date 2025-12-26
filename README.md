@@ -26,6 +26,7 @@ Complete collection of examples for some important Claude Code features and conc
 | **Checkpoints** | Session snapshots & rewind | [08-checkpoints/](08-checkpoints/) |
 | **Advanced Features** | Planning, thinking, background tasks | [09-advanced-features/](09-advanced-features/) |
 | **CLI Reference** | Commands, flags, and options | [10-cli/](10-cli/) |
+| **Blog Posts** | Real-world usage examples | [blog-post/](blog-post/) |
 
 ---
 

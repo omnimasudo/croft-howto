@@ -66,47 +66,29 @@ sequenceDiagram
 
 ## Plugin Definition Structure
 
-```yaml
----
-name: plugin-name
-version: "1.0.0"
-description: "What this plugin does"
-author: "Your Name"
-license: MIT
+Plugin manifest uses JSON format in `.claude-plugin/plugin.json`:
 
-# Plugin metadata
-tags:
-  - category
-  - use-case
-
-# Requirements
-requires:
-  - claude-code: ">=1.0.0"
-
-# Components bundled
-components:
-  - type: commands
-    path: commands/
-  - type: agents
-    path: agents/
-  - type: mcp
-    path: mcp/
-  - type: hooks
-    path: hooks/
-
-# Configuration
-config:
-  auto_load: true
-  enabled_by_default: true
----
+```json
+{
+  "name": "my-first-plugin",
+  "description": "A greeting plugin",
+  "version": "1.0.0",
+  "author": {
+    "name": "Your Name"
+  },
+  "homepage": "https://example.com",
+  "repository": "https://github.com/user/repo",
+  "license": "MIT"
+}
 ```
 
 ## Plugin Structure Example
 
 ```
 my-plugin/
-├── plugin.yaml
-├── commands/
+├── .claude-plugin/
+│   └── plugin.json       # NOT plugin.yaml
+├── commands/             # Outside .claude-plugin
 │   ├── task-1.md
 │   ├── task-2.md
 │   └── workflows/
@@ -114,12 +96,13 @@ my-plugin/
 │   ├── specialist-1.md
 │   ├── specialist-2.md
 │   └── configs/
-├── mcp/
-│   ├── mcp-config.json
-│   └── servers/
+├── skills/
+│   ├── skill-1.md
+│   └── skill-2.md
 ├── hooks/
-│   ├── pre-deploy.js
-│   └── post-merge.js
+│   └── hooks.json
+├── .mcp.json
+├── .lsp.json             # NEW: LSP server config
 ├── templates/
 │   └── issue-template.md
 ├── scripts/
@@ -132,33 +115,48 @@ my-plugin/
     └── plugin.test.js
 ```
 
+## LSP Server Configuration
+
+Plugins can include Language Server Protocol (LSP) support via `.lsp.json`:
+
+```json
+{
+  "go": {
+    "command": "gopls",
+    "args": ["serve"],
+    "extensionToLanguage": {
+      ".go": "go"
+    }
+  }
+}
+```
+
+## Standalone vs Plugin Approach
+
+| Approach | Command Names | Configuration | Best For |
+|----------|---------------|---|---|
+| **Standalone** | `/hello` | Manual setup in CLAUDE.md | Personal, project-specific |
+| **Plugins** | `/plugin-name:hello` | Automated via plugin.json | Sharing, distribution, team use |
+
+Use **standalone slash commands** for quick personal workflows. Use **plugins** when you want to bundle multiple features, share with a team, or publish for distribution.
+
 ## Practical Examples
 
 ### Example 1: PR Review Plugin
 
-**File:** `plugin.yaml`
+**File:** `.claude-plugin/plugin.json`
 
-```yaml
----
-name: pr-review
-version: "1.0.0"
-description: Complete PR review workflow with security, testing, and docs
-author: Anthropic
-tags:
-  - code-review
-  - quality
-  - security
-
-components:
-  - type: commands
-    path: commands/
-  - type: agents
-    path: agents/
-  - type: mcp
-    path: mcp/
-  - type: hooks
-    path: hooks/
----
+```json
+{
+  "name": "pr-review",
+  "version": "1.0.0",
+  "description": "Complete PR review workflow with security, testing, and docs",
+  "author": {
+    "name": "Anthropic"
+  },
+  "repository": "https://github.com/anthropic/pr-review",
+  "license": "MIT"
+}
 ```
 
 **File:** `commands/review-pr.md`
@@ -366,14 +364,29 @@ graph TD
 | **Specialized Analysis** | ❌ Use Subagent | Create manually or use skill |
 | **Live Data Access** | ❌ Use MCP | Standalone, don't bundle |
 
+## Testing a Plugin
+
+Before publishing, test your plugin locally using the CLI flag:
+
+```bash
+claude --plugin-dir ./my-plugin
+```
+
+This launches Claude Code with your plugin loaded, allowing you to:
+- Verify all slash commands are available
+- Test subagents and agents function correctly
+- Confirm MCP servers connect properly
+- Validate hook execution
+- Check for any configuration errors
+
 ## Publishing a Plugin
 
 **Steps to publish:**
 
 1. Create plugin structure with all components
-2. Write `plugin.yaml` manifest
+2. Write `.claude-plugin/plugin.json` manifest
 3. Create `README.md` with documentation
-4. Test locally with `/plugin install ./my-plugin`
+4. Test locally with `claude --plugin-dir ./my-plugin`
 5. Submit to plugin marketplace
 6. Get reviewed and approved
 7. Published on marketplace
@@ -587,10 +600,10 @@ The following Claude Code features work together with plugins:
 
 ## Additional Resources
 
-- [Claude Code Documentation](https://docs.claude.com/claude-code)
-- [Plugin Marketplace](https://plugins.claude.com)
-- [Official Plugin Examples](https://github.com/anthropic/claude-plugins)
-- [Plugin Development Guide](https://docs.claude.com/plugins/development)
+- [Official Plugins Documentation](https://code.claude.com/docs/en/plugins)
+- [Discover Plugins](https://code.claude.com/docs/en/discover-plugins)
+- [Plugin Marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)
+- [Plugins Reference](https://code.claude.com/docs/en/plugins-reference)
 - [MCP Server Reference](https://spec.modelcontextprotocol.io/)
 - [Subagent Configuration Guide](../04-subagents/README.md)
 - [Hook System Reference](../06-hooks/README.md)

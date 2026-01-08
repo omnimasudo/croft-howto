@@ -77,7 +77,7 @@ Claude Code supports **9 hook events**:
 | **SubagentStop** | Subagent finishes | No | Yes | Subagent validation |
 | **PreCompact** | Before compact operation | Yes (manual/auto) | No | Pre-compact actions |
 | **SessionStart** | Session begins/resumes | Yes (startup/resume/clear/compact) | No | Environment setup |
-| **SessionEnd** | Session ends | No | No | Cleanup |
+| **SessionEnd** | Session ends (cleanup only) | No | No | Cleanup, final logging |
 
 ### PreToolUse
 
@@ -200,6 +200,84 @@ if [ -n "$CLAUDE_ENV_FILE" ]; then
   echo 'export NODE_ENV=development' >> "$CLAUDE_ENV_FILE"
 fi
 exit 0
+```
+
+### SessionEnd
+
+Runs when session ends to perform cleanup or final logging. Cannot block termination.
+
+**Reason field values:**
+- `clear` - User cleared the session
+- `logout` - User logged out
+- `prompt_input_exit` - User exited via prompt input
+- `other` - Other reason
+
+**Configuration:**
+```json
+{
+  "hooks": {
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/session-cleanup.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Notification Event
+
+Updated matchers for notification events:
+- `permission_prompt` - Permission request notification
+- `idle_prompt` - Idle state notification
+- `auth_success` - Authentication success
+- `elicitation_dialog` - Dialog shown to user
+
+## Component-Scoped Hooks
+
+Hooks can be attached to specific components (skills, agents, commands) in their frontmatter:
+
+**In SKILL.md, agent.md, or command.md:**
+
+```yaml
+---
+name: secure-operations
+description: Perform operations with security checks
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "./scripts/check.sh"
+          once: true  # Only run once per session
+---
+```
+
+**Supported events for component hooks:** `PreToolUse`, `PostToolUse`, `Stop`
+
+This allows defining hooks directly in the component that uses them, keeping related code together.
+
+## PermissionRequest Event
+
+Handles permission requests with custom output format:
+
+```json
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PermissionRequest",
+    "decision": {
+      "behavior": "allow|deny",
+      "updatedInput": {},
+      "message": "Custom message",
+      "interrupt": false
+    }
+  }
+}
 ```
 
 ## Hook Input and Output
@@ -660,6 +738,35 @@ if __name__ == "__main__":
 
 > **Note:** Anthropic hasn't released an official offline tokenizer. Both methods are approximations. The transcript includes user prompts, Claude's responses, and tool outputs, but NOT system prompts or internal context.
 
+## Plugin Hooks
+
+Plugins can include hooks in their `hooks/hooks.json` file:
+
+**File:** `plugins/hooks/hooks.json`
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/validate.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Environment Variables in Plugin Hooks:**
+- `${CLAUDE_PLUGIN_ROOT}` - Path to the plugin directory
+
+This allows plugins to include custom validation and automation hooks.
+
 ## MCP Tool Hooks
 
 MCP tools follow the pattern `mcp__<server>__<tool>`:
@@ -845,9 +952,13 @@ Edit `~/.claude/settings.json` or `.claude/settings.json` with the hook configur
 
 - **[Checkpoints and Rewind](../08-checkpoints/)** - Save and restore conversation state
 - **[Slash Commands](../01-slash-commands/)** - Create custom slash commands
+- **[Skills](../03-skills/)** - Reusable autonomous capabilities
+- **[Subagents](../04-subagents/)** - Delegated task execution
 - **[Plugins](../07-plugins/)** - Bundled extension packages
 - **[Advanced Features](../09-advanced-features/)** - Explore advanced Claude Code capabilities
 
-## Resources
+## Additional Resources
 
-- **Official Documentation**: [code.claude.com/docs/en/hooks](https://code.claude.com/docs/en/hooks)
+- **[Official Hooks Documentation](https://code.claude.com/docs/en/hooks)** - Complete hooks reference
+- **[CLI Reference](https://code.claude.com/docs/en/cli-reference)** - Command-line interface documentation
+- **[Memory Guide](../02-memory/)** - Persistent context configuration

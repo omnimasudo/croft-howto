@@ -78,11 +78,27 @@ my-skill/
     └── template.txt
 ```
 
-### SKILL.md Format
+### SKILL.md Format with Full Metadata
+
 ```yaml
 ---
 name: your-skill-name
 description: Brief description of what this Skill does and when to use it
+context: fork              # Optional: run in isolated sub-agent context
+agent: Explore             # Optional: which agent type (with context: fork)
+user-invocable: true       # Optional: default true, hide from slash menu if false
+disable-model-invocation: false  # Optional: prevent auto-invocation
+allowed-tools:             # Optional: restrict tool access
+  - Read
+  - Grep
+  - Glob
+hooks:                     # Optional: component-scoped hooks
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "./scripts/validate.sh"
+          once: true
 ---
 
 # Your Skill Name
@@ -94,27 +110,71 @@ Provide clear, step-by-step guidance for Claude.
 Show concrete examples of using this Skill.
 ```
 
-### Requirements
+### Required Fields
 - **name**: lowercase letters, numbers, hyphens only (max 64 characters)
 - **description**: what the Skill does AND when to use it (max 1024 characters)
 
-### Advanced Feature: Restrict Tool Access
+### Optional Fields
+
+#### Tool Restriction: `allowed-tools`
+
 Limit which tools Claude can use with a Skill:
 
 ```yaml
----
-name: safe-file-reader
-description: Read files without making changes. Use when users need read-only file access or want to search files safely.
-allowed-tools: Read, Grep, Glob
----
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
 ```
 
-**Use cases for `allowed-tools`:**
+**Use cases:**
 - **Read-only Skills**: Prevent accidental file modifications
 - **Security-sensitive workflows**: Limit tool access for sensitive operations
-- **Limited scope Skills**: Restrict to specific tools (e.g., data analysis only)
+- **Limited scope Skills**: Restrict to specific tools
 
-**Note**: If `allowed-tools` isn't specified, Claude will ask for permission as normal.
+If `allowed-tools` isn't specified, Claude will request permission as normal.
+
+#### Execution Context: `context`
+
+Run a skill in an isolated subagent context:
+
+```yaml
+context: fork              # Run in isolated context
+agent: Explore             # Use specific agent type
+```
+
+This creates a dedicated subagent for the skill with its own context and state.
+
+#### Visibility Control
+
+Control skill visibility and invocation:
+
+```yaml
+user-invocable: false                 # Hide from slash menu
+disable-model-invocation: false       # Block auto-invocation
+```
+
+| Setting | Slash Menu | Skill Tool | Auto-discovery |
+|---------|------------|------------|----------------|
+| `user-invocable: true` (default) | Visible | Allowed | Yes |
+| `user-invocable: false` | Hidden | Allowed | Yes |
+| `disable-model-invocation: true` | Visible | Blocked | Yes |
+
+#### Hooks in Skills
+
+Add component-scoped hooks to your skill:
+
+```yaml
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "./scripts/validate.sh"
+          once: true
+```
+
+Supported events: `PreToolUse`, `PostToolUse`, `Stop`
 
 ## Managing Skills
 
@@ -1005,6 +1065,19 @@ graph TD
     I --> J["Return Results"]
 ```
 
+## Skills with Subagents
+
+Skills can be automatically loaded with subagents, enabling specialized task delegation:
+
+```yaml
+# In subagent definition
+skills: pr-review, security-check
+```
+
+This allows subagents to access and invoke specific skills autonomously.
+
+**Note**: Built-in agents (Explore, Plan, general-purpose) do not have access to user-defined skills.
+
 ## Skill vs Other Features
 
 ```mermaid
@@ -1221,11 +1294,11 @@ After copying skills:
 4. Test by copying to skills directory
 5. Refine based on usage
 
-## Related Concepts Links
+## Additional Resources
 
-- **Slash Commands** - User-initiated shortcuts for specific tasks
-- **Subagents** - Delegated AI agents for task distribution
-- **Memory** - Persistent context across conversation sessions
-- **MCP (Model Context Protocol)** - Real-time access to external data sources
-- **Claude Code** - AI CLI for automated development workflows
-- **Skill Metadata** - YAML frontmatter that defines skill activation rules
+- [Official Skills Documentation](https://code.claude.com/docs/en/skills)
+- [Slash Commands Guide](../01-slash-commands/) - User-initiated shortcuts
+- [Subagents Guide](../04-subagents/) - Delegated AI agents
+- [Memory Guide](../02-memory/) - Persistent context
+- [MCP (Model Context Protocol)](../05-mcp/) - Real-time external data
+- [Hooks Guide](../06-hooks/) - Event-driven automation

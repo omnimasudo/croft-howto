@@ -82,6 +82,12 @@ tools: tool1, tool2, tool3  # Optional - inherits all tools if omitted
 model: sonnet  # Optional - specify model alias or 'inherit'
 permissionMode: default  # Optional - permission mode
 skills: skill1, skill2  # Optional - skills to auto-load
+hooks:  # Optional - component-scoped hooks
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "./scripts/security-check.sh"
 ---
 
 Your subagent's system prompt goes here. This can be multiple paragraphs
@@ -99,6 +105,7 @@ to solving problems.
 | `model` | No | Model to use: `sonnet`, `opus`, `haiku`, or `inherit`. Defaults to configured subagent model |
 | `permissionMode` | No | `default`, `acceptEdits`, `bypassPermissions`, `plan`, `ignore` |
 | `skills` | No | Comma-separated list of skills to auto-load |
+| `hooks` | No | Component-scoped hooks (PreToolUse, PostToolUse, Stop) |
 
 ### Tool Configuration Options
 
@@ -130,7 +137,7 @@ tools: Read, Bash(npm:*), Bash(test:*)
 
 ### CLI-Based Configuration
 
-Define subagents for a single session using the `--agents` flag:
+Define subagents for a single session using the `--agents` flag with JSON format:
 
 ```bash
 claude --agents '{
@@ -142,6 +149,28 @@ claude --agents '{
   }
 }'
 ```
+
+**JSON Format for `--agents` flag:**
+
+```json
+{
+  "agent-name": {
+    "description": "Required: when to invoke this agent",
+    "prompt": "Required: system prompt for the agent",
+    "tools": ["Optional", "array", "of", "tools"],
+    "model": "optional: sonnet|opus|haiku"
+  }
+}
+```
+
+**Priority of Agent Definitions:**
+
+Agent definitions are loaded with this priority order (first match wins):
+1. **CLI-defined** - `--agents` flag (session-specific)
+2. **User-level** - `~/.claude/agents/` (all projects)
+3. **Project-level** - `.claude/agents/` (current project)
+
+This allows CLI definitions to override both user and project agents for a single session.
 
 ---
 
@@ -180,10 +209,10 @@ Claude Code includes three built-in subagents that are always available:
 
 **When used**: When searching/understanding code without making changes.
 
-**Thoroughness Levels**:
-- **Quick** - Fast searches with minimal exploration
-- **Medium** - Moderate exploration, balanced speed and thoroughness
-- **Very thorough** - Comprehensive analysis across multiple locations and naming conventions
+**Thoroughness Levels** - Specify the depth of exploration:
+- **"quick"** - Fast searches with minimal exploration, good for finding specific patterns
+- **"medium"** - Moderate exploration, balanced speed and thoroughness, default approach
+- **"very thorough"** - Comprehensive analysis across multiple locations and naming conventions, may take longer
 
 ---
 
@@ -667,12 +696,14 @@ graph TD
 
 ---
 
-## Resources
+## Additional Resources
 
 - [Official Subagents Documentation](https://code.claude.com/docs/en/sub-agents)
+- [CLI Reference](https://code.claude.com/docs/en/cli-reference) - `--agents` flag and other CLI options
 - [Plugins Guide](../07-plugins/) - For bundling agents with other features
 - [Skills Guide](../03-skills/) - For auto-invoked capabilities
 - [Memory Guide](../02-memory/) - For persistent context
+- [Hooks Guide](../06-hooks/) - For event-driven automation
 
 ---
 

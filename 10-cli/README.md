@@ -121,6 +121,16 @@ claude --append-system-prompt "Always include unit tests with code examples"
 claude -p --system-prompt-file ./prompts/code-reviewer.txt "review main.py"
 ```
 
+### System Prompt Flags Comparison
+
+| Flag | Behavior | Interactive | Print |
+|------|----------|-------------|-------|
+| `--system-prompt` | Replaces entire default system prompt | ✅ | ✅ |
+| `--system-prompt-file` | Replaces with prompt from file | ❌ | ✅ |
+| `--append-system-prompt` | Appends to default system prompt | ✅ | ✅ |
+
+**Use `--system-prompt-file` only in print mode. For interactive mode, use `--system-prompt` or `--append-system-prompt`.**
+
 ## Tool & Permission Management
 
 | Flag | Description | Example |
@@ -233,6 +243,26 @@ claude --resume feature-auth --fork-session "try alternative approach"
 claude --session-id "550e8400-e29b-41d4-a716-446655440000" "continue"
 ```
 
+### Session Fork
+
+Create a branch from an existing session for experimentation:
+
+```bash
+# Fork a session to try a different approach
+claude --resume abc123 --fork-session "try alternative implementation"
+
+# Fork with a custom message
+claude -r "feature-auth" --fork-session "test with different architecture"
+```
+
+**Use Cases:**
+- Try alternative implementations without losing the original session
+- Experiment with different approaches in parallel
+- Create branches from successful work for variations
+- Test breaking changes without affecting the main session
+
+The original session remains unchanged, and the fork becomes a new independent session.
+
 ## Advanced Features
 
 | Flag | Description | Example |
@@ -244,6 +274,7 @@ claude --session-id "550e8400-e29b-41d4-a716-446655440000" "continue"
 | `--debug` | Enable debug mode with filtering | `claude --debug "api,mcp"` |
 | `--enable-lsp-logging` | Enable verbose LSP logging | `claude --enable-lsp-logging` |
 | `--betas` | Beta headers for API requests | `claude --betas interleaved-thinking` |
+| `--plugin-dir` | Load plugins from directory (repeatable) | `claude --plugin-dir ./my-plugin` |
 
 ### Advanced Examples
 
@@ -260,7 +291,31 @@ claude --ide "help me with this file"
 
 ## Agents Configuration
 
-The `--agents` flag accepts a JSON object defining custom subagents:
+The `--agents` flag accepts a JSON object defining custom subagents for a session.
+
+### Agents JSON Format
+
+```json
+{
+  "agent-name": {
+    "description": "Required: when to invoke this agent",
+    "prompt": "Required: system prompt for the agent",
+    "tools": ["Optional", "array", "of", "tools"],
+    "model": "optional: sonnet|opus|haiku"
+  }
+}
+```
+
+**Required Fields:**
+- `description` - Natural language description of when to use this agent
+- `prompt` - System prompt that defines the agent's role and behavior
+
+**Optional Fields:**
+- `tools` - Array of available tools (inherits all if omitted)
+  - Format: `["Read", "Grep", "Glob", "Bash"]`
+- `model` - Model to use: `sonnet`, `opus`, or `haiku`
+
+### Complete Agents Example
 
 ```json
 {
@@ -272,18 +327,20 @@ The `--agents` flag accepts a JSON object defining custom subagents:
   },
   "debugger": {
     "description": "Debugging specialist for errors and test failures.",
-    "prompt": "You are an expert debugger. Analyze errors, identify root causes, and provide fixes."
+    "prompt": "You are an expert debugger. Analyze errors, identify root causes, and provide fixes.",
+    "tools": ["Read", "Edit", "Bash", "Grep"],
+    "model": "opus"
+  },
+  "documenter": {
+    "description": "Documentation specialist for generating guides.",
+    "prompt": "You are a technical writer. Create clear, comprehensive documentation.",
+    "tools": ["Read", "Write"],
+    "model": "haiku"
   }
 }
 ```
 
-**Fields:**
-- `description` (required): When to invoke the subagent
-- `prompt` (required): System prompt for the subagent
-- `tools` (optional): Specific tools available (inherits all if omitted)
-- `model` (optional): sonnet, opus, or haiku (uses default if omitted)
-
-### Agents Example
+### Agents Command Examples
 
 ```bash
 # Define custom agents inline
@@ -295,7 +352,22 @@ claude --agents '{
     "model": "opus"
   }
 }' "audit this codebase for security issues"
+
+# Load agents from file
+claude --agents "$(cat ~/.claude/agents.json)" "review the auth module"
+
+# Combine with other flags
+claude -p --agents "$(cat agents.json)" --model sonnet "analyze performance"
 ```
+
+### Agent Priority
+
+When multiple agent definitions exist, they are loaded in this priority order:
+1. **CLI-defined** (`--agents` flag) - Session-specific
+2. **User-level** (`~/.claude/agents/`) - All projects
+3. **Project-level** (`.claude/agents/`) - Current project
+
+CLI-defined agents override both user and project agents for the session.
 
 ---
 
@@ -485,7 +557,7 @@ claude -p --max-turns 2 \
 
 ### 7. JSON API Integration
 
-Use Claude as a programmable API for your tools.
+Use Claude as a programmable API for your tools with `jq` parsing.
 
 ```bash
 # Get structured analysis
@@ -502,6 +574,36 @@ if echo "$RESULT" | jq -e '.secure == false' > /dev/null; then
   echo "Security issues found!"
   echo "$RESULT" | jq '.issues[]'
 fi
+```
+
+### jq Parsing Examples
+
+Parse and process Claude's JSON output using `jq`:
+
+```bash
+# Extract specific fields
+claude -p --output-format json "analyze this code" | jq '.result'
+
+# Filter array elements
+claude -p --output-format json "list issues" | jq -r '.issues[] | select(.severity=="high")'
+
+# Extract multiple fields
+claude -p --output-format json "describe the project" | jq -r '.{name, version, description}'
+
+# Convert to CSV
+claude -p --output-format json "list functions" | jq -r '.functions[] | [.name, .lineCount] | @csv'
+
+# Conditional processing
+claude -p --output-format json "check security" | jq 'if .vulnerabilities | length > 0 then "UNSAFE" else "SAFE" end'
+
+# Extract nested values
+claude -p --output-format json "analyze performance" | jq '.metrics.cpu.usage'
+
+# Process entire array
+claude -p --output-format json "find todos" | jq '.todos | length'
+
+# Transform output
+claude -p --output-format json "list improvements" | jq 'map({title: .title, priority: .priority})'
 ```
 
 ---
@@ -589,13 +691,15 @@ claude -p --output-format json "query"
 
 ---
 
-## Related Concepts
+## Additional Resources
 
+- **[Official CLI Reference](https://code.claude.com/docs/en/cli-reference)** - Complete command reference
+- **[Headless Mode Documentation](https://code.claude.com/docs/en/headless)** - Automated execution
 - **[Slash Commands](../01-slash-commands/)** - Custom shortcuts within Claude
-- **[Memory](../02-memory/)** - Persistent context via CLAUDE.md
+- **[Memory Guide](../02-memory/)** - Persistent context via CLAUDE.md
 - **[MCP Protocol](../05-mcp/)** - External tool integrations
 - **[Advanced Features](../09-advanced-features/)** - Planning mode, extended thinking
-- **[Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)**
+- **[Subagents Guide](../04-subagents/)** - Delegated task execution
 
 ---
 

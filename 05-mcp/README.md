@@ -51,6 +51,49 @@ graph TB
     F -->|Docs| K["Google Drive"]
 ```
 
+## MCP Installation Methods
+
+Claude Code supports multiple transport protocols for MCP server connections:
+
+### HTTP Transport (Recommended)
+
+```bash
+# Basic HTTP connection
+claude mcp add --transport http notion https://mcp.notion.com/mcp
+
+# HTTP with authentication header
+claude mcp add --transport http secure-api https://api.example.com/mcp \
+  --header "Authorization: Bearer your-token"
+```
+
+### Stdio Transport (Local)
+
+For locally running MCP servers:
+
+```bash
+# Local Node.js server
+claude mcp add --transport stdio myserver -- npx @myorg/mcp-server
+
+# With environment variables
+claude mcp add --transport stdio myserver --env KEY=value -- npx server
+```
+
+### SSE Transport (Deprecated)
+
+Server-Sent Events transport is deprecated but still supported:
+
+```bash
+claude mcp add --transport sse legacy-server https://example.com/sse
+```
+
+### Windows-Specific Note
+
+On native Windows (not WSL), use `cmd /c` for npx commands:
+
+```bash
+claude mcp add --transport stdio my-server -- cmd /c npx -y @some/package
+```
+
 ## MCP Setup Process
 
 ```mermaid
@@ -71,12 +114,58 @@ sequenceDiagram
     Claude->>User: ✅ MCP connected!
 ```
 
-## Installation
+## MCP Scopes
 
-Copy the appropriate configuration to your project's `.claude/` directory:
+MCP configurations can be stored at different scopes with varying levels of sharing:
+
+| Scope | Location | Description | Shared With | Requires Approval |
+|-------|----------|-------------|-------------|------------------|
+| **Local** (default) | `~/.claude.json` | Private to current user | Just you | No |
+| **Project** | `.mcp.json` | Checked into git repository | Team members | Yes (first use) |
+| **User** | `~/.claude.json` | Available across all projects | Just you | No |
+
+### Using Project Scope
+
+Store project-specific MCP configurations in `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.github.com/mcp"
+    }
+  }
+}
+```
+
+Team members will see an approval prompt on first use of project MCPs.
+
+## MCP Configuration Management
+
+### Adding MCP Servers
 
 ```bash
-cp github-mcp.json /path/to/your/project/.claude/mcp.json
+# Add HTTP-based server
+claude mcp add --transport http github https://api.github.com/mcp
+
+# Add local stdio server
+claude mcp add --transport stdio database -- npx @company/db-server
+
+# List all MCP servers
+claude mcp list
+
+# Get details on specific server
+claude mcp get github
+
+# Remove an MCP server
+claude mcp remove github
+
+# Reset project-specific approval choices
+claude mcp reset-project-choices
+
+# Import from Claude Desktop
+claude mcp add-from-claude-desktop
 ```
 
 ## Available MCP Servers Table
@@ -157,6 +246,29 @@ Reviewers: @bob, @charlie
 export GITHUB_TOKEN="your_github_token"
 cp github-mcp.json ~/.claude/mcp.json
 ```
+
+### Environment Variable Expansion in Configuration
+
+MCP configurations support environment variable expansion with fallback defaults:
+
+```json
+{
+  "mcpServers": {
+    "api-server": {
+      "type": "http",
+      "url": "${API_BASE_URL:-https://api.example.com}/mcp",
+      "headers": {
+        "Authorization": "Bearer ${API_KEY}",
+        "X-Custom-Header": "${CUSTOM_HEADER:-default-value}"
+      }
+    }
+  }
+}
+```
+
+Variables are expanded at runtime:
+- `${VAR}` - Uses environment variable, error if not set
+- `${VAR:-default}` - Uses environment variable, falls back to default if not set
 
 ### Example 2: Database MCP Setup
 
@@ -345,6 +457,53 @@ Then reference them in MCP config:
 }
 ```
 
+## Claude as MCP Server
+
+Claude Code itself can act as an MCP server for other applications:
+
+```bash
+claude mcp serve
+```
+
+This starts Claude Code in MCP server mode, allowing other MCP clients to connect and use Claude's capabilities as a service.
+
+## Managed MCP Configuration (Enterprise)
+
+For enterprise deployments, MCP servers can be managed centrally via configuration files:
+
+**Location:**
+- macOS: `/Library/Application Support/ClaudeCode/managed-mcp.json`
+- Linux: `~/.config/ClaudeCode/managed-mcp.json`
+- Windows: `%APPDATA%\ClaudeCode\managed-mcp.json`
+
+**Features:**
+- Allowlist/denylist controls
+- Restrict by server name, command, or URL
+- Organization-wide MCP policies
+- Prevents unauthorized server connections
+
+**Example configuration:**
+
+```json
+{
+  "allowlist": [
+    {
+      "serverName": "github",
+      "serverUrl": "https://api.github.com/mcp"
+    },
+    {
+      "serverName": "company-internal",
+      "serverCommand": "company-mcp-server"
+    }
+  ],
+  "denylist": [
+    {
+      "serverName": "untrusted-*"
+    }
+  ]
+}
+```
+
 ## Best Practices
 
 ### Security Considerations
@@ -511,9 +670,9 @@ export GITHUB_TOKEN="your_token"
 
 ## Additional Resources
 
+- [Official MCP Documentation](https://code.claude.com/docs/en/mcp)
+- [MCP Protocol Specification](https://spec.modelcontextprotocol.io/)
 - [MCP GitHub Repository](https://github.com/modelcontextprotocol/servers)
-- [MCP Protocol Specification](https://modelcontextprotocol.io)
-- [Claude Code MCP Guide](https://docs.claude.com/en/docs/claude-code/mcp)
 - [Available MCP Servers](https://github.com/modelcontextprotocol/servers)
+- [Claude Code CLI Reference](https://code.claude.com/docs/en/cli-reference)
 - [Claude API Documentation](https://docs.anthropic.com)
-- [Environment Variables Setup Guide](https://www.digitalocean.com/community/tutorials/how-to-read-and-set-environmental-and-shell-variables)

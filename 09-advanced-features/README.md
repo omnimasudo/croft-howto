@@ -63,26 +63,35 @@ Planning mode is a two-phase approach:
 
 ### Activating Planning Mode
 
-**Explicit activation**:
+**Slash command**:
 ```bash
 /plan Implement user authentication system
 ```
 
-**Automatic activation**:
-Claude automatically enters planning mode for complex tasks:
+**CLI flag**:
+```bash
+claude --permission-mode plan
 ```
-User: Refactor the entire API to use microservices architecture
 
-Claude: This is a complex task. Let me create a plan first...
-[Enters planning mode]
+**Set as default**:
+```json
+{
+  "permissions": {
+    "defaultMode": "plan"
+  }
+}
 ```
+
+**Keyboard shortcut**:
+- `Shift + Tab` - Toggle permission modes (including plan)
+- `Alt + M` - Toggle permission modes (Windows/Linux)
 
 ### Benefits of Planning Mode
 
-- **Clear roadmap with time estimates**: Detailed breakdown of implementation steps
-- **Risk assessment**: Identify potential issues before implementation
-- **Systematic task breakdown**: Organized phases and milestones
-- **Opportunity for review and modification**: Approve or adjust the plan before execution
+- **Structured implementation approach**: Detailed breakdown of implementation steps
+- **Review and approval**: Approve or adjust the plan before execution
+- **Risk identification**: Identify potential issues before implementation
+- **Clear phases**: Organized implementation phases and milestones
 
 ### Example: Feature Implementation
 
@@ -169,20 +178,29 @@ Extended thinking is a deliberate, step-by-step reasoning process where Claude:
 
 ### Activating Extended Thinking
 
-**Explicit activation**:
+**Keyboard shortcut**:
+- `Option + T` (macOS) / `Alt + T` (Windows/Linux) - Toggle extended thinking
+
+**Per-request activation**:
 ```bash
-/think Should we use microservices or monolith?
+ultrathink: Should we use microservices or monolith?
 ```
 
 **Automatic activation**:
-For sufficiently complex queries, Claude automatically uses extended thinking.
+- Enabled by default on Sonnet 4.5 and Opus 4.5
+- For sufficiently complex queries, Claude automatically uses extended thinking
+
+**Custom budget**:
+```bash
+export MAX_THINKING_TOKENS=1024
+```
 
 ### Benefits of Extended Thinking
 
-- **Thorough analysis of trade-offs**: Examine pros and cons systematically
+- **Deep reasoning**: Spend more time thinking about complex problems
 - **Better architectural decisions**: Make informed choices with comprehensive evaluation
 - **Consideration of edge cases**: Think through potential issues and scenarios
-- **Systematic evaluation**: Structured approach to complex problem-solving
+- **Thorough analysis**: Structured approach to complex problem-solving
 
 ### Example: Architectural Decision
 
@@ -395,83 +413,79 @@ Claude: [Shows linter output from bg-5002]
 
 ---
 
-## Permission Mode
+## Permission Modes
 
-Permission mode controls what actions Claude can take without explicit approval.
+Permission modes control what actions Claude can take without explicit approval.
 
-### Permission Modes Table
+### Available Permission Modes
 
 | Mode | Description | Use Case |
 |------|-------------|----------|
-| **Unrestricted** | Full access (default) | Active development |
-| **Confirm** | Ask before actions | Learning, pair programming |
-| **Read-only** | Analysis only | Code review |
-| **Custom** | Granular permissions | Fine-tuned control |
+| **default** | Full access, asks for confirmation | Active development |
+| **acceptEdits** | Automatically accepts file edits | Development workflow |
+| **dontAsk** | No confirmation needed | Fully automated |
+| **bypassPermissions** | Bypass all permission checks | Trusted automation |
+| **plan** | Planning mode before implementation | Review before execution |
+| **ignore** | Ignore permission restrictions | Advanced usage |
 
-### Permission Commands
+### Activation Methods
 
+**Keyboard shortcut**:
 ```bash
-/permission readonly      # Code review mode
-/permission confirm       # Learning mode
-/permission unrestricted  # Full automation
+Shift + Tab  # or Alt + M on Windows/Linux
 ```
 
-### Permission Levels
-
-#### 1. Unrestricted Mode (Default)
-Claude can use all tools freely.
-
-```
-User: /permission unrestricted
+**Slash command**:
+```bash
+/plan                  # Enter plan mode
 ```
 
-#### 2. Confirmation Mode
-Claude asks before taking actions.
+**CLI flag**:
+```bash
+claude --permission-mode plan
+```
+
+**Environment variable**:
+```bash
+export CLAUDE_PERMISSION_MODE=plan
+```
+
+### Permission Mode Examples
+
+#### Default Mode
+Claude asks for confirmation on significant actions:
 
 ```
-User: /permission confirm
-
 User: Fix the bug in auth.ts
 
 Claude: I need to modify src/auth.ts to fix the bug.
 The change will update the password validation logic.
 
 Approve this change? (yes/no/show)
-
-User: show
-
-Claude: [Shows the exact changes]
-
-User: yes
-
-Claude: [Makes the change]
 ```
 
-#### 3. Read-Only Mode
-Claude can only read files, not modify them.
+#### Plan Mode
+Review implementation plan before execution:
 
 ```
-User: /permission readonly
+User: /plan Implement user authentication system
 
+Claude: I'll create a plan for implementing authentication.
+
+## Implementation Plan
+[Detailed plan with phases and steps]
+
+Ready to proceed? (yes/no/modify)
+```
+
+#### Accept Edits Mode
+Automatically accept file modifications:
+
+```
+User: acceptEdits
 User: Fix the bug in auth.ts
 
-Claude: I'm in read-only mode. I can analyze the bug and show you the fix, but I cannot modify files.
-
-Here's the bug and suggested fix:
-[Shows analysis and proposed changes]
-```
-
-#### 4. Custom Permission Sets
-
-```json
-{
-  "permissions": {
-    "mode": "custom",
-    "allowed": ["Read", "Grep", "Glob"],
-    "blocked": ["Write", "Edit", "Bash"],
-    "requireConfirmation": ["Git"]
-  }
-}
+Claude: [Makes changes without asking]
 ```
 
 ### Use Cases
@@ -702,31 +716,31 @@ claude-code --new
 
 ### Keyboard Shortcuts
 
-Claude Code supports keyboard shortcuts for efficiency:
+Claude Code supports keyboard shortcuts for efficiency. Here's the complete reference from official docs:
 
-**Basic Navigation and Input:**
-- `Ctrl + R` - Search command history
-- `Tab` - Autocomplete
-- `↑ / ↓` - Command history
-- `Ctrl + L` - Clear screen
+| Shortcut | Description |
+|----------|-------------|
+| `Ctrl+C` | Cancel current input/generation |
+| `Ctrl+D` | Exit Claude Code |
+| `Ctrl+L` | Clear terminal screen |
+| `Ctrl+O` | Toggle verbose output |
+| `Ctrl+R` | Reverse search history |
+| `Ctrl+B` | Background running tasks |
+| `Esc+Esc` | Rewind code/conversation |
+| `Shift+Tab` / `Alt+M` | Toggle permission modes |
+| `Option+P` / `Alt+P` | Switch model |
+| `Option+T` / `Alt+T` | Toggle extended thinking |
 
-**Extended Shortcuts:**
+**Line Editing (standard readline shortcuts):**
 
 | Shortcut | Action |
 |----------|--------|
-| `Ctrl + C` | Cancel current operation |
-| `Ctrl + D` | Exit Claude Code |
-| `Ctrl + L` | Clear screen |
-| `Ctrl + R` | Search command history |
-| `Ctrl + P` | Previous command |
-| `Ctrl + N` | Next command |
 | `Ctrl + A` | Move to line start |
 | `Ctrl + E` | Move to line end |
 | `Ctrl + K` | Cut to end of line |
 | `Ctrl + U` | Cut to start of line |
 | `Ctrl + W` | Delete word backward |
 | `Ctrl + Y` | Paste (yank) |
-| `Ctrl + Z` | Suspend (background) |
 | `Tab` | Autocomplete |
 | `↑ / ↓` | Command history |
 
@@ -795,6 +809,38 @@ User: Deploy to prodcution<Backspace><Backspace>uction
 
 [Edit in-place before sending]
 ```
+
+### Vim Mode
+
+Enable Vi/Vim keybindings for text editing:
+
+**Activation**:
+- Use `/vim` command or `/config` to enable
+- Mode switching with `Esc` for NORMAL, `i/a/o` for INSERT
+
+**Navigation keys**:
+- `h` / `l` - Move left/right
+- `j` / `k` - Move down/up
+- `w` / `b` / `e` - Move by word
+- `0` / `$` - Move to line start/end
+- `gg` / `G` - Jump to start/end of text
+
+**Text objects**:
+- `iw` / `aw` - Inner/around word
+- `i"` / `a"` - Inner/around quoted string
+- `i(` / `a(` - Inner/around parentheses
+
+### Bash Mode
+
+Execute shell commands directly with `!` prefix:
+
+```bash
+! npm test
+! git status
+! cat src/index.js
+```
+
+Use this for quick command execution without switching contexts.
 
 ---
 
@@ -1033,18 +1079,18 @@ Create `.claude/config.json` in your project:
 
 ---
 
-## Related Concepts
+## Additional Resources
 
-For more information about Claude Code and related features, see:
+For more information about Claude Code and related features:
 
-- [Main Claude Code Guide](../README.md)
-- [Slash Commands](../01-slash-commands/)
-- [Memory](../02-memory/)
-- [Skills](../03-skills/)
-- [Subagents](../04-subagents/)
-- [MCP](../05-mcp/)
-- [Hooks](../06-hooks/)
-- [Plugins](../07-plugins/)
-- [Checkpoints](../08-checkpoints/)
-- [Claude Documentation](https://docs.claude.com)
-- [MCP GitHub Servers](https://github.com/modelcontextprotocol/servers)
+- [Official Interactive Mode Documentation](https://code.claude.com/docs/en/interactive-mode)
+- [Official Headless Mode Documentation](https://code.claude.com/docs/en/headless)
+- [CLI Reference](https://code.claude.com/docs/en/cli-reference)
+- [Checkpoints Guide](../08-checkpoints/) - Session management and rewinding
+- [Slash Commands](../01-slash-commands/) - Command reference
+- [Memory Guide](../02-memory/) - Persistent context
+- [Skills Guide](../03-skills/) - Autonomous capabilities
+- [Subagents Guide](../04-subagents/) - Delegated task execution
+- [MCP Guide](../05-mcp/) - External data access
+- [Hooks Guide](../06-hooks/) - Event-driven automation
+- [Plugins Guide](../07-plugins/) - Bundled extensions

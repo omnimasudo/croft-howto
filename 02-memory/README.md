@@ -240,6 +240,48 @@ graph TD
     E -->|imports| F["@docs/api-standards.md"]
 ```
 
+## Modular Rules System
+
+Create organized, path-specific rules using the `.claude/rules/` directory structure:
+
+```
+your-project/
+├── .claude/
+│   ├── CLAUDE.md
+│   └── rules/
+│       ├── code-style.md
+│       ├── testing.md
+│       └── security.md
+```
+
+### Path-Specific Rules with YAML Frontmatter
+
+Define rules that apply only to specific file paths:
+
+```markdown
+---
+paths: src/api/**/*.ts
+---
+
+# API Development Rules
+
+- All API endpoints must include input validation
+- Use Zod for schema validation
+- Document all parameters and response types
+- Include error handling for all operations
+```
+
+**Glob Pattern Examples:**
+
+- `**/*.ts` - All TypeScript files
+- `src/**/*` - All files under src/
+- `src/**/*.{ts,tsx}` - Multiple extensions
+- `{src,lib}/**/*.ts, tests/**/*.test.ts` - Multiple patterns
+
+### Symlinks Support
+
+Rules in `.claude/rules/` support symlinks for file references and external documentation.
+
 ## Memory Locations Table
 
 | Location | Scope | Priority | Shared | Access | Best For |
@@ -249,6 +291,7 @@ graph TD
 | `C:\ProgramData\ClaudeCode\CLAUDE.md` (Windows) | Enterprise | Highest | Organization | System | Corporate guidelines |
 | `./CLAUDE.md` | Project | High | Team | Git | Team standards, shared architecture |
 | `./.claude/CLAUDE.md` | Project | High | Team | Git | Alternative project location |
+| `./.claude/rules/` | Project Rules | High | Team | Git | Path-specific, modular rules |
 | `./subdir/CLAUDE.md` | Directory | Medium | Team | Git | Directory-specific rules |
 | `~/.claude/CLAUDE.md` | Personal | Low | Individual | Filesystem | Personal preferences |
 | `./CLAUDE.local.md` | Project Local | Deprecated | Individual | Git (ignored) | Personal project notes (deprecated) |
@@ -849,12 +892,11 @@ Claude will prompt you to choose which memory file to update.
 
 ## Official Documentation
 
-This guide is based on official Claude Code documentation. For the most up-to-date information, refer to:
+For the most up-to-date information, refer to the official Claude Code documentation:
 
-- **[Memory Documentation](https://code.claude.com/docs/en/memory.md)** - Complete memory system reference
-- **[Slash Commands Reference](https://code.claude.com/docs/en/slash-commands.md)** - All built-in commands including `/init` and `/memory`
-- **[Quickstart Guide](https://code.claude.com/docs/en/quickstart.md)** - Getting started with Claude Code
-- **[Documentation Map](https://code.claude.com/docs/en/claude_code_docs_map.md)** - Complete documentation index
+- **[Memory Documentation](https://code.claude.com/docs/en/memory)** - Complete memory system reference
+- **[Slash Commands Reference](https://code.claude.com/docs/en/slash-commands)** - All built-in commands including `/init` and `/memory`
+- **[CLI Reference](https://code.claude.com/docs/en/cli-reference)** - Command-line interface documentation
 
 ### Key Technical Details from Official Docs
 

@@ -22,49 +22,38 @@ Checkpoints are invaluable when exploring different approaches, recovering from 
 | **Rewind** | Return to a previous checkpoint, discarding subsequent changes |
 | **Branch Point** | Checkpoint from which multiple approaches are explored |
 
-## Commands
+## Accessing Checkpoints
 
-All checkpoint operations are performed using the `/checkpoint` command:
+You can access and manage checkpoints in two primary ways:
+
+### Using Keyboard Shortcut
+Press `Esc` twice (`Esc` + `Esc`) to open the checkpoint interface and browse saved checkpoints.
+
+### Using Slash Command
+Use the `/rewind` command for quick access:
 
 ```bash
-# Create checkpoint
-/checkpoint save "Before refactoring"
-
-# List checkpoints
-/checkpoint list
-
-# Rewind to checkpoint
-/checkpoint rewind "Before refactoring"
-
-# Compare checkpoints
-/checkpoint diff checkpoint-1 checkpoint-2
-
-# Delete checkpoint
-/checkpoint delete checkpoint-1
-
-# Export checkpoint
-/checkpoint export "name" ~/checkpoints/backup.json
+# Open rewind interface
+/rewind
 ```
 
-## Creating Checkpoints
+## Rewind Options
 
-### Automatic Checkpoints
-Claude Code automatically creates checkpoints at key moments:
-- Before major refactoring operations
-- Before potentially destructive commands
-- At regular intervals during long sessions
-- Before running tests or builds
+When you rewind, you can choose what to restore:
 
-### Manual Checkpoints
-Create checkpoints explicitly:
+- **Conversation only** - Restore chat history and context, keep current code
+- **Code only** - Restore file changes, keep current conversation
+- **Both** - Restore both conversation and code to the checkpoint state
 
-```
-User: /checkpoint save "Before API refactor"
-```
+## Automatic Checkpoints
 
-```
-User: /checkpoint create pre-deployment
-```
+Claude Code automatically creates checkpoints for you:
+
+- **Every user prompt** - A new checkpoint is created with each user input
+- **Persistent** - Checkpoints persist across sessions
+- **Auto-cleaned** - Checkpoints are automatically cleaned up after 30 days (configurable)
+
+This means you can always rewind to any previous point in your conversation, from a few minutes ago to days before.
 
 ## Use Cases
 
@@ -77,40 +66,17 @@ User: /checkpoint create pre-deployment
 
 ## Using Checkpoints
 
-### List Checkpoints
-View all available checkpoints:
+### Viewing and Rewinding
 
-```
-User: /checkpoint list
-```
+Press `Esc` twice or use `/rewind` to open the checkpoint browser. You'll see a list of all available checkpoints with timestamps. Select any checkpoint to rewind to that state.
 
-Output:
-```
-Checkpoints:
-1. [2025-11-08 10:30:15] Auto: Before file edit
-2. [2025-11-08 10:45:22] Manual: Before API refactor
-3. [2025-11-08 11:02:10] Auto: Before git commit
-4. [2025-11-08 11:15:45] Manual: pre-deployment
-```
+### Checkpoint Details
 
-### Rewind to Checkpoint
-Return to a previous checkpoint:
-
-```
-User: /checkpoint rewind 2
-```
-
-Or by name:
-```
-User: /checkpoint rewind "Before API refactor"
-```
-
-### Compare Checkpoints
-See what changed between checkpoints:
-
-```
-User: /checkpoint diff 2 4
-```
+Each checkpoint shows:
+- Timestamp of when it was created
+- Files that were modified
+- Number of messages in the conversation
+- Tools that were used
 
 ## Practical Examples
 
@@ -120,21 +86,15 @@ User: /checkpoint diff 2 4
 User: Let's add a caching layer to the API
 
 Claude: I'll add Redis caching to your API endpoints...
-[Makes changes]
-
-User: /checkpoint save "Redis approach"
+[Makes changes at checkpoint A]
 
 User: Actually, let's try in-memory caching instead
 
-Claude: I'll rewind and implement in-memory caching...
-[Uses /checkpoint rewind to undo Redis changes]
-[Implements in-memory caching]
+Claude: I'll rewind to explore a different approach...
+[User presses Esc+Esc and rewinds to checkpoint A]
+[Implements in-memory caching at checkpoint B]
 
-User: /checkpoint save "In-memory approach"
-
-User: /checkpoint diff "Redis approach" "In-memory approach"
-
-Claude: Here are the differences between the two approaches...
+User: Now I can compare both approaches
 ```
 
 ### Example 2: Recovering from Mistakes
@@ -147,8 +107,8 @@ Claude: I'll refactor the authentication module...
 
 User: Wait, that broke the OAuth integration. Let's go back.
 
-Claude: I'll rewind to before the refactoring...
-/checkpoint rewind "Before auth refactor"
+Claude: I'll help you rewind to before the refactoring...
+[User presses Esc+Esc and selects the checkpoint before the refactor]
 
 User: Let's try a more conservative approach this time
 ```
@@ -156,189 +116,87 @@ User: Let's try a more conservative approach this time
 ### Example 3: Safe Experimentation
 
 ```
-User: /checkpoint save "Working state before experiment"
-
 User: Let's try rewriting this in a functional style
+[Creates checkpoint before experiment]
 
 Claude: [Makes experimental changes]
 
 User: The tests are failing. Let's rewind.
+[User presses Esc+Esc and rewinds to the checkpoint]
 
-Claude: /checkpoint rewind "Working state before experiment"
+Claude: I've rewound the changes. Let's try a different approach.
 ```
 
-### Example 4: Comparing Solutions
+### Example 4: Branching Approaches
 
 ```
 User: I want to compare two database designs
+[Takes note of checkpoint - call it "Start"]
 
 Claude: I'll create the first design...
 [Implements Schema A]
 
-User: /checkpoint save "Schema A"
+User: Now let me go back and try the second approach
+[User presses Esc+Esc and rewinds to "Start"]
 
-Claude: /checkpoint rewind to start
+Claude: Now I'll implement Schema B...
 [Implements Schema B]
 
-User: /checkpoint save "Schema B"
-
-User: /checkpoint compare "Schema A" "Schema B"
-
-Claude: Here's a comparison of both schemas:
-- Schema A uses normalization...
-- Schema B uses denormalization...
+User: Great! Now I have both schemas to choose from
 ```
 
-## Checkpoint Management
+## Checkpoint Retention
 
-### View Checkpoint Details
+Claude Code automatically manages your checkpoints:
 
-```
-User: /checkpoint show 2
-```
+- Checkpoints are created automatically with every user prompt
+- Old checkpoints are retained for up to 30 days
+- You can configure the retention period in your settings
+- Checkpoints are cleaned up automatically to prevent unlimited storage growth
 
-Output:
-```
-Checkpoint #2: "Before API refactor"
-Created: 2025-11-08 10:45:22
-Files modified: 5
-- src/api/endpoints.ts
-- src/api/middleware.ts
-- src/utils/cache.ts
-- tests/api.test.ts
-- package.json
+## Workflow Patterns
 
-Message count: 23
-Tools used: Read, Edit, Bash
-```
+### Branching Strategy for Exploration
 
-### Delete Checkpoints
+When exploring multiple approaches:
 
 ```
-User: /checkpoint delete 1
+1. Start with initial implementation → Checkpoint A
+2. Try Approach 1 → Checkpoint B
+3. Rewind to Checkpoint A
+4. Try Approach 2 → Checkpoint C
+5. Compare results from B and C
+6. Choose best approach and continue
 ```
 
-Or delete all:
+### Safe Refactoring Pattern
+
+When making significant changes:
+
 ```
-User: /checkpoint clear
-```
-
-### Export Checkpoints
-
-Save checkpoint for later use:
-```
-User: /checkpoint export "Before API refactor" ~/checkpoints/api-refactor.json
-```
-
-### Import Checkpoints
-
-Restore from saved checkpoint:
-```
-User: /checkpoint import ~/checkpoints/api-refactor.json
-```
-
-## Advanced Usage
-
-### Branching Strategy
-
-```markdown
-Main conversation
-├─ Checkpoint 1: "Initial state"
-│
-├─ Branch A: Redis implementation
-│  ├─ Checkpoint 2: "Redis complete"
-│  └─ Checkpoint 3: "Redis with clustering"
-│
-└─ Branch B: In-memory implementation
-   ├─ Checkpoint 4: "In-memory complete"
-   └─ Checkpoint 5: "In-memory optimized"
-```
-
-### Checkpoint Scripts
-
-Create automated checkpoint workflows:
-
-```bash
-#!/bin/bash
-# create-safe-checkpoint.sh
-
-# Create checkpoint
-echo "/checkpoint save \"Safe point - $(date +%Y%m%d-%H%M%S)\"" | claude-code
-
-# Run risky operation
-echo "$1" | claude-code
-
-# Check if successful
-if [ $? -ne 0 ]; then
-  echo "/checkpoint rewind last" | claude-code
-  echo "Operation failed, reverted to checkpoint"
-fi
-```
-
-### Checkpoint Hooks
-
-Automatically create checkpoints on events:
-
-```json
-{
-  "hooks": {
-    "PreToolUse:Edit": "~/.claude/hooks/create-checkpoint.sh",
-    "PreCommit": "~/.claude/hooks/checkpoint-before-commit.sh"
-  }
-}
-```
-
-Example hook:
-```bash
-#!/bin/bash
-# ~/.claude/hooks/create-checkpoint.sh
-
-FILE=$1
-TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
-
-# Create checkpoint before editing important files
-if [[ "$FILE" =~ (config|database|auth|api) ]]; then
-  echo "Creating checkpoint before editing $FILE"
-  # Trigger checkpoint creation
-fi
+1. Current state → Checkpoint (auto)
+2. Start refactoring
+3. Run tests
+4. If tests pass → Continue working
+5. If tests fail → Rewind and try different approach
 ```
 
 ## Best Practices
 
-### When to Create Checkpoints
+Since checkpoints are created automatically, you can focus on your work without worrying about manually saving state. However, keep these practices in mind:
 
-✅ **Do create checkpoints:**
-- Before major refactoring
-- Before trying experimental approaches
-- Before potentially breaking changes
-- At the end of successful feature implementations
-- Before switching to a different task
+### Using Checkpoints Effectively
 
-❌ **Don't create checkpoints:**
-- After every single change (too granular)
-- For trivial changes (typo fixes, formatting)
-- Without descriptive names
+✅ **Do:**
+- Review available checkpoints before rewinding
+- Use rewind when you want to explore different directions
+- Keep checkpoints to compare different approaches
+- Understand what each rewind option does (conversation, code, or both)
 
-### Naming Conventions
-
-Good checkpoint names:
-- ✅ "Before auth refactor"
-- ✅ "Working state - all tests passing"
-- ✅ "Pre-deployment v1.2.0"
-- ✅ "Schema A - normalized design"
-
-Poor checkpoint names:
-- ❌ "checkpoint1"
-- ❌ "temp"
-- ❌ "test"
-- ❌ "backup"
-
-### Checkpoint Hygiene
-
-- **Limit active checkpoints**: Keep 5-10 meaningful checkpoints
-- **Delete old checkpoints**: Remove outdated ones regularly
-- **Use descriptive names**: Make it easy to identify later
-- **Document major checkpoints**: Add notes about what was accomplished
+❌ **Don't:**
+- Rely on checkpoints alone for code preservation
+- Expect checkpoints to track external file system changes
+- Use checkpoints as a substitute for git commits
 
 ## Configuration
 
@@ -366,10 +224,11 @@ Configure checkpoint behavior in settings. Here's the comprehensive configuratio
 
 ## Limitations
 
-- Checkpoints are session-specific
-- External changes (outside Claude Code) are not tracked
-- Large file changes may increase checkpoint size
-- Some tool states may not be fully restorable
+Checkpoints have the following limitations:
+
+- **Bash command changes NOT tracked** - Operations like `rm`, `mv`, `cp` on the filesystem are not captured in checkpoints
+- **External changes NOT tracked** - Changes made outside Claude Code (in your editor, terminal, etc.) are not captured
+- **Not a replacement for version control** - Use git for permanent, auditable changes to your codebase
 
 ## Troubleshooting
 
@@ -423,41 +282,20 @@ Use both together:
 3. Create checkpoint before git operations
 4. Commit successful checkpoint states to git
 
-## Example Workflows
+## Quick Start Guide
 
-### Safe Refactoring Workflow
+### Basic Workflow
 
-```
-1. /checkpoint save "Before refactoring"
-2. Implement refactoring
-3. Run tests
-4. If tests pass: Commit to git
-5. If tests fail: /checkpoint rewind "Before refactoring"
-```
+1. **Work normally** - Claude Code creates checkpoints automatically
+2. **Want to go back?** - Press `Esc` twice or use `/rewind`
+3. **Choose checkpoint** - Select from the list to rewind
+4. **Select what to restore** - Choose conversation, code, or both
+5. **Continue working** - You're back at that point
 
-### Feature Exploration Workflow
+### Keyboard Shortcuts
 
-```
-1. /checkpoint save "Main branch"
-2. Try approach A
-3. /checkpoint save "Approach A"
-4. /checkpoint rewind "Main branch"
-5. Try approach B
-6. /checkpoint save "Approach B"
-7. /checkpoint compare "Approach A" "Approach B"
-8. Choose best approach and commit
-```
-
-### Emergency Recovery Workflow
-
-```
-1. Notice major issue
-2. /checkpoint list
-3. Identify last known good state
-4. /checkpoint rewind <good-state>
-5. Verify system works
-6. Proceed cautiously
-```
+- **`Esc` + `Esc`** - Open checkpoint browser
+- **`/rewind`** - Alternative way to access checkpoints
 
 ## Related Concepts
 
@@ -467,14 +305,19 @@ Use both together:
 - **[Hooks](../06-hooks/)** - Event-driven automation
 - **[Plugins](../07-plugins/)** - Bundled extension packages
 
+## Additional Resources
+
+- [Official Checkpointing Documentation](https://code.claude.com/docs/en/checkpointing)
+- [Advanced Features Guide](../09-advanced-features/) - Extended thinking and other capabilities
+
 ## Summary
 
-Checkpoints are a powerful feature for safe exploration and experimentation in Claude Code. By combining checkpoints with your development workflow, you can:
+Checkpoints are an automatic feature in Claude Code that lets you safely explore different approaches without fear of losing work. Every user prompt creates a new checkpoint automatically, so you can rewind to any previous point in your session.
 
+Key benefits:
 - Experiment fearlessly with multiple approaches
-- Quickly recover from mistakes without losing work
+- Quickly recover from mistakes
 - Compare different solutions side-by-side
-- Maintain clean, organized development sessions
 - Integrate safely with version control systems
 
-The key to effective checkpoint usage is creating them at meaningful points in your work and using descriptive names that make it easy to find and rewind to the right state when needed.
+Remember: checkpoints are not a replacement for git. Use checkpoints for rapid experimentation and git for permanent code changes.

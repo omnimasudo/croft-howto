@@ -43,6 +43,8 @@ Claude Code provides these built-in slash commands:
 | `/mcp` | Manage MCP server connections and OAuth authentication |
 | `/memory` | Edit `CLAUDE.md` memory files |
 | `/model` | Select or change the AI model |
+| `/plan` | Enter plan mode directly from the prompt |
+| `/remote-env` | Configure remote session environment (claude.ai subscribers) |
 | `/output-style [style]` | Set the output style directly or from a selection menu |
 | `/permissions` | View or update permissions |
 | `/plugin` | Manage Claude Code plugins |
@@ -58,6 +60,7 @@ Claude Code provides these built-in slash commands:
 | `/stats` | Visualize daily usage, session history, streaks, and model preferences |
 | `/status` | Open the Settings interface (Status tab) |
 | `/statusline` | Set up Claude Code's status line UI |
+| `/teleport` | Resume remote session from claude.ai by session ID |
 | `/terminal-setup` | Install Shift+Enter key binding for newlines |
 | `/todos` | List current TODO items |
 | `/usage` | Show plan usage limits and rate limit status |
@@ -160,6 +163,13 @@ allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*)
 argument-hint: [message]
 description: Create a git commit
 model: claude-3-5-haiku-20241022
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "./scripts/validate.sh"
+          once: true
 ---
 
 Create a git commit with message: $ARGUMENTS
@@ -173,7 +183,8 @@ Create a git commit with message: $ARGUMENTS
 | `argument-hint` | Expected arguments for auto-completion | None |
 | `description` | Brief description of the command | Uses first line from prompt |
 | `model` | Specific model to use | Inherits from conversation |
-| `disable-model-invocation` | Prevent SlashCommand tool from calling this | `false` |
+| `hooks` | Component-scoped hooks (PreToolUse, PostToolUse, Stop) | None |
+| `disable-model-invocation` | Prevent Skill tool from calling this | `false` |
 
 ## Plugin Commands
 
@@ -207,9 +218,30 @@ MCP servers can expose prompts as slash commands:
 /mcp__jira__create_issue "Bug title" high
 ```
 
-## SlashCommand Tool
+## MCP Permission Syntax
 
-Claude can programmatically invoke custom slash commands using the SlashCommand tool.
+Control MCP server access using permission syntax in settings:
+
+**Server-level permissions:**
+- `mcp__github` - Access entire GitHub MCP server
+- `mcp__github__*` - Wildcard access to all tools in GitHub server
+- `mcp__github__get_issue` - Specific tool access
+
+**Usage in permissions:**
+```json
+{
+  "permissions": {
+    "blocked": ["mcp__github__*"],
+    "requireConfirmation": ["mcp__jira__create_issue"]
+  }
+}
+```
+
+This allows fine-grained control over which MCP tools Claude can use.
+
+## Skill Tool
+
+Claude can programmatically invoke custom slash commands using the Skill tool.
 
 ### Enabling Programmatic Invocation
 
@@ -232,7 +264,7 @@ disable-model-invocation: true
 Or disable via permissions:
 ```
 /permissions
-# Add to deny rules: SlashCommand
+# Add to deny rules: Skill
 ```
 
 ### Character Budget
@@ -559,12 +591,13 @@ Run the project tests with the following options:
 - **[Subagents](../04-subagents/)** - For complex, delegated tasks
 - **[Plugins](../07-plugins/)** - For bundled command collections
 
-## Resources
+## Additional Resources
 
-- [Claude Code Slash Commands Documentation](https://code.claude.com/docs/en/slash-commands) - Official documentation
-- [Discovering Claude Code Slash Commands](https://medium.com/@luongnv89/discovering-claude-code-slash-commands-cdc17f0dfb29) - Comprehensive blog post
-- [4 Essential Slash Commands I Use in Every Project](../blog-post/4-essential-slash-commands.md) - Practical workflow guide
-- [Markdown Guide](https://www.markdownguide.org/)
+- [Official Slash Commands Documentation](https://code.claude.com/docs/en/slash-commands) - Complete reference
+- [CLI Reference](https://code.claude.com/docs/en/cli-reference) - Command-line options
+- [Memory Guide](../02-memory/) - Persistent context
+- [Skills Guide](../03-skills/) - Auto-invoked capabilities
+- [Markdown Guide](https://www.markdownguide.org/) - Markdown syntax reference
 
 ---
 

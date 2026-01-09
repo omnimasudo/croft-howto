@@ -2,6 +2,29 @@
 
 # Claude How To
 
+> A visual, example-driven guide to Claude Code — from basic concepts to advanced agents, with copy-paste templates that bring immediate value.
+
+## Why This Guide?
+
+This project complements [Anthropic's official documentation](https://docs.anthropic.com/en/docs/claude-code) with a different approach:
+
+| | Official Docs | This Guide |
+|--|---------------|------------|
+| **Format** | Reference documentation | Visual tutorials with diagrams |
+| **Depth** | Feature descriptions | How it works under the hood |
+| **Examples** | Basic snippets | Production-ready templates you can use immediately |
+| **Structure** | Feature-organized | Progressive learning path (beginner → advanced) |
+| **Onboarding** | Self-directed | Guided roadmap with time estimates |
+
+**What you'll find here:**
+- Mermaid diagrams explaining how each feature works
+- Ready-to-use configurations you can copy into your project
+- Real-world examples with context and best practices
+- Clear progression from `/help` to building custom agents
+- Troubleshooting guides based on common issues
+
+---
+
 ## Contributors
 
 Thanks to everyone who has contributed to this project!

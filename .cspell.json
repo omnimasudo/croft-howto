@@ -93,10 +93,14 @@
     "repo",
     "repos",
     "readme",
-    "README"
+    "README",
+    "mypy",
+    "wjhrdy"
   ],
   "ignoreWords": [
-    "luongnv89"
+    "luongnv89",
+    "wjhrdy",
+    "Cherry"
   ],
   "ignoreRegExpList": [
     "code\\{[^}]*\\}",

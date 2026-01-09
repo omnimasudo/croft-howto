@@ -296,10 +296,10 @@ pip-audit
 
 ### Dependency Management
 - [OWASP Dependency Check](https://owasp.org/www-project-dependency-check/)
-- [GitHub Security Alerts](https://docs.github.com/en/code-security/supply-chain-security/managing-vulnerabilities-in-your-dependencies)
+- [GitHub Security Alerts](https://docs.github.com/en/code-security/dependabot/dependabot-alerts/about-dependabot-alerts)
 
 ### General Security
-- [Anthropic's Security Policy](https://www.anthropic.com/security)
+- [Anthropic Security](https://www.anthropic.com/)
 - [GitHub Security Best Practices](https://docs.github.com/en/code-security)
 
 ## Security Advisories Archive

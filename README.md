@@ -758,13 +758,23 @@ Claude:
 
 ## Contributing
 
-Found an issue or want to contribute an example?
+Found an issue or want to contribute an example? We'd love your help!
 
-1. Create an issue describing the example
-2. Follow existing structure and patterns
-3. Include comprehensive README
-4. Test thoroughly
-5. Submit pull request
+**Please read [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on:**
+- Types of contributions (examples, docs, features, bugs, feedback)
+- How to set up your development environment
+- Directory structure and how to add content
+- Writing guidelines and best practices
+- Commit and PR process
+- Code of conduct
+
+Quick start:
+1. Fork and clone the repository
+2. Create a descriptive branch (`add/feature-name`, `fix/bug`, `docs/improvement`)
+3. Make your changes following the guidelines
+4. Submit a pull request with a clear description
+
+**Need help?** Open an issue or discussion, and we'll guide you through the process.
 
 ---
 

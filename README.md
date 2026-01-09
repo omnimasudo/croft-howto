@@ -780,7 +780,15 @@ Quick start:
 
 ## License
 
-These examples are provided as-is for educational purposes. Adapt and use them freely in your projects.
+This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
+
+You are free to:
+- Use this guide and examples in your projects
+- Modify and adapt the content
+- Share and distribute
+- Use for commercial purposes
+
+The only requirement is to include a copy of the license and copyright notice.
 
 ---
 

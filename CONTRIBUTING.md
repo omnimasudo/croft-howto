@@ -324,7 +324,7 @@ Be respectful and inclusive:
 
 ## License
 
-By contributing to this project, you agree that your contributions will be licensed under the same license as the project (Educational license).
+By contributing to this project, you agree that your contributions will be licensed under the MIT License. See [LICENSE](LICENSE) file for details.
 
 ## Questions?
 

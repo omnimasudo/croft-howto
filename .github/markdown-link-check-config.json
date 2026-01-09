@@ -1,0 +1,27 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^https://twitter.com",
+      "comment": "Twitter/X links require authentication"
+    },
+    {
+      "pattern": "^https://x.com",
+      "comment": "X (Twitter) links require authentication"
+    },
+    {
+      "pattern": "^https://github.com/[^/]+/claude-howto",
+      "comment": "Self-referencing links"
+    }
+  ],
+  "replacementPatterns": [
+    {
+      "pattern": "^/",
+      "replacement": "https://github.com/luongnv89/claude-howto/blob/main/"
+    }
+  ],
+  "timeout": 10000,
+  "retryOn": [429, 503],
+  "retryCount": 3,
+  "fallbackRetryDelay": 5000,
+  "aliveStatusCodes": [200, 206]
+}

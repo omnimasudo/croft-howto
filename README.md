@@ -2,8 +2,6 @@
 
 # Claude How To
 
-[![Star History Chart](https://api.star-history.com/svg?repos=luongnv89/claude-howto&type=Date)](https://star-history.com/#luongnv89/claude-howto&Date)
-
 > A visual, example-driven guide to Claude Code — from basic concepts to advanced agents, with copy-paste templates that bring immediate value.
 
 ## Why This Guide?
@@ -54,6 +52,7 @@ This project complements [Anthropic's official documentation](https://docs.anthr
 - [Contributing](#contributing)
 - [EPUB Generation](#epub-generation)
 - [Contributors](#contributors)
+- [Star History](#star-history)
 
 ---
 
@@ -796,6 +795,12 @@ Thanks to everyone who has contributed to this project!
 | Contributor | PRs |
 |-------------|-----|
 | [wjhrdy](https://github.com/wjhrdy) | [#1 - add a tool to create an epub](https://github.com/luongnv89/claude-howto/pull/1) |
+
+---
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=luongnv89/claude-howto&type=Date)](https://star-history.com/#luongnv89/claude-howto&Date)
 
 ---
 

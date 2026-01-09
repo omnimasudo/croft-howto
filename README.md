@@ -893,6 +893,6 @@ Thanks to everyone who has contributed to this project!
 
 ---
 
-**Last Updated**: December 2025
+**Last Updated**: January 2026
 **Claude Code Version**: 1.0+
-**Compatible Models**: Sonnet 4.5, Opus 4.1, Haiku 4.5
+**Compatible Models**: Claude Sonnet 4.5, Claude Opus 4.5, Claude Haiku 4.5

@@ -25,6 +25,35 @@ This project complements [Anthropic's official documentation](https://docs.anthr
 
 ---
 
+## Table of Contents
+
+- [Why This Guide?](#why-this-guide)
+- [Quick Navigation](#quick-navigation)
+- [Learning Path](#-learning-path)
+- [Quick Reference](#-quick-reference-choose-your-features)
+- [Getting Started](#-getting-started)
+- **Features**
+  - [01. Slash Commands](#01-slash-commands)
+  - [02. Memory](#02-memory)
+  - [03. Skills](#03-skills)
+  - [04. Subagents](#04-subagents)
+  - [05. MCP Protocol](#05-mcp-protocol)
+  - [06. Hooks](#06-hooks)
+  - [07. Plugins](#07-plugins)
+  - [08. Checkpoints](#08-checkpoints-and-rewind)
+  - [09. Advanced Features](#09-advanced-features)
+  - [10. CLI Reference](#10-cli-reference)
+- [Directory Structure](#directory-structure)
+- [Installation Quick Reference](#installation-quick-reference)
+- [Example Workflows](#example-workflows)
+- [Best Practices](#best-practices)
+- [Troubleshooting](#troubleshooting)
+- [Additional Resources](#additional-resources)
+- [Contributing](#contributing)
+- [EPUB Generation](#epub-generation)
+
+---
+
 ## Contributors
 
 Thanks to everyone who has contributed to this project!

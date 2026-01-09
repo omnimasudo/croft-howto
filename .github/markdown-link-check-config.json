@@ -11,6 +11,30 @@
     {
       "pattern": "^https://github.com/[^/]+/claude-howto",
       "comment": "Self-referencing links"
+    },
+    {
+      "pattern": "^https://docs\\.claude\\.com",
+      "comment": "Claude docs - URL structure may vary"
+    },
+    {
+      "pattern": "^https://docs\\.anthropic\\.com",
+      "comment": "Anthropic docs - May have authentication or access restrictions"
+    },
+    {
+      "pattern": "^https://code\\.claude\\.com",
+      "comment": "Claude Code docs - May have dynamic content"
+    },
+    {
+      "pattern": "^https://plugins\\.claude\\.com",
+      "comment": "Plugin marketplace - May have access restrictions"
+    },
+    {
+      "pattern": "^https://medium\\.com",
+      "comment": "Medium posts - May have paywall or tracking restrictions"
+    },
+    {
+      "pattern": "^https://modelcontextprotocol\\.io",
+      "comment": "MCP docs - May have infrastructure limitations"
     }
   ],
   "replacementPatterns": [

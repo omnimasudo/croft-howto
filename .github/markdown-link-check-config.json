@@ -22,7 +22,7 @@
     },
     {
       "pattern": "^https://code\\.claude\\.com",
-      "comment": "Claude Code docs - May have dynamic content"
+      "comment": "Claude Code docs - May have dynamic content or routing issues"
     },
     {
       "pattern": "^https://plugins\\.claude\\.com",
@@ -35,6 +35,26 @@
     {
       "pattern": "^https://modelcontextprotocol\\.io",
       "comment": "MCP docs - May have infrastructure limitations"
+    },
+    {
+      "pattern": "^https://discord\\.gg",
+      "comment": "Discord invite links - May expire or have access issues"
+    },
+    {
+      "pattern": "^https://bsky\\.app",
+      "comment": "BlueSky links - May require authentication"
+    },
+    {
+      "pattern": "^https://api\\.star-history\\.com",
+      "comment": "External badge service - May have rate limiting"
+    },
+    {
+      "pattern": "^https://jazz\\.tools",
+      "comment": "External tool links - May have dynamic routing"
+    },
+    {
+      "pattern": "^https://mcp\\.notion\\.com",
+      "comment": "Notion-hosted docs - May require authentication"
     }
   ],
   "replacementPatterns": [

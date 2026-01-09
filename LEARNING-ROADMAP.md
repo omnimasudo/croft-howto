@@ -32,6 +32,9 @@ graph TD
     H --> I[9. Advanced Features<br/>Power User Tools]
     I --> J[10. CLI Reference<br/>Command Mastery]
 
+    K[Optional Path:<br/>Learn CLI Anytime]
+    K -.-> J
+
     style A fill:#90EE90
     style B fill:#87CEEB
     style C fill:#87CEEB
@@ -42,6 +45,7 @@ graph TD
     style H fill:#FF6347
     style I fill:#8B0000,color:#fff
     style J fill:#87CEEB
+    style K fill:#E6E6FA,stroke:#9370DB,stroke-width:2px
 ```
 
 **Color Legend:**
@@ -51,6 +55,7 @@ graph TD
 - 🟠 Orange: Intermediate-Advanced - Specialized
 - 🔴 Red: Advanced - Power user features
 - 🔴 Dark Red: Most Advanced - Expert territory
+- 💜 Purple (Dotted): Optional - Can learn anytime
 
 ---
 
@@ -67,9 +72,11 @@ graph TD
 | **7** | [Plugins](07-plugins/) | ⭐⭐⭐⭐ Advanced | 2 hours | All previous | Complete solutions | Team onboarding, distribution |
 | **8** | [Checkpoints](08-checkpoints/) | ⭐⭐ Intermediate | 45 min | Session management | Safe exploration | Experimentation, recovery |
 | **9** | [Advanced Features](09-advanced-features/) | ⭐⭐⭐⭐⭐ Advanced | 2-3 hours | All previous | Power user tools | Planning, headless, permissions |
-| **10** | [CLI Reference](10-cli/) | ⭐⭐ Beginner+ | 1 hour | None | CLI mastery | Scripting, CI/CD, automation |
+| **10** | [CLI Reference](10-cli/) | ⭐⭐ Beginner+ | 1 hour | Recommended: All | Master command-line usage | Scripting, CI/CD, automation, batch processing |
 
 **Total Learning Time**: ~11-13 hours (spread across 4-5 weeks recommended)
+
+**Note on CLI Reference (Lesson 10)**: While numbered as lesson 10, the CLI Reference can be learned anytime! It covers command-line usage which is independent of other features. Many learners find it useful to learn early for scripting, while others prefer to master the UI features first and then learn CLI for advanced automation.
 
 ---
 
@@ -271,46 +278,59 @@ Complete this end-to-end workflow:
 
 ---
 
-### Milestone 5: CLI Mastery (Anytime)
+### Milestone 5: CLI Mastery (Learn Anytime!)
 
 **Topics**: CLI Reference
 **Time**: 1 hour
 **Complexity**: ⭐⭐ Beginner+
 **Goal**: Master command-line usage for scripting and automation
 
+**When to Learn**: This can be learned anytime - either early for scripting needs, or later as part of your power user journey. CLI is independent of other features!
+
 #### What You'll Achieve
 ✅ Understand all CLI commands and flags
-✅ Use print mode for scripting
+✅ Use print mode for non-interactive scripting
 ✅ Integrate Claude Code into CI/CD pipelines
 ✅ Process files and logs via piping
 ✅ Configure custom agents via CLI
+✅ Automate batch processing tasks
+✅ Master session management and resumption
 
 #### Hands-on Exercises
 
 ```bash
 # Exercise 1: Interactive vs Print mode
-claude "explain this project"           # Interactive
-claude -p "explain this function"       # Print mode
+claude "explain this project"           # Interactive mode
+claude -p "explain this function"       # Print mode (non-interactive)
 
-# Exercise 2: Process file content
+# Exercise 2: Process file content via piping
 cat error.log | claude -p "explain this error"
+cat schema.sql | claude -p "suggest optimizations"
 
-# Exercise 3: JSON output for scripts
+# Exercise 3: JSON output for scripts (great for CI/CD)
 claude -p --output-format json "list all functions"
 
-# Exercise 4: Session management
+# Exercise 4: Session management and resumption
 claude -r "feature-auth" "continue implementation"
+claude -r "code-review" "finalize suggestions"
 
-# Exercise 5: CI/CD integration
+# Exercise 5: CI/CD integration with constraints
 claude -p --max-turns 3 --output-format json "review code"
+
+# Exercise 6: Batch processing
+for file in *.md; do
+  claude -p --output-format json "summarize this: $(cat $file)" > ${file%.md}.summary.json
+done
 ```
 
 #### Success Criteria
 - [ ] Used print mode for non-interactive queries
 - [ ] Piped file content to Claude for analysis
 - [ ] Generated JSON output for scripting
-- [ ] Resumed a previous session
+- [ ] Resumed a previous session successfully
 - [ ] Understood permission and tool flags
+- [ ] Created a simple shell script using Claude CLI
+- [ ] Integrated Claude into a CI/CD workflow
 
 #### CLI Integration Exercise
 Create a simple CI/CD script:
@@ -319,9 +339,19 @@ Create a simple CI/CD script:
 3. Process with `jq` for specific issues
 4. Integrate into GitHub Actions workflow
 
+#### Real-World Use Cases for CLI
+- **Code Review Automation**: Run code reviews in CI/CD pipelines
+- **Log Analysis**: Analyze error logs and system outputs
+- **Documentation Generation**: Batch generate documentation
+- **Testing Insights**: Analyze test failures
+- **Performance Analysis**: Review performance metrics
+- **Data Processing**: Transform and analyze data files
+
 #### Next Steps
 - Create shell aliases for common commands
 - Set up batch processing scripts
+- Integrate with your existing CI/CD pipeline
+- Create team-wide CLI shortcuts
 - Read: [10-cli/README.md](10-cli/README.md)
 
 ---
@@ -361,13 +391,15 @@ Create a simple CI/CD script:
 **Saturday Afternoon** (3 hours):
 - Complete Milestone 3: Subagents + MCP
 - Install and explore plugins
+- *Optional*: Learn CLI basics for scripting
 
 **Sunday** (4 hours):
 - Complete Milestone 4: Checkpoints + Advanced Features
 - Build a custom plugin for your team
-- Set up complete CI/CD workflow
+- Set up complete CI/CD workflow with CLI
+- Advanced CLI integration for CI/CD pipelines
 
-**Outcome**: You'll be a Claude Code power user ready to train others
+**Outcome**: You'll be a Claude Code power user ready to train others and automate complex workflows
 
 ---
 
@@ -454,12 +486,19 @@ Use this checklist to track your progress:
 ### Week 5+: Mastery
 - [ ] Completed 08-checkpoints
 - [ ] Completed 09-advanced-features
-- [ ] Completed 10-cli
 - [ ] Used planning mode successfully
 - [ ] Set up headless CI/CD
 - [ ] Created team plugin
-- [ ] Used CLI for scripting and automation
-- [ ] Milestone 4 & 5 achieved
+- [ ] Milestone 4 achieved
+
+### Optional: CLI Mastery (Learn Anytime)
+- [ ] Completed 10-cli reference
+- [ ] Used CLI print mode for scripting
+- [ ] Piped files to Claude for analysis
+- [ ] Created JSON output for automation
+- [ ] Integrated Claude into CI/CD pipeline
+- [ ] Used session resumption for workflows
+- [ ] Milestone 5 achieved
 
 ---
 

@@ -3,7 +3,7 @@ name = "claude-howto"
 version = "1.0.0"
 description = "Claude Code How-To Guide with EPUB builder"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
 requires-python = ">=3.10"
 dependencies = [
     "ebooklib",
@@ -31,6 +31,11 @@ addopts = "-v"
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["scripts"]
+include = ["build_epub"]
+exclude = ["tests", "tests.*"]
 
 # =============================================================================
 # Ruff Configuration

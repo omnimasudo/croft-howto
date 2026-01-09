@@ -316,11 +316,16 @@ Contributors are recognized in:
 
 ## Code of Conduct
 
-Be respectful and inclusive:
+We are committed to providing a welcoming and inclusive community. Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for our full community standards.
+
+In brief:
+- Be respectful and inclusive
 - Welcome feedback gracefully
 - Help others learn and grow
 - Avoid harassment or discrimination
 - Report issues to maintainers
+
+All contributors are expected to uphold this code and treat each other with kindness and respect.
 
 ## License
 

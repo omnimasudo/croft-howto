@@ -766,7 +766,9 @@ Found an issue or want to contribute an example? We'd love your help!
 - Directory structure and how to add content
 - Writing guidelines and best practices
 - Commit and PR process
-- Code of conduct
+
+**Our Community Standards:**
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) - How we treat each other
 
 Quick start:
 1. Fork and clone the repository

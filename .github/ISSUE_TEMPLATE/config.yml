@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Claude Code Documentation
+    url: https://docs.anthropic.com/en/docs/claude-code
+    about: Official Claude Code documentation
+  - name: Discussions
+    url: https://github.com/luongnv89/claude-howto/discussions
+    about: Ask questions and share ideas with the community
+  - name: Claude Code Examples
+    url: https://github.com/anthropic/claude-examples
+    about: Official Claude Code examples from Anthropic

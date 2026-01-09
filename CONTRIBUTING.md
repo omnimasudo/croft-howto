@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="resources/logos/claude-howto-logo-dark.svg">
+  <img alt="Claude How To" src="resources/logos/claude-howto-logo.svg">
+</picture>
+
 # Contributing to Claude How To
 
 Thank you for your interest in contributing to this project! This guide will help you understand how to contribute effectively.

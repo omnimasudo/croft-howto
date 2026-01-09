@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981"/>
+      <stop offset="100%" style="stop-color:#059669"/>
+    </linearGradient>
+    <linearGradient id="mintGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6ee7b7"/>
+      <stop offset="100%" style="stop-color:#34d399"/>
+    </linearGradient>
+    <linearGradient id="bgDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1f0d"/>
+      <stop offset="100%" style="stop-color:#051515"/>
+    </linearGradient>
+    <filter id="glowDark">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-color="#10b981" flood-opacity="0.5"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Dark background -->
+  <circle cx="128" cy="128" r="128" fill="url(#bgDark)"/>
+
+  <!-- Icon: Rounded starburst dark mode -->
+  <g transform="translate(128, 128)">
+    <!-- Central core with glow -->
+    <circle cx="0" cy="0" r="28" fill="#10b981" filter="url(#glowDark)"/>
+    <circle cx="0" cy="0" r="20" fill="url(#mintGrad)"/>
+
+    <!-- 12 rays -->
+    <!-- Ray 1 (top) -->
+    <path d="M 0,-30 Q -10,-64 0,-96 Q 10,-64 0,-30" fill="url(#emeraldGrad)" opacity="1" filter="url(#glowDark)"/>
+
+    <!-- Ray 2 (30°) -->
+    <path d="M 26,-16 Q 36,-44 56,-70 Q 46,-40 26,-16" fill="url(#emeraldGrad)" opacity="0.95"/>
+
+    <!-- Ray 3 (60°) -->
+    <path d="M 44,14 Q 60,30 84,56 Q 56,36 44,14" fill="url(#emeraldGrad)" opacity="1" filter="url(#glowDark)"/>
+
+    <!-- Ray 4 (90°, right) -->
+    <path d="M 30,0 Q 64,-10 96,0 Q 64,10 30,0" fill="url(#emeraldGrad)" opacity="0.98"/>
+
+    <!-- Ray 5 (120°) -->
+    <path d="M 44,-14 Q 60,-30 84,-56 Q 56,-36 44,-14" fill="url(#emeraldGrad)" opacity="0.95"/>
+
+    <!-- Ray 6 (150°) -->
+    <path d="M 26,16 Q 36,44 56,70 Q 46,40 26,16" fill="url(#emeraldGrad)" opacity="1" filter="url(#glowDark)"/>
+
+    <!-- Ray 7 (180°, left) -->
+    <path d="M 0,30 Q -10,64 0,96 Q 10,64 0,30" fill="url(#emeraldGrad)" opacity="0.98"/>
+
+    <!-- Ray 8 (210°) -->
+    <path d="M -26,16 Q -36,44 -56,70 Q -46,40 -26,16" fill="url(#emeraldGrad)" opacity="0.95"/>
+
+    <!-- Ray 9 (240°) -->
+    <path d="M -44,-14 Q -60,-30 -84,-56 Q -56,-36 -44,-14" fill="url(#emeraldGrad)" opacity="1" filter="url(#glowDark)"/>
+
+    <!-- Ray 10 (270°) -->
+    <path d="M -30,0 Q -64,-10 -96,0 Q -64,10 -30,0" fill="url(#emeraldGrad)" opacity="0.98"/>
+
+    <!-- Ray 11 (300°) -->
+    <path d="M -44,14 Q -60,30 -84,56 Q -56,36 -44,14" fill="url(#emeraldGrad)" opacity="0.95"/>
+
+    <!-- Ray 12 (330°) -->
+    <path d="M -26,-16 Q -36,-44 -56,-70 Q -46,-40 -26,-16" fill="url(#emeraldGrad)" opacity="1" filter="url(#glowDark)"/>
+
+    <!-- Inner detail lines -->
+    <g opacity="0.8">
+      <rect x="-7" y="-6" width="14" height="2.4" fill="#0d1f0d" rx="1.2"/>
+      <rect x="-7" y="-0.4" width="14" height="2.4" fill="#0d1f0d" rx="1.2"/>
+      <rect x="-7" y="5.2" width="14" height="2.4" fill="#0d1f0d" rx="1.2"/>
+    </g>
+  </g>
+</svg>

@@ -55,7 +55,7 @@ jobs:
           uv pip install "bandit[toml]"
 
       - name: Run Bandit Security Scan
-        run: uv run bandit -c pyproject.toml -r scripts/ --exclude scripts/tests/
+        run: uv run bandit -c scripts/pyproject.toml -r scripts/ --exclude scripts/tests/
 
   test:
     name: Unit Tests (Python ${{ matrix.python-version }})

@@ -204,7 +204,8 @@
     "idempotent",
     "interoperable",
     "composable",
-    "extensible"
+    "extensible",
+    "srcset"
   ],
   "ignoreWords": [
     "luongnv89",

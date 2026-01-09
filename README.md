@@ -51,18 +51,9 @@ This project complements [Anthropic's official documentation](https://docs.anthr
 - [Additional Resources](#additional-resources)
 - [Contributing](#contributing)
 - [EPUB Generation](#epub-generation)
+- [Contributors](#contributors)
 
 ---
-
-## Contributors
-
-Thanks to everyone who has contributed to this project!
-
-| Contributor | PRs |
-|-------------|-----|
-| [wjhrdy](https://github.com/wjhrdy) | [#1 - add a tool to create an epub](https://github.com/luongnv89/claude-howto/pull/1) |
-
-Complete collection of examples for some important Claude Code features and concepts.
 
 ## Quick Navigation
 
@@ -793,6 +784,16 @@ uv run scripts/build_epub.py
 This creates `claude-howto-guide.epub` with all content, including rendered Mermaid diagrams.
 
 See [scripts/README.md](scripts/README.md) for more options.
+
+---
+
+## Contributors
+
+Thanks to everyone who has contributed to this project!
+
+| Contributor | PRs |
+|-------------|-----|
+| [wjhrdy](https://github.com/wjhrdy) | [#1 - add a tool to create an epub](https://github.com/luongnv89/claude-howto/pull/1) |
 
 ---
 

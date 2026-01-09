@@ -827,6 +827,17 @@ Found an issue or want to contribute an example? We'd love your help!
 
 **Our Community Standards:**
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) - How we treat each other
+- [SECURITY.md](SECURITY.md) - Security policy and vulnerability reporting
+
+### Reporting Security Issues
+
+If you discover a security vulnerability, please report it responsibly:
+
+1. **Use GitHub Private Vulnerability Reporting**: https://github.com/luongnv89/claude-howto/security/advisories
+2. **Or read** [.github/SECURITY_REPORTING.md](.github/SECURITY_REPORTING.md) for detailed instructions
+3. **Do NOT** open a public issue for security vulnerabilities
+
+Security issues are taken seriously and will be addressed promptly. See [SECURITY.md](SECURITY.md) for our full security policy.
 
 Quick start:
 1. Fork and clone the repository

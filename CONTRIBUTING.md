@@ -314,6 +314,18 @@ Contributors are recognized in:
 - GitHub contributors page
 - Commit history
 
+## Security
+
+When contributing examples and documentation, please follow secure coding practices:
+
+- **Never hardcode secrets or API keys** - Use environment variables
+- **Warn about security implications** - Highlight potential risks
+- **Use secure defaults** - Enable security features by default
+- **Validate inputs** - Show proper input validation and sanitization
+- **Include security notes** - Document security considerations
+
+For security issues, see [SECURITY.md](../SECURITY.md) for our vulnerability reporting process.
+
 ## Code of Conduct
 
 We are committed to providing a welcoming and inclusive community. Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for our full community standards.

@@ -48,6 +48,7 @@ This project complements [Anthropic's official documentation](https://docs.anthr
 - [Example Workflows](#example-workflows)
 - [Best Practices](#best-practices)
 - [Troubleshooting](#troubleshooting)
+- [Testing](#testing)
 - [Additional Resources](#additional-resources)
 - [Contributing](#contributing)
 - [EPUB Generation](#epub-generation)
@@ -743,6 +744,63 @@ Claude:
 2. Verify agent description clarity
 3. Review task complexity
 6. Test agent independently
+
+---
+
+## Testing
+
+This project includes comprehensive automated testing to ensure code quality and reliability.
+
+### Testing Overview
+
+- **Unit Tests**: Python tests using pytest (Python 3.10, 3.11, 3.12)
+- **Code Quality**: Linting and formatting with Ruff
+- **Security**: Vulnerability scanning with Bandit
+- **Type Checking**: Static type analysis with mypy
+- **Build Verification**: EPUB generation testing
+- **Coverage Tracking**: Codecov integration
+
+### Running Tests Locally
+
+```bash
+# Install development dependencies
+uv pip install -r requirements-dev.txt
+
+# Run all unit tests
+pytest scripts/tests/ -v
+
+# Run tests with coverage report
+pytest scripts/tests/ -v --cov=scripts --cov-report=html
+
+# Run code quality checks
+ruff check scripts/
+ruff format --check scripts/
+
+# Run security scan
+bandit -c pyproject.toml -r scripts/ --exclude scripts/tests/
+
+# Run type checking
+mypy scripts/ --ignore-missing-imports
+```
+
+### Automated Testing on GitHub
+
+Tests run automatically on:
+- Every push to `main` or `develop` branches
+- Every pull request to `main`
+
+View test results in the GitHub Actions tab or check the [TESTING.md](.github/TESTING.md) guide for detailed information.
+
+### Writing Tests
+
+When contributing, please include tests for new functionality:
+
+1. **Write tests** in `scripts/tests/test_*.py`
+2. **Run tests locally** to verify they pass
+3. **Check coverage** with `pytest --cov=scripts`
+4. **Submit with PR** - tests are required for all contributions
+
+For detailed testing guidelines, see [TESTING.md](.github/TESTING.md).
 
 ---
 

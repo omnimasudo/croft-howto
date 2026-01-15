@@ -6,12 +6,16 @@ on:
     paths:
       - '**.md'
       - '.github/workflows/docs-check.yml'
+      - '.cspell.json'
+      - '.github/markdown-link-check-config.json'
   pull_request:
     branches: [main]
     paths:
       - '**.md'
       - 'CONTRIBUTING.md'
       - 'LICENSE'
+      - '.cspell.json'
+      - '.github/markdown-link-check-config.json'
 
 # Cancel in-progress runs for the same branch
 concurrency:

@@ -674,7 +674,7 @@ export GITHUB_TOKEN="your_token"
 ## Additional Resources
 
 - [Official MCP Documentation](https://code.claude.com/docs/en/mcp)
-- [MCP Protocol Specification](https://spec.modelcontextprotocol.io/)
+- [MCP Protocol Specification](https://modelcontextprotocol.io/specification)
 - [MCP GitHub Repository](https://github.com/modelcontextprotocol/servers)
 - [Available MCP Servers](https://github.com/modelcontextprotocol/servers)
 - [Claude Code CLI Reference](https://code.claude.com/docs/en/cli-reference)

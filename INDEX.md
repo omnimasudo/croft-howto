@@ -366,7 +366,7 @@ Advanced capabilities for complex workflows.
 | `README.md` | `/04-mcp/` | MCP guide |
 | `README.md` | `/05-skills/` | Skills guide |
 | `README.md` | `/06-plugins/` | Plugins guide |
-| `README.md` | `/07-hooks/` | Hooks guide |
+| `README.md` | `/06-hooks/` | Hooks guide |
 | `README.md` | `/08-checkpoints/` | Checkpoints guide |
 | `README.md` | `/09-advanced-features/` | Advanced features guide |
 | `QUICK_REFERENCE.md` | `/` | Quick reference card |
@@ -486,7 +486,7 @@ claude-howto/
 │   │   └── README.md
 │   └── README.md
 │
-├── 07-hooks/                                    # Hooks
+├── 06-hooks/                                    # Hooks
 │   ├── format-code.sh
 │   ├── pre-commit.sh
 │   ├── security-scan.sh
@@ -567,11 +567,11 @@ cp 04-mcp/multi-mcp.json .claude/mcp.json
 ```bash
 # Install hooks
 mkdir -p ~/.claude/hooks
-cp 07-hooks/*.sh ~/.claude/hooks/
+cp 06-hooks/*.sh ~/.claude/hooks/
 chmod +x ~/.claude/hooks/*.sh
 
 # Configure hooks in settings
-# See 07-hooks/README.md
+# See 06-hooks/README.md
 ```
 
 ### Safe Experimentation
@@ -680,14 +680,14 @@ Run tests in background
 - `06-plugins/devops-automation/` - Complete DevOps solution
 
 ### Automation
-- `07-hooks/` - Event-driven automation
-- `07-hooks/pre-commit.sh` - Pre-commit automation
-- `07-hooks/format-code.sh` - Auto-formatting
+- `06-hooks/` - Event-driven automation
+- `06-hooks/pre-commit.sh` - Pre-commit automation
+- `06-hooks/format-code.sh` - Auto-formatting
 - `09-advanced-features/` - Headless mode for CI/CD
 
 ### Validation
-- `07-hooks/security-scan.sh` - Security validation
-- `07-hooks/validate-prompt.sh` - Prompt validation
+- `06-hooks/security-scan.sh` - Security validation
+- `06-hooks/validate-prompt.sh` - Prompt validation
 
 ### Experimentation
 - `08-checkpoints/` - Safe experimentation with rewind

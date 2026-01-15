@@ -2819,7 +2819,7 @@ UserPromptSubmit: "~/.claude/hooks/validate-prompt.sh"
 - Use hooks for long-running tasks
 - Hardcode credentials
 
-**See**: [07-hooks/](07-hooks/) for detailed examples
+**See**: [06-hooks/](06-hooks/) for detailed examples
 
 ---
 
@@ -3033,7 +3033,7 @@ Complete configuration example:
 
 - [Claude Documentation](https://docs.claude.com)
 - [MCP GitHub Servers](https://github.com/modelcontextprotocol/servers)
-- [Skills Cookbook](https://github.com/anthropic-ai/skills)
+- [Anthropic Cookbook](https://github.com/anthropics/anthropic-cookbook)
 - [Claude Code Guide](https://docs.claude.com/en/docs/claude-code/overview)
 
 ---

@@ -548,7 +548,7 @@ Once you've completed all milestones:
 - [Discovering Claude Code Slash Commands](https://medium.com/@luongnv89/discovering-claude-code-slash-commands-cdc17f0dfb29)
 
 ### Community
-- [Claude Code Examples](https://github.com/anthropic/claude-examples)
+- [Anthropic Cookbook](https://github.com/anthropics/anthropic-cookbook)
 - [MCP Servers Repository](https://github.com/modelcontextprotocol/servers)
 
 ---

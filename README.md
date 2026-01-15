@@ -92,7 +92,7 @@ This project complements [Anthropic's official documentation](https://docs.anthr
 | **Checkpoints** | Session snapshots & rewind | [08-checkpoints/](08-checkpoints/) |
 | **Advanced Features** | Planning, thinking, background tasks | [09-advanced-features/](09-advanced-features/) |
 | **CLI Reference** | Commands, flags, and options | [10-cli/](10-cli/) |
-| **Blog Posts** | Real-world usage examples | [blog-post/](blog-post/) |
+| **Blog Posts** | Real-world usage examples | [Blog Posts](https://medium.com/@luongnv89) |
 
 ---
 
@@ -830,7 +830,7 @@ For detailed testing guidelines, see [TESTING.md](.github/TESTING.md).
 - [Claude Code Documentation](https://docs.claude.com/en/docs/claude-code)
 - [MCP Protocol Specification](https://modelcontextprotocol.io)
 - [Plugin Marketplace](https://plugins.claude.com)
-- [Community Examples](https://github.com/anthropic/claude-examples)
+- [Anthropic Cookbook](https://github.com/anthropics/anthropic-cookbook)
 - [Boris Cherny's Claude Code Workflow](https://x.com/bcherny/status/2007179832300581177) - The creator of Claude Code shares his systematized workflow: parallel agents, shared CLAUDE.md, Plan mode, slash commands, subagents, and verification hooks for autonomous long-running sessions. Key insights include turning recurring workflows into reusable commands and wiring Claude into team tools (GitHub, Slack, BigQuery, Sentry) for end-to-end work with feedback loops.
 
 ---

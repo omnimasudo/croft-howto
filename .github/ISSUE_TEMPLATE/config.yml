@@ -6,6 +6,6 @@ contact_links:
   - name: Discussions
     url: https://github.com/luongnv89/claude-howto/discussions
     about: Ask questions and share ideas with the community
-  - name: Claude Code Examples
-    url: https://github.com/anthropic/claude-examples
-    about: Official Claude Code examples from Anthropic
+  - name: Anthropic Cookbook
+    url: https://github.com/anthropics/anthropic-cookbook
+    about: Official examples and guides from Anthropic

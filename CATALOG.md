@@ -7,7 +7,22 @@
 
 > Quick reference guide to all Claude Code features: commands, agents, skills, plugins, and hooks.
 
-**Navigation**: [Commands](#-slash-commands) | [Sub-Agents](#-sub-agents) | [Skills](#-skills) | [Plugins](#-plugins) | [MCP Servers](#-mcp-servers) | [Hooks](#-hooks)
+**Navigation**: [Commands](#slash-commands) | [Sub-Agents](#sub-agents) | [Skills](#skills) | [Plugins](#plugins) | [MCP Servers](#mcp-servers) | [Hooks](#hooks) | [Memory](#memory-files)
+
+---
+
+## Summary
+
+| Feature | Built-in | Examples | Total | Reference |
+|---------|----------|----------|-------|-----------|
+| **Slash Commands** | 30 | 8 | 38 | [01-slash-commands/](01-slash-commands/) |
+| **Sub-Agents** | 8 | 7 | 15 | [04-subagents/](04-subagents/) |
+| **Skills** | - | 4 | 4 | [03-skills/](03-skills/) |
+| **Plugins** | - | 3 | 3 | [07-plugins/](07-plugins/) |
+| **MCP Servers** | 1 | 8 | 9 | [05-mcp/](05-mcp/) |
+| **Hooks** | 9 events | 7 | 7 | [06-hooks/](06-hooks/) |
+| **Memory** | 3 types | 3 | 3 | [02-memory/](02-memory/) |
+| **Total** | **51** | **40** | **79** | |
 
 ---
 

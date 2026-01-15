@@ -925,22 +925,11 @@ For the most up-to-date information, refer to the official Claude Code documenta
 
 ## Related Concepts Links
 
-### Core Memory Concepts
-- [CLAUDE.md File Format Guide](./examples/)
-- [Memory Examples](./examples/)
-- [Memory Hierarchy](./examples/)
-
 ### Integration Points
 - [MCP Protocol](../05-mcp/) - Live data access alongside memory
 - [Slash Commands](../01-slash-commands/) - Session-specific shortcuts
 - [Skills](../03-skills/) - Automated workflows with memory context
 
-### Best Practices
-- [Code Organization](./examples/)
-- [Team Collaboration](./examples/)
-- [Documentation Strategy](./examples/)
-
 ### Related Claude Features
 - [Claude Web Memory](https://claude.ai) - Automatic synthesis
-- [File Imports](./examples/) - Reference external documentation
-- [File Context](../01-context-window/) - Current session context
+- [Official Memory Docs](https://docs.anthropic.com/en/docs/claude-code/memory) - Anthropic documentation

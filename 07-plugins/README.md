@@ -607,6 +607,6 @@ The following Claude Code features work together with plugins:
 - [Discover Plugins](https://code.claude.com/docs/en/discover-plugins)
 - [Plugin Marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)
 - [Plugins Reference](https://code.claude.com/docs/en/plugins-reference)
-- [MCP Server Reference](https://spec.modelcontextprotocol.io/)
+- [MCP Server Reference](https://modelcontextprotocol.io/)
 - [Subagent Configuration Guide](../04-subagents/README.md)
 - [Hook System Reference](../06-hooks/README.md)

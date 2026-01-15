@@ -329,7 +329,7 @@ When contributing examples and documentation, please follow secure coding practi
 - **Validate inputs** - Show proper input validation and sanitization
 - **Include security notes** - Document security considerations
 
-For security issues, see [SECURITY.md](../SECURITY.md) for our vulnerability reporting process.
+For security issues, see [SECURITY.md](SECURITY.md) for our vulnerability reporting process.
 
 ## Code of Conduct
 

@@ -33,7 +33,7 @@ If applicable, provide an example of what you envision:
 
 ## Related Examples
 Link any existing related examples or guides:
-- [Existing Guide](link)
+- Existing Guide: <!-- Add link here -->
 - Feature: (e.g., Skills, Hooks, Subagents)
 
 ## Additional Context

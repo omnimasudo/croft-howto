@@ -1,6 +1,22 @@
 {
   "ignorePatterns": [
     {
+      "pattern": "^https://docs\\.example\\.com",
+      "comment": "Example placeholder URLs in documentation templates"
+    },
+    {
+      "pattern": "^\\./docs/",
+      "comment": "Example relative paths in documentation templates"
+    },
+    {
+      "pattern": "^FORMS\\.md$|^REFERENCE\\.md$",
+      "comment": "Example file references in skill templates"
+    },
+    {
+      "pattern": "^https://en\\.wikipedia\\.org/wiki/N%2B1",
+      "comment": "Wikipedia N+1 article - URL encoding issues"
+    },
+    {
       "pattern": "^https://twitter.com",
       "comment": "Twitter/X links require authentication"
     },

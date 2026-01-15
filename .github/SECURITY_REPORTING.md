@@ -301,7 +301,7 @@ A: Check GitHub security advisories page. If you still don't see a response, you
 - [SECURITY.md](../SECURITY.md) - Full security policy
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - Contributing guidelines
 - [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) - Community standards
-- [OWASP Guide](https://owasp.org/www-project-responsible-disclosure/) - Responsible disclosure best practices
+- [OWASP Vulnerability Disclosure](https://cheatsheetseries.owasp.org/cheatsheets/Vulnerability_Disclosure_Cheat_Sheet.html) - Responsible disclosure best practices
 - [Coordinated Vulnerability Disclosure](https://cheatsheetseries.owasp.org/cheatsheets/Vulnerable_Dependency_Management_Cheat_Sheet.html)
 
 ---

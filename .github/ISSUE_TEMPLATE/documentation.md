@@ -41,4 +41,4 @@ How does this issue impact users?
 
 ## Related Documentation
 Links to related sections:
-- [Related Guide](link)
+- Related Guide: <!-- Add link here -->

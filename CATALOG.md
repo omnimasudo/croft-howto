@@ -115,6 +115,7 @@ Auto-invoked capabilities with instructions, scripts, and templates.
 | `code-review` | Comprehensive code review | "Review this code", "Check quality" | `cp -r 03-skills/code-review ~/.claude/skills/` |
 | `brand-voice` | Brand consistency checker | Writing marketing copy | `cp -r 03-skills/brand-voice ~/.claude/skills/` |
 | `doc-generator` | API documentation generator | "Generate docs", "Document API" | `cp -r 03-skills/doc-generator ~/.claude/skills/` |
+| `refactor` | Systematic code refactoring (Martin Fowler methodology) | "Refactor this", "Clean up code", "Reduce technical debt" | `cp -r 03-skills/refactor ~/.claude/skills/` |
 
 ### Skill Structure
 

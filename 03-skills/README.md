@@ -1052,6 +1052,71 @@ pip install pypdf pdfplumber
 
 **Important**: Claude reads additional files only when needed, using progressive disclosure to manage context efficiently. Reference files with relative links in your SKILL.md.
 
+### Example 5: Code Refactoring Skill
+
+A systematic refactoring skill based on Martin Fowler's methodology.
+
+**Directory Structure:**
+
+```
+refactor/
+├── SKILL.md                          # Main instructions & workflow
+├── references/
+│   ├── code-smells.md                # Code smell catalog
+│   └── refactoring-catalog.md        # Refactoring techniques
+├── templates/
+│   └── refactoring-plan.md           # Planning template
+└── scripts/
+    ├── analyze-complexity.py         # Complexity metrics
+    └── detect-smells.py              # Automated smell detection
+```
+
+**File:** `refactor/SKILL.md`
+
+```yaml
+---
+name: code-refactor
+description: Systematic code refactoring based on Martin Fowler's methodology. Use when users ask to refactor code, improve code structure, reduce technical debt, clean up legacy code, eliminate code smells, or improve code maintainability.
+---
+
+# Code Refactoring Skill
+
+A phased approach emphasizing safe, incremental changes backed by tests.
+
+## Workflow
+
+Phase 1: Research & Analysis → Phase 2: Test Coverage Assessment →
+Phase 3: Code Smell Identification → Phase 4: Refactoring Plan Creation →
+Phase 5: Incremental Implementation → Phase 6: Review & Iteration
+
+## Core Principles
+
+1. **Behavior Preservation**: External behavior must remain unchanged
+2. **Small Steps**: Make tiny, testable changes
+3. **Test-Driven**: Tests are the safety net
+4. **Continuous**: Refactoring is ongoing, not a one-time event
+5. **Collaborative**: User approval required at each phase
+```
+
+**Key Features:**
+- Phased approach with user approval checkpoints
+- Code smell catalog with severity assessment
+- Refactoring technique catalog mapped to smells
+- Automated complexity analysis scripts
+- Safe rollback strategies
+
+**Usage:**
+```
+User: "Refactor this UserService class - it's gotten too large"
+
+Claude: [Loads refactor skill]
+1. Analyzes UserService for code smells
+2. Identifies: Large Class, Long Methods, Feature Envy
+3. Creates phased refactoring plan
+4. Requests approval before each phase
+5. Implements incrementally with test verification
+```
+
 ## Skill Discovery & Invocation
 
 ```mermaid

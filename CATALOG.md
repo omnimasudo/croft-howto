@@ -2,7 +2,51 @@
 
 > Quick reference guide to all Claude Code features: commands, agents, skills, plugins, and hooks.
 
-**Navigation**: [Commands](#-slash-commands) | [Sub-Agents](#-sub-agents) | [Skills](#-skills) | [Plugins](#-plugins) | [MCP Servers](#-mcp-servers) | [Hooks](#-hooks)
+**Navigation**: [Commands](#-slash-commands) | [Sub-Agents](#-sub-agents) | [Skills](#-skills) | [Plugins](#-plugins) | [MCP Servers](#-mcp-servers) | [Hooks](#-hooks) | [Token Legend](#token-estimation-legend)
+
+---
+
+## Token Estimation Legend
+
+Each feature table includes **Tokens** and **Scope** columns to help you manage context budget and installation decisions.
+
+### Estimation Methodology
+
+| Factor | Description |
+|--------|-------------|
+| **Base Calculation** | ~1 token ≈ 4 characters of English text |
+| **Markdown Overhead** | YAML frontmatter, headers, formatting add ~10-15% |
+| **Reference Files** | Skills with multiple files (scripts, templates) include all loadable content |
+| **Dynamic Content** | MCP tools and hooks show config overhead only; actual tool calls add more |
+
+### Token Ranges by Feature Type
+
+| Feature Type | Typical Range | What's Included |
+|--------------|---------------|-----------------|
+| **Commands** | 300-800 | Markdown file content + YAML metadata |
+| **Sub-Agents** | 600-1000 | System prompt + tool definitions |
+| **Skills** | 1000-3000 | SKILL.md + referenced files (scripts, templates) |
+| **Plugins** | 4000-6000 | All bundled components combined |
+| **MCP Servers** | 50-200 | JSON config only (tool schemas loaded on-demand) |
+| **Hooks** | 20-50 | Hook config entry (scripts run externally) |
+| **Memory** | 200-2000 | Varies by content length (loaded every session) |
+
+### Scope Recommendations
+
+| Scope | Location | Best For |
+|-------|----------|----------|
+| **User** | `~/.claude/` | Personal preferences, individual workflows |
+| **Project** | `.claude/` or `./` | Team standards, shared configurations |
+| **Directory** | `./path/to/dir/` | Module-specific rules (memory only) |
+| **Built-in** | N/A | Pre-installed, no configuration needed |
+
+### Context Budget Tips
+
+- **Claude's context window**: ~200K tokens (model-dependent)
+- **Keep memory files concise**: Every token in CLAUDE.md is loaded every session
+- **Skills load on-demand**: Only when auto-invoked, not at startup
+- **Plugins are heavy**: Consider installing only what you actively use
+- **Use `/context`**: Check current usage anytime
 
 ---
 

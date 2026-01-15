@@ -46,16 +46,18 @@ Commands are user-invoked shortcuts that execute specific actions.
 
 ### Custom Commands (Examples)
 
-| Command | Description | When to Use | Installation |
-|---------|-------------|-------------|--------------|
-| `/optimize` | Analyze code for optimization | Performance improvement | `cp 01-slash-commands/optimize.md .claude/commands/` |
-| `/pr` | Prepare pull request | Before submitting PRs | `cp 01-slash-commands/pr.md .claude/commands/` |
-| `/generate-api-docs` | Generate API documentation | Document APIs | `cp 01-slash-commands/generate-api-docs.md .claude/commands/` |
-| `/commit` | Create git commit with context | Commit changes | `cp 01-slash-commands/commit.md .claude/commands/` |
-| `/push-all` | Stage, commit, and push | Quick deployment | `cp 01-slash-commands/push-all.md .claude/commands/` |
-| `/doc-refactor` | Restructure documentation | Improve docs | `cp 01-slash-commands/doc-refactor.md .claude/commands/` |
-| `/setup-ci-cd` | Setup CI/CD pipeline | New projects | `cp 01-slash-commands/setup-ci-cd.md .claude/commands/` |
-| `/unit-test-expand` | Expand test coverage | Improve testing | `cp 01-slash-commands/unit-test-expand.md .claude/commands/` |
+| Command | Description | When to Use | Tokens | Scope | Installation |
+|---------|-------------|-------------|--------|-------|--------------|
+| `/optimize` | Analyze code for optimization | Performance improvement | ~500 | Project | `cp 01-slash-commands/optimize.md .claude/commands/` |
+| `/pr` | Prepare pull request | Before submitting PRs | ~400 | Project | `cp 01-slash-commands/pr.md .claude/commands/` |
+| `/generate-api-docs` | Generate API documentation | Document APIs | ~600 | Project | `cp 01-slash-commands/generate-api-docs.md .claude/commands/` |
+| `/commit` | Create git commit with context | Commit changes | ~300 | User | `cp 01-slash-commands/commit.md .claude/commands/` |
+| `/push-all` | Stage, commit, and push | Quick deployment | ~400 | User | `cp 01-slash-commands/push-all.md .claude/commands/` |
+| `/doc-refactor` | Restructure documentation | Improve docs | ~500 | Project | `cp 01-slash-commands/doc-refactor.md .claude/commands/` |
+| `/setup-ci-cd` | Setup CI/CD pipeline | New projects | ~800 | Project | `cp 01-slash-commands/setup-ci-cd.md .claude/commands/` |
+| `/unit-test-expand` | Expand test coverage | Improve testing | ~600 | Project | `cp 01-slash-commands/unit-test-expand.md .claude/commands/` |
+
+> **Tokens**: Estimated context consumed when command is loaded. **Scope**: `User` = personal workflows (`~/.claude/`), `Project` = team-shared (`.claude/`)
 
 **Reference**: [01-slash-commands/](01-slash-commands/) | [Official Docs](https://docs.anthropic.com/en/docs/claude-code/slash-commands)
 
@@ -85,15 +87,17 @@ Specialized AI assistants with isolated contexts for specific tasks.
 
 ### Custom Sub-Agents (Examples)
 
-| Agent | Description | When to Use | Installation |
-|-------|-------------|-------------|--------------|
-| `code-reviewer` | Comprehensive code quality | Code review sessions | `cp 04-subagents/code-reviewer.md .claude/agents/` |
-| `test-engineer` | Test strategy & coverage | Test planning | `cp 04-subagents/test-engineer.md .claude/agents/` |
-| `documentation-writer` | Technical documentation | API docs, guides | `cp 04-subagents/documentation-writer.md .claude/agents/` |
-| `secure-reviewer` | Security-focused review | Security audits | `cp 04-subagents/secure-reviewer.md .claude/agents/` |
-| `implementation-agent` | Full feature implementation | Feature development | `cp 04-subagents/implementation-agent.md .claude/agents/` |
-| `debugger` | Root cause analysis | Bug investigation | `cp 04-subagents/debugger.md .claude/agents/` |
-| `data-scientist` | SQL queries, data analysis | Data tasks | `cp 04-subagents/data-scientist.md .claude/agents/` |
+| Agent | Description | When to Use | Tokens | Scope | Installation |
+|-------|-------------|-------------|--------|-------|--------------|
+| `code-reviewer` | Comprehensive code quality | Code review sessions | ~800 | Project | `cp 04-subagents/code-reviewer.md .claude/agents/` |
+| `test-engineer` | Test strategy & coverage | Test planning | ~700 | Project | `cp 04-subagents/test-engineer.md .claude/agents/` |
+| `documentation-writer` | Technical documentation | API docs, guides | ~600 | Project | `cp 04-subagents/documentation-writer.md .claude/agents/` |
+| `secure-reviewer` | Security-focused review | Security audits | ~900 | Project | `cp 04-subagents/secure-reviewer.md .claude/agents/` |
+| `implementation-agent` | Full feature implementation | Feature development | ~1000 | Project | `cp 04-subagents/implementation-agent.md .claude/agents/` |
+| `debugger` | Root cause analysis | Bug investigation | ~700 | User | `cp 04-subagents/debugger.md .claude/agents/` |
+| `data-scientist` | SQL queries, data analysis | Data tasks | ~600 | User | `cp 04-subagents/data-scientist.md .claude/agents/` |
+
+> **Tokens**: Estimated context consumed when agent is invoked. **Scope**: `User` = personal (`~/.claude/agents/`), `Project` = team-shared (`.claude/agents/`)
 
 **Reference**: [04-subagents/](04-subagents/) | [Official Docs](https://docs.anthropic.com/en/docs/claude-code/sub-agents)
 
@@ -110,12 +114,14 @@ Auto-invoked capabilities with instructions, scripts, and templates.
 
 ### Example Skills
 
-| Skill | Description | When Auto-Invoked | Installation |
-|-------|-------------|-------------------|--------------|
-| `code-review` | Comprehensive code review | "Review this code", "Check quality" | `cp -r 03-skills/code-review ~/.claude/skills/` |
-| `brand-voice` | Brand consistency checker | Writing marketing copy | `cp -r 03-skills/brand-voice ~/.claude/skills/` |
-| `doc-generator` | API documentation generator | "Generate docs", "Document API" | `cp -r 03-skills/doc-generator ~/.claude/skills/` |
-| `refactor` | Systematic code refactoring (Martin Fowler methodology) | "Refactor this", "Clean up code", "Reduce technical debt" | `cp -r 03-skills/refactor ~/.claude/skills/` |
+| Skill | Description | When Auto-Invoked | Tokens | Scope | Installation |
+|-------|-------------|-------------------|--------|-------|--------------|
+| `code-review` | Comprehensive code review | "Review this code", "Check quality" | ~2000 | Project | `cp -r 03-skills/code-review .claude/skills/` |
+| `brand-voice` | Brand consistency checker | Writing marketing copy | ~1200 | Project | `cp -r 03-skills/brand-voice .claude/skills/` |
+| `doc-generator` | API documentation generator | "Generate docs", "Document API" | ~1500 | Project | `cp -r 03-skills/doc-generator .claude/skills/` |
+| `refactor` | Systematic code refactoring (Martin Fowler) | "Refactor this", "Clean up code" | ~3000 | User | `cp -r 03-skills/refactor ~/.claude/skills/` |
+
+> **Tokens**: Estimated context when skill + references loaded. **Scope**: `User` = personal (`~/.claude/skills/`), `Project` = team-shared (`.claude/skills/`)
 
 ### Skill Structure
 
@@ -141,11 +147,13 @@ Bundled collections of commands, agents, MCP servers, and hooks.
 
 ### Example Plugins
 
-| Plugin | Description | Components | When to Use | Installation |
-|--------|-------------|------------|-------------|--------------|
-| `pr-review` | PR review workflow | 3 commands, 3 agents, GitHub MCP | Code reviews | `/plugin install pr-review` |
-| `devops-automation` | Deployment & monitoring | 4 commands, 3 agents, K8s MCP | DevOps tasks | `/plugin install devops-automation` |
-| `documentation` | Doc generation suite | 4 commands, 3 agents, templates | Documentation | `/plugin install documentation` |
+| Plugin | Description | Components | When to Use | Tokens | Scope | Installation |
+|--------|-------------|------------|-------------|--------|-------|--------------|
+| `pr-review` | PR review workflow | 3 commands, 3 agents, GitHub MCP | Code reviews | ~5000 | Project | `/plugin install pr-review` |
+| `devops-automation` | Deployment & monitoring | 4 commands, 3 agents, K8s MCP | DevOps tasks | ~6000 | Project | `/plugin install devops-automation` |
+| `documentation` | Doc generation suite | 4 commands, 3 agents, templates | Documentation | ~4000 | Project | `/plugin install documentation` |
+
+> **Tokens**: Total context when all plugin components loaded. **Scope**: `Project` = team-shared, `User` = personal workflows
 
 ### Plugin Structure
 
@@ -178,17 +186,19 @@ Model Context Protocol servers for external tool and API access.
 
 ### Common MCP Servers
 
-| Server | Description | When to Use | Installation |
-|--------|-------------|-------------|--------------|
-| **GitHub** | PR management, issues, code | GitHub workflows | `cp 05-mcp/github-mcp.json .claude/mcp.json` |
-| **Database** | SQL queries, data access | Database operations | `cp 05-mcp/database-mcp.json .claude/mcp.json` |
-| **Filesystem** | Advanced file operations | Complex file tasks | `cp 05-mcp/filesystem-mcp.json .claude/mcp.json` |
-| **Slack** | Team communication | Notifications, updates | Configure in settings |
-| **Google Docs** | Document access | Doc editing, review | Configure in settings |
-| **Asana** | Project management | Task tracking | Configure in settings |
-| **Stripe** | Payment data | Financial analysis | Configure in settings |
-| **Memory** | Persistent memory | Cross-session recall | Configure in settings |
-| **Context7** | Library documentation | Up-to-date docs lookup | Built-in |
+| Server | Description | When to Use | Tokens | Scope | Installation |
+|--------|-------------|-------------|--------|-------|--------------|
+| **GitHub** | PR management, issues, code | GitHub workflows | ~200 | Project | `cp 05-mcp/github-mcp.json .claude/mcp.json` |
+| **Database** | SQL queries, data access | Database operations | ~150 | Project | `cp 05-mcp/database-mcp.json .claude/mcp.json` |
+| **Filesystem** | Advanced file operations | Complex file tasks | ~100 | User | `cp 05-mcp/filesystem-mcp.json .claude/mcp.json` |
+| **Slack** | Team communication | Notifications, updates | ~150 | Project | Configure in settings |
+| **Google Docs** | Document access | Doc editing, review | ~200 | Project | Configure in settings |
+| **Asana** | Project management | Task tracking | ~150 | Project | Configure in settings |
+| **Stripe** | Payment data | Financial analysis | ~200 | Project | Configure in settings |
+| **Memory** | Persistent memory | Cross-session recall | ~100 | User | Configure in settings |
+| **Context7** | Library documentation | Up-to-date docs lookup | ~50 | Built-in | Built-in |
+
+> **Tokens**: Config overhead (tool calls add more). **Scope**: `Project` = team (`.claude/mcp.json`), `User` = personal (`~/.claude/mcp.json`)
 
 ### MCP Configuration Example
 
@@ -235,15 +245,17 @@ Event-driven automation that executes shell commands on Claude Code events.
 
 ### Example Hooks
 
-| Hook | Description | Event | Installation |
-|------|-------------|-------|--------------|
-| `validate-bash.py` | Command validation | PreToolUse:Bash | `cp 06-hooks/validate-bash.py ~/.claude/hooks/` |
-| `security-scan.py` | Security scanning | PostToolUse:Write | `cp 06-hooks/security-scan.py ~/.claude/hooks/` |
-| `format-code.sh` | Auto-formatting | PostToolUse:Write | `cp 06-hooks/format-code.sh ~/.claude/hooks/` |
-| `validate-prompt.py` | Prompt validation | UserPromptSubmit | `cp 06-hooks/validate-prompt.py ~/.claude/hooks/` |
-| `context-tracker.py` | Token usage tracking | Stop | `cp 06-hooks/context-tracker.py ~/.claude/hooks/` |
-| `pre-commit.sh` | Pre-commit validation | PreToolUse:Bash | `cp 06-hooks/pre-commit.sh ~/.claude/hooks/` |
-| `log-bash.sh` | Command logging | PostToolUse:Bash | `cp 06-hooks/log-bash.sh ~/.claude/hooks/` |
+| Hook | Description | Event | Tokens | Scope | Installation |
+|------|-------------|-------|--------|-------|--------------|
+| `validate-bash.py` | Command validation | PreToolUse:Bash | ~50 | Project | `cp 06-hooks/validate-bash.py .claude/hooks/` |
+| `security-scan.py` | Security scanning | PostToolUse:Write | ~50 | Project | `cp 06-hooks/security-scan.py .claude/hooks/` |
+| `format-code.sh` | Auto-formatting | PostToolUse:Write | ~30 | User | `cp 06-hooks/format-code.sh ~/.claude/hooks/` |
+| `validate-prompt.py` | Prompt validation | UserPromptSubmit | ~50 | Project | `cp 06-hooks/validate-prompt.py .claude/hooks/` |
+| `context-tracker.py` | Token usage tracking | Stop | ~40 | User | `cp 06-hooks/context-tracker.py ~/.claude/hooks/` |
+| `pre-commit.sh` | Pre-commit validation | PreToolUse:Bash | ~30 | Project | `cp 06-hooks/pre-commit.sh .claude/hooks/` |
+| `log-bash.sh` | Command logging | PostToolUse:Bash | ~20 | User | `cp 06-hooks/log-bash.sh ~/.claude/hooks/` |
+
+> **Tokens**: Config overhead only (scripts run externally). **Scope**: `Project` = team (`.claude/settings.json`), `User` = personal (`~/.claude/settings.json`)
 
 ### Hook Configuration
 
@@ -281,11 +293,13 @@ Persistent context loaded automatically across sessions.
 
 ### Memory Types
 
-| Type | Location | Scope | When to Use |
-|------|----------|-------|-------------|
-| **Project Memory** | `./CLAUDE.md` | All team members | Team standards, project rules |
-| **Directory Memory** | `./src/api/CLAUDE.md` | Specific directories | Module-specific rules |
-| **Personal Memory** | `~/.claude/CLAUDE.md` | Individual user | Personal preferences |
+| Type | Location | Scope | Tokens | When to Use |
+|------|----------|-------|--------|-------------|
+| **Project Memory** | `./CLAUDE.md` | Project (team) | ~500-2000 | Team standards, project rules |
+| **Directory Memory** | `./src/api/CLAUDE.md` | Directory | ~200-500 | Module-specific rules |
+| **Personal Memory** | `~/.claude/CLAUDE.md` | User (personal) | ~300-1000 | Personal preferences |
+
+> **Tokens**: Varies by content length (auto-loaded every session). Keep memory files concise to preserve context for actual work.
 
 **Reference**: [02-memory/](02-memory/) | [Official Docs](https://docs.anthropic.com/en/docs/claude-code/memory)
 

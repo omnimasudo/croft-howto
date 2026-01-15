@@ -206,13 +206,16 @@
     "composable",
     "extensible",
     "srcset",
-    "overcomplicate"
+    "overcomplicate",
+    "Asana",
+    "oneline"
   ],
   "ignoreWords": [
     "luongnv89",
     "wjhrdy",
     "Cherry",
-    "Boris"
+    "Boris",
+    "Cherny's"
   ],
   "ignoreRegExpList": [
     "code\\{[^}]*\\}",

@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="resources/logos/claude-howto-logo-dark.svg">
+  <img alt="Claude How To" src="resources/logos/claude-howto-logo.svg">
+</picture>
+
 # Claude Code Feature Catalog
 
 > Quick reference guide to all Claude Code features: commands, agents, skills, plugins, and hooks.

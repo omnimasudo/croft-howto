@@ -31,6 +31,7 @@ This project complements [Anthropic's official documentation](https://docs.anthr
 ## Table of Contents
 
 - [Why This Guide?](#why-this-guide)
+- [Feature Catalog](#-feature-catalog)
 - [Quick Navigation](#quick-navigation)
 - [Learning Path](#-learning-path)
 - [Quick Reference](#-quick-reference-choose-your-features)
@@ -60,10 +61,27 @@ This project complements [Anthropic's official documentation](https://docs.anthr
 
 ---
 
+## Feature Catalog
+
+**Looking for a quick reference?** Check out our comprehensive **[Feature Catalog](CATALOG.md)** for:
+
+- All slash commands (built-in and custom) with descriptions
+- Sub-agents and their capabilities
+- Skills with auto-invocation triggers
+- Plugins with components and installation commands
+- MCP servers for external integrations
+- Hooks for event-driven automation
+- One-command installation for each feature
+
+**[View Full Catalog](CATALOG.md)**
+
+---
+
 ## Quick Navigation
 
 | Feature | Description | Folder |
 |---------|-------------|--------|
+| **Feature Catalog** | Complete reference with installation commands | [CATALOG.md](CATALOG.md) |
 | **Slash Commands** | User-invoked shortcuts | [01-slash-commands/](01-slash-commands/) |
 | **Memory** | Persistent context | [02-memory/](02-memory/) |
 | **Skills** | Reusable capabilities | [03-skills/](03-skills/) |

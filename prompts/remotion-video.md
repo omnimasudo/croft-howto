@@ -10,11 +10,12 @@ Follow a 7-phase workflow, making smart decisions at each step based on the info
 
 **KEY PRINCIPLES:**
 
-- **Explore First, Ask Later:** Always begin by automatically exploring the codebase to gather product information. Do NOT start with questions. Only ask the user if critical information cannot be found or is unclear after exploration.
+- **Explore First:** Always begin by automatically exploring the codebase to gather product information. Do NOT start with questions about the product.
+- **Ask Before Planning:** After exploration, present findings and ask user for video preferences (size, style, duration, customizations) BEFORE creating the plan.
 - **Product URL First:** When a product URL is found or provided, it serves as the PRIMARY source of truth. Information from the product page takes precedence over codebase findings.
 - **Value Over Tech:** Focus on value propositions, customer benefits, and features (what users gain) rather than technical specifications or implementation details.
 - **Customer-Centric:** Emphasize how the product solves problems, improves lives, or delivers benefits to users.
-- **Maximum Autonomy:** Work independently and make reasonable assumptions. Only ask the user for input when: (1) critical information is completely missing after exploration, (2) there's genuine ambiguity that affects the outcome, or (3) a major creative direction needs confirmation. Proceed with sensible defaults otherwise.
+- **Autonomous Execution:** After user confirms preferences, proceed autonomously through planning and implementation without further approval requests.
 
 ## 📋 Phase 1: Autonomous Resource Discovery
 
@@ -97,52 +98,70 @@ Follow a 7-phase workflow, making smart decisions at each step based on the info
 
 ---
 
-## ✅ Phase 3: Information Synthesis & Decision
+## ✅ Phase 3: Present Findings & Gather User Preferences
 
-**OBJECTIVE:** Synthesize gathered information and make autonomous creative decisions.
+**OBJECTIVE:** Share what you discovered and get user input on video preferences before planning.
 
 **ACTIONS:**
 
-1. **Silently analyze** all collected information:
-   - Value proposition and key benefits
-   - Target audience and emotional triggers
-   - Brand identity and visual style
-   - Optimal tone, pacing, and focus
-
-2. **Make informed decisions:**
-   - Choose tone based on brand (serious/playful/energetic)
-   - Select pacing based on platform and audience
-   - Define video structure emphasizing strongest value props
-   - Design visual style matching brand identity
-
-3. **Only ask IF critical ambiguity exists:**
-   - Conflicting messages on product page (e.g., multiple different value props)
-   - Completely missing value proposition
-   - Unclear target audience (B2B vs B2C makes drastic difference)
-   - User explicitly requested consultation
-
-4. **Present decision brief (informational, not requesting approval):**
+1. **Present a summary of discovered information:**
 
    ```text
-   🎬 VIDEO DIRECTION
+   📊 DISCOVERED INFORMATION
 
-   Focus: [Value prop being emphasized]
-   Tone: [Chosen approach]
-   Structure: [Hook → Demo → CTA approach]
-   Duration: [X seconds]
+   Product: [Name]
+   Value Proposition: [Main benefit to customers]
+   Key Features: [2-3 main benefits]
+   Brand Colors: [Extracted or suggested colors]
+   Target Audience: [Who this is for]
    ```
 
-**OUTPUT:** Clear creative direction ready for planning phase.
+2. **Ask user for preferences (REQUIRED BEFORE PROCEEDING):**
+
+   Use a clear, concise format:
+
+   ```text
+   Before I create your video, please let me know your preferences:
+
+   1. **Video Size/Format:**
+      - Landscape (1920x1080) - YouTube, website
+      - Portrait (1080x1920) - TikTok, Instagram Reels
+      - Square (1080x1080) - Instagram feed
+
+   2. **Video Duration:**
+      - 15 seconds - Quick social media ad
+      - 30 seconds - Standard promotional video
+      - 60 seconds - Detailed feature showcase
+      - Custom duration
+
+   3. **Video Style:**
+      - Modern & Minimal - Clean, Apple-style aesthetics
+      - Energetic & Bold - Fast-paced, social media style
+      - Professional & Corporate - Business-focused
+      - Custom style (describe your vision)
+
+   4. **Anything else to highlight or customize?**
+      (Specific features, messaging, colors, etc.)
+   ```
+
+3. **Wait for user response** before proceeding to Phase 4.
+
+4. **Acknowledge preferences and confirm:**
+   - Summarize user's choices
+   - Apply any custom requirements
+   - Proceed to structure design with confirmed direction
+
+**OUTPUT:** User-confirmed video specifications ready for planning phase.
 
 ---
 
-## 📐 Phase 4: Structure Design
+## 📐 Phase 4: Structure Design (Post-Confirmation)
 
-**OBJECTIVE:** Create a compelling video structure using the 3-act format.
+**OBJECTIVE:** Create a compelling video structure using the 3-act format based on user preferences.
 
 **ACTIONS:**
 
-1. **Autonomously design** the video structure:
+1. **Design video structure with user's confirmed preferences:**
 
    ```text
    🎬 VIDEO STRUCTURE
@@ -152,24 +171,30 @@ Follow a 7-phase workflow, making smart decisions at each step based on the info
    - [Bold animation entrance]
    - [Compelling headline/question]
 
-   Act 2: Value Demonstration (5-20 seconds)
+   Act 2: Value Demonstration (middle section)
    - [Show key benefits in action]
    - [Visual storytelling of customer value]
    - [2-3 feature highlights as benefits]
 
-   Act 3: Call to Action (20-30 seconds)
+   Act 3: Call to Action (final section)
    - [Clear CTA with brand reinforcement]
    - [Memorable closing visual]
    - [Smooth exit animation]
    ```
 
-2. **Make creative decisions based on:**
+2. **Apply user preferences:**
+   - Use specified video size/format
+   - Match chosen style (minimal/energetic/professional)
+   - Adapt timing to specified duration
+   - Incorporate any custom requirements
+
+3. **Make creative decisions based on:**
    - Product value proposition (what makes it compelling)
    - Target audience (what resonates with them)
-   - Platform best practices (pacing, timing)
+   - User's style preferences
    - Brand personality (visual and tonal consistency)
 
-3. **Automatically proceed** to Phase 5 for technical planning.
+4. **Present the structure briefly** then automatically proceed to Phase 5.
 
 **OUTPUT:** Complete video structure ready for implementation planning.
 
@@ -299,15 +324,27 @@ Throughout all phases, maintain these standards:
 
 # 🚀 Getting Started
 
-I'll automatically explore your codebase to understand your product, gather all available information (product details, brand assets, colors, etc.), and create a professional Remotion video project with high-energy animations.
+I'll create a professional Remotion video project for your product. Here's my workflow:
 
-I work autonomously through all phases:
+## Phase 1-2: Autonomous Exploration (I do this automatically)
 
-1. Explore your codebase and fetch product page (if URL found)
-2. Analyze value propositions and key benefits
-3. Design video structure and creative direction
-4. Build complete Remotion project with professional animations
+1. Explore your codebase for product details, brand assets, and colors
+2. Fetch and analyze product page (if URL found)
+3. Extract value propositions and key benefits
 
-I'll only ask you questions if I encounter critical ambiguities or need important clarifications. Otherwise, I'll make smart decisions and proceed to delivery.
+## Phase 3: Your Input (I'll ask you)
+
+1. Present what I discovered
+2. Ask for your video preferences:
+   - Video size/format (landscape/portrait/square)
+   - Duration (15s/30s/60s)
+   - Style (minimal/energetic/professional)
+   - Any customizations
+
+## Phase 4-7: Autonomous Execution (I do this automatically)
+
+1. Design video structure based on your preferences
+2. Build complete Remotion project with professional animations
+3. Deliver production-ready code with rendering instructions
 
 Let's create something amazing!

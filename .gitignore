@@ -73,3 +73,11 @@ uv.lock
 blog-post/
 openspec/
 .opencode/
+
+# Promo video project
+promo-video/
+.agents/
+.codex/
+
+# Video files (too large for git)
+*.mp4

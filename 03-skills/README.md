@@ -5,38 +5,61 @@
 
 # Agent Skills Guide
 
-Agent Skills are reusable, model-invoked capabilities packaged as folders containing instructions, scripts, and resources. Claude automatically detects and uses relevant skills.
+Agent Skills are reusable, filesystem-based capabilities that extend Claude's functionality. They package domain-specific expertise, workflows, and best practices into discoverable components that Claude automatically uses when relevant.
 
 ## Overview
 
-**Agent Skills** are modular capabilities that extend Claude's functionality. They package expertise into discoverable, reusable components that Claude **autonomously uses** based on context—unlike slash commands which require explicit user invocation.
+**Agent Skills** are modular capabilities that transform general-purpose agents into specialists. Unlike prompts (conversation-level instructions for one-off tasks), Skills load on-demand and eliminate the need to repeatedly provide the same guidance across multiple conversations.
 
-Agent Skills enable you to:
-- **Package domain expertise** - Encapsulate specialized knowledge and processes
-- **Ensure consistency** - Apply standardized approaches across all projects
-- **Enable automation** - Let Claude automatically invoke skills when needed
-- **Scale workflows** - Reuse skills across multiple projects and teams
-- **Maintain quality** - Embed best practices directly into your workflow
+### Key Benefits
 
-Skills are **model-invoked**, meaning Claude automatically decides when to use them based on your request, the skill's description, and the context of your work.
+- **Specialize Claude**: Tailor capabilities for domain-specific tasks
+- **Reduce repetition**: Create once, use automatically across conversations
+- **Compose capabilities**: Combine Skills to build complex workflows
+- **Scale workflows**: Reuse skills across multiple projects and teams
+- **Maintain quality**: Embed best practices directly into your workflow
 
-## Skill Architecture
+Skills follow the [Agent Skills](https://agentskills.io) open standard, which works across multiple AI tools. Claude Code extends the standard with additional features like invocation control, subagent execution, and dynamic context injection.
+
+> **Note**: Custom slash commands have been merged into skills. A file at `.claude/commands/review.md` and a skill at `.claude/skills/review/SKILL.md` both create `/review` and work the same way. Your existing `.claude/commands/` files keep working.
+
+## How Skills Work: Progressive Disclosure
+
+Skills leverage a **progressive disclosure** architecture—Claude loads information in stages as needed, rather than consuming context upfront. This enables efficient context management while maintaining unlimited scalability.
+
+### Three Levels of Loading
 
 ```mermaid
 graph TB
-    A["Skill Directory"]
-    B["SKILL.md"]
-    C["YAML Metadata"]
-    D["Instructions"]
-    E["Scripts"]
-    F["Templates"]
+    subgraph "Level 1: Metadata (Always Loaded)"
+        A["YAML Frontmatter"]
+        A1["~100 tokens per skill"]
+        A2["name + description"]
+    end
+
+    subgraph "Level 2: Instructions (When Triggered)"
+        B["SKILL.md Body"]
+        B1["Under 5k tokens"]
+        B2["Workflows & guidance"]
+    end
+
+    subgraph "Level 3: Resources (As Needed)"
+        C["Bundled Files"]
+        C1["Effectively unlimited"]
+        C2["Scripts, templates, docs"]
+    end
 
     A --> B
     B --> C
-    B --> D
-    E --> A
-    F --> A
 ```
+
+| Level | When Loaded | Token Cost | Content |
+|-------|------------|------------|---------|
+| **Level 1: Metadata** | Always (at startup) | ~100 tokens per Skill | `name` and `description` from YAML frontmatter |
+| **Level 2: Instructions** | When Skill is triggered | Under 5k tokens | SKILL.md body with instructions and guidance |
+| **Level 3+: Resources** | As needed | Effectively unlimited | Bundled files executed via bash without loading contents into context |
+
+This means you can install many Skills without context penalty—Claude only knows each Skill exists and when to use it until actually triggered.
 
 ## Skill Loading Process
 
@@ -47,61 +70,54 @@ sequenceDiagram
     participant System as System
     participant Skill as Skill
 
-    User->>Claude: "Create Excel report"
-    Claude->>System: Scan available skills
-    System->>System: Load skill metadata
-    Claude->>Claude: Match user request to skills
-    Claude->>Skill: Load xlsx skill SKILL.md
-    Skill-->>Claude: Return instructions + tools
-    Claude->>Claude: Execute skill
-    Claude->>User: Generate Excel file
+    User->>Claude: "Review this code for security issues"
+    Claude->>System: Check available skills (metadata)
+    System-->>Claude: Skill descriptions loaded at startup
+    Claude->>Claude: Match request to skill description
+    Claude->>Skill: bash: read code-review/SKILL.md
+    Skill-->>Claude: Instructions loaded into context
+    Claude->>Claude: Determine: Need templates?
+    Claude->>Skill: bash: read templates/checklist.md
+    Skill-->>Claude: Template loaded
+    Claude->>Claude: Execute skill instructions
+    Claude->>User: Comprehensive code review
 ```
 
 ## Skill Types & Locations
 
-| Type | Location | Scope | Shared | Sync | Best For |
-|------|----------|-------|--------|------|----------|
-| **Personal Skills** | `~/.claude/skills/` | Individual | No | Manual | Personal workflows, experimental skills |
-| **Project Skills** | `.claude/skills/` | Team | Yes | Git | Team standards, shared with team |
-| **Plugin Skills** | Via plugin install | Varies | Depends | Auto | Bundled with Claude Code plugins |
+| Type | Location | Scope | Shared | Best For |
+|------|----------|-------|--------|----------|
+| **Enterprise** | Managed settings | All org users | Yes | Organization-wide standards |
+| **Personal** | `~/.claude/skills/<skill-name>/SKILL.md` | Individual | No | Personal workflows |
+| **Project** | `.claude/skills/<skill-name>/SKILL.md` | Team | Yes (via git) | Team standards |
+| **Plugin** | `<plugin>/skills/<skill-name>/SKILL.md` | Where enabled | Depends | Bundled with plugins |
 
-### How Skills Work
-Once created, skills work automatically—you simply describe what you need, and Claude detects and invokes the appropriate skill based on its description. **No slash commands needed.**
+When skills share the same name across levels, higher-priority locations win: **enterprise > personal > project**. Plugin skills use a `plugin-name:skill-name` namespace, so they cannot conflict.
+
+### Automatic Discovery from Nested Directories
+
+When you work with files in subdirectories, Claude Code automatically discovers skills from nested `.claude/skills/` directories. For example, if you're editing a file in `packages/frontend/`, Claude Code also looks for skills in `packages/frontend/.claude/skills/`. This supports monorepo setups where packages have their own skills.
 
 ## Creating Custom Skills
 
 ### Basic Directory Structure
+
 ```
 my-skill/
-├── SKILL.md (required)
-├── reference.md (optional)
-├── scripts/
-│   └── helper.py
-└── templates/
-    └── template.txt
+├── SKILL.md           # Main instructions (required)
+├── template.md        # Template for Claude to fill in
+├── examples/
+│   └── sample.md      # Example output showing expected format
+└── scripts/
+    └── validate.sh    # Script Claude can execute
 ```
 
-### SKILL.md Format with Full Metadata
+### SKILL.md Format
 
 ```yaml
 ---
 name: your-skill-name
 description: Brief description of what this Skill does and when to use it
-context: fork              # Optional: run in isolated sub-agent context
-agent: Explore             # Optional: which agent type (with context: fork)
-user-invocable: true       # Optional: default true, hide from slash menu if false
-disable-model-invocation: false  # Optional: prevent auto-invocation
-allowed-tools:             # Optional: restrict tool access
-  - Read
-  - Grep
-  - Glob
-hooks:                     # Optional: component-scoped hooks
-  PreToolUse:
-    - matcher: "Bash"
-      hooks:
-        - type: command
-          command: "./scripts/validate.sh"
-          once: true
 ---
 
 # Your Skill Name
@@ -114,128 +130,157 @@ Show concrete examples of using this Skill.
 ```
 
 ### Required Fields
-- **name**: lowercase letters, numbers, hyphens only (max 64 characters)
-- **description**: what the Skill does AND when to use it (max 1024 characters)
 
-### Optional Fields
+- **name**: lowercase letters, numbers, hyphens only (max 64 characters). Cannot contain "anthropic" or "claude".
+- **description**: what the Skill does AND when to use it (max 1024 characters). This is critical for Claude to know when to activate the skill.
 
-#### Tool Restriction: `allowed-tools`
-
-Limit which tools Claude can use with a Skill:
+### Optional Frontmatter Fields
 
 ```yaml
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-```
-
-**Use cases:**
-- **Read-only Skills**: Prevent accidental file modifications
-- **Security-sensitive workflows**: Limit tool access for sensitive operations
-- **Limited scope Skills**: Restrict to specific tools
-
-If `allowed-tools` isn't specified, Claude will request permission as normal.
-
-#### Execution Context: `context`
-
-Run a skill in an isolated subagent context:
-
-```yaml
-context: fork              # Run in isolated context
-agent: Explore             # Use specific agent type
-```
-
-This creates a dedicated subagent for the skill with its own context and state.
-
-#### Visibility Control
-
-Control skill visibility and invocation:
-
-```yaml
-user-invocable: false                 # Hide from slash menu
-disable-model-invocation: false       # Block auto-invocation
-```
-
-| Setting | Slash Menu | Skill Tool | Auto-discovery |
-|---------|------------|------------|----------------|
-| `user-invocable: true` (default) | Visible | Allowed | Yes |
-| `user-invocable: false` | Hidden | Allowed | Yes |
-| `disable-model-invocation: true` | Visible | Blocked | Yes |
-
-#### Hooks in Skills
-
-Add component-scoped hooks to your skill:
-
-```yaml
-hooks:
+---
+name: my-skill
+description: What this skill does and when to use it
+argument-hint: "[filename] [format]"        # Hint for autocomplete
+disable-model-invocation: true              # Only user can invoke
+user-invocable: false                       # Hide from slash menu
+allowed-tools: Read, Grep, Glob             # Restrict tool access
+model: opus                                 # Specific model to use
+context: fork                               # Run in isolated subagent
+agent: Explore                              # Which agent type (with context: fork)
+hooks:                                      # Skill-scoped hooks
   PreToolUse:
     - matcher: "Bash"
       hooks:
         - type: command
           command: "./scripts/validate.sh"
-          once: true
+---
 ```
 
-Supported events: `PreToolUse`, `PostToolUse`, `Stop`
+## Skill Content Types
 
-## Managing Skills
+Skills can contain two types of content, each suited for different purposes:
 
-### Viewing Available Skills
+### Reference Content
 
-Ask Claude directly:
-```
-What Skills are available?
-```
+Adds knowledge Claude applies to your current work—conventions, patterns, style guides, domain knowledge. Runs inline with your conversation context.
 
-Or check the filesystem:
-```bash
-# List personal Skills
-ls ~/.claude/skills/
+```yaml
+---
+name: api-conventions
+description: API design patterns for this codebase
+---
 
-# List project Skills
-ls .claude/skills/
-
-# View specific Skill
-cat ~/.claude/skills/my-skill/SKILL.md
+When writing API endpoints:
+- Use RESTful naming conventions
+- Return consistent error formats
+- Include request validation
 ```
 
-### Testing a Skill
+### Task Content
 
-Create the Skill, then ask questions matching its description. Claude autonomously activates it—no explicit invocation needed.
+Step-by-step instructions for specific actions. Often invoked directly with `/skill-name`.
 
-Example: If your description mentions "PDF files":
-```
-Can you help me extract text from this PDF?
-```
+```yaml
+---
+name: deploy
+description: Deploy the application to production
+context: fork
+disable-model-invocation: true
+---
 
-### Updating a Skill
-
-Edit the `SKILL.md` file directly:
-```bash
-# Personal Skill
-code ~/.claude/skills/my-skill/SKILL.md
-
-# Project Skill
-code .claude/skills/my-skill/SKILL.md
+Deploy the application:
+1. Run the test suite
+2. Build the application
+3. Push to the deployment target
 ```
 
-**Important**: Changes take effect on next Claude Code startup. Restart if already running.
+## Controlling Skill Invocation
 
-### Removing a Skill
+By default, both you and Claude can invoke any skill. Two frontmatter fields control this:
 
-```bash
-# Personal Skill
-rm -rf ~/.claude/skills/my-skill
+| Frontmatter | You can invoke | Claude can invoke | When loaded |
+|-------------|---------------|-------------------|-------------|
+| (default) | Yes | Yes | Description always in context |
+| `disable-model-invocation: true` | Yes | No | Description not in context |
+| `user-invocable: false` | No | Yes | Description always in context |
 
-# Project Skill
-rm -rf .claude/skills/my-skill
-git commit -m "Remove unused Skill"
+**Use `disable-model-invocation: true`** for workflows with side effects: `/commit`, `/deploy`, `/send-slack-message`. You don't want Claude deciding to deploy because your code looks ready.
+
+**Use `user-invocable: false`** for background knowledge that isn't actionable as a command. A `legacy-system-context` skill explains how an old system works—useful for Claude, but not a meaningful action for users.
+
+## String Substitutions
+
+Skills support dynamic values:
+
+| Variable | Description |
+|----------|-------------|
+| `$ARGUMENTS` | All arguments passed when invoking the skill |
+| `$ARGUMENTS[N]` or `$N` | Access specific argument by index (0-based) |
+| `${CLAUDE_SESSION_ID}` | Current session ID |
+
+**Example:**
+
+```yaml
+---
+name: fix-issue
+description: Fix a GitHub issue
+---
+
+Fix GitHub issue $ARGUMENTS following our coding standards.
+1. Read the issue description
+2. Implement the fix
+3. Write tests
+4. Create a commit
 ```
+
+Running `/fix-issue 123` replaces `$ARGUMENTS` with `123`.
+
+## Injecting Dynamic Context
+
+The `!`command`` syntax runs shell commands before the skill content is sent to Claude:
+
+```yaml
+---
+name: pr-summary
+description: Summarize changes in a pull request
+context: fork
+agent: Explore
+---
+
+## Pull request context
+- PR diff: !`gh pr diff`
+- PR comments: !`gh pr view --comments`
+- Changed files: !`gh pr diff --name-only`
+
+## Your task
+Summarize this pull request...
+```
+
+Commands execute immediately; Claude only sees the final output.
+
+## Running Skills in Subagents
+
+Add `context: fork` to run a skill in isolation:
+
+```yaml
+---
+name: deep-research
+description: Research a topic thoroughly
+context: fork
+agent: Explore
+---
+
+Research $ARGUMENTS thoroughly:
+1. Find relevant files using Glob and Grep
+2. Read and analyze the code
+3. Summarize findings with specific file references
+```
+
+The skill content becomes the task for a dedicated subagent with its own context. The `agent` field specifies which agent type to use (`Explore`, `Plan`, `general-purpose`, or custom agents).
 
 ## Practical Examples
 
-### Example 1: Custom Code Review Skill
+### Example 1: Code Review Skill
 
 **Directory Structure:**
 
@@ -267,27 +312,23 @@ This skill provides comprehensive code review capabilities focusing on:
    - Data exposure risks
    - Injection vulnerabilities
    - Cryptographic weaknesses
-   - Sensitive data logging
 
 2. **Performance Review**
    - Algorithm efficiency (Big O analysis)
    - Memory optimization
    - Database query optimization
    - Caching opportunities
-   - Concurrency issues
 
 3. **Code Quality**
    - SOLID principles
    - Design patterns
    - Naming conventions
-   - Documentation
    - Test coverage
 
 4. **Maintainability**
    - Code readability
    - Function size (should be < 50 lines)
    - Cyclomatic complexity
-   - Dependency management
    - Type safety
 
 ## Review Template
@@ -306,837 +347,141 @@ For each piece of code reviewed, provide:
 - **Severity**: Critical/High/Medium
 - **Fix**: Code example
 
-### Findings by Category
-
-#### Security (if issues found)
-List security vulnerabilities with examples
-
-#### Performance (if issues found)
-List performance problems with complexity analysis
-
-#### Quality (if issues found)
-List code quality issues with refactoring suggestions
-
-#### Maintainability (if issues found)
-List maintainability problems with improvements
+For detailed checklists, see [templates/review-checklist.md](templates/review-checklist.md).
 ```
 
-**Python Script:** `~/.claude/skills/code-review/scripts/analyze-metrics.py`
+### Example 2: Codebase Visualizer Skill
 
-```python
-#!/usr/bin/env python3
-import re
-import sys
-
-def analyze_code_metrics(code):
-    """Analyze code for common metrics."""
-
-    # Count functions
-    functions = len(re.findall(r'^def\s+\w+', code, re.MULTILINE))
-
-    # Count classes
-    classes = len(re.findall(r'^class\s+\w+', code, re.MULTILINE))
-
-    # Average line length
-    lines = code.split('\n')
-    avg_length = sum(len(l) for l in lines) / len(lines) if lines else 0
-
-    # Estimate complexity
-    complexity = len(re.findall(r'\b(if|elif|else|for|while|and|or)\b', code))
-
-    return {
-        'functions': functions,
-        'classes': classes,
-        'avg_line_length': avg_length,
-        'complexity_score': complexity
-    }
-
-if __name__ == '__main__':
-    with open(sys.argv[1], 'r') as f:
-        code = f.read()
-    metrics = analyze_code_metrics(code)
-    for key, value in metrics.items():
-        print(f"{key}: {value:.2f}")
-```
-
-**Python Script:** `~/.claude/skills/code-review/scripts/compare-complexity.py`
-
-```python
-#!/usr/bin/env python3
-"""
-Compare cyclomatic complexity of code before and after changes.
-Helps identify if refactoring actually simplifies code structure.
-"""
-
-import re
-import sys
-from typing import Dict, Tuple
-
-class ComplexityAnalyzer:
-    """Analyze code complexity metrics."""
-
-    def __init__(self, code: str):
-        self.code = code
-        self.lines = code.split('\n')
-
-    def calculate_cyclomatic_complexity(self) -> int:
-        """
-        Calculate cyclomatic complexity using McCabe's method.
-        Count decision points: if, elif, else, for, while, except, and, or
-        """
-        complexity = 1  # Base complexity
-
-        # Count decision points
-        decision_patterns = [
-            r'\bif\b',
-            r'\belif\b',
-            r'\bfor\b',
-            r'\bwhile\b',
-            r'\bexcept\b',
-            r'\band\b(?!$)',
-            r'\bor\b(?!$)'
-        ]
-
-        for pattern in decision_patterns:
-            matches = re.findall(pattern, self.code)
-            complexity += len(matches)
-
-        return complexity
-
-    def calculate_cognitive_complexity(self) -> int:
-        """
-        Calculate cognitive complexity - how hard is it to understand?
-        Based on nesting depth and control flow.
-        """
-        cognitive = 0
-        nesting_depth = 0
-
-        for line in self.lines:
-            # Track nesting depth
-            if re.search(r'^\s*(if|for|while|def|class|try)\b', line):
-                nesting_depth += 1
-                cognitive += nesting_depth
-            elif re.search(r'^\s*(elif|else|except|finally)\b', line):
-                cognitive += nesting_depth
-
-            # Reduce nesting when unindenting
-            if line and not line[0].isspace():
-                nesting_depth = 0
-
-        return cognitive
-
-    def calculate_maintainability_index(self) -> float:
-        """
-        Maintainability Index ranges from 0-100.
-        > 85: Excellent
-        > 65: Good
-        > 50: Fair
-        < 50: Poor
-        """
-        lines = len(self.lines)
-        cyclomatic = self.calculate_cyclomatic_complexity()
-        cognitive = self.calculate_cognitive_complexity()
-
-        # Simplified MI calculation
-        mi = 171 - 5.2 * (cyclomatic / lines) - 0.23 * (cognitive) - 16.2 * (lines / 1000)
-
-        return max(0, min(100, mi))
-
-    def get_complexity_report(self) -> Dict:
-        """Generate comprehensive complexity report."""
-        return {
-            'cyclomatic_complexity': self.calculate_cyclomatic_complexity(),
-            'cognitive_complexity': self.calculate_cognitive_complexity(),
-            'maintainability_index': round(self.calculate_maintainability_index(), 2),
-            'lines_of_code': len(self.lines),
-            'avg_line_length': round(sum(len(l) for l in self.lines) / len(self.lines), 2) if self.lines else 0
-        }
-
-
-def compare_files(before_file: str, after_file: str) -> None:
-    """Compare complexity metrics between two code versions."""
-
-    with open(before_file, 'r') as f:
-        before_code = f.read()
-
-    with open(after_file, 'r') as f:
-        after_code = f.read()
-
-    before_analyzer = ComplexityAnalyzer(before_code)
-    after_analyzer = ComplexityAnalyzer(after_code)
-
-    before_metrics = before_analyzer.get_complexity_report()
-    after_metrics = after_analyzer.get_complexity_report()
-
-    print("=" * 60)
-    print("CODE COMPLEXITY COMPARISON")
-    print("=" * 60)
-
-    print("\nBEFORE:")
-    print(f"  Cyclomatic Complexity:    {before_metrics['cyclomatic_complexity']}")
-    print(f"  Cognitive Complexity:     {before_metrics['cognitive_complexity']}")
-    print(f"  Maintainability Index:    {before_metrics['maintainability_index']}")
-    print(f"  Lines of Code:            {before_metrics['lines_of_code']}")
-    print(f"  Avg Line Length:          {before_metrics['avg_line_length']}")
-
-    print("\nAFTER:")
-    print(f"  Cyclomatic Complexity:    {after_metrics['cyclomatic_complexity']}")
-    print(f"  Cognitive Complexity:     {after_metrics['cognitive_complexity']}")
-    print(f"  Maintainability Index:    {after_metrics['maintainability_index']}")
-    print(f"  Lines of Code:            {after_metrics['lines_of_code']}")
-    print(f"  Avg Line Length:          {after_metrics['avg_line_length']}")
-
-    print("\nCHANGES:")
-    cyclomatic_change = after_metrics['cyclomatic_complexity'] - before_metrics['cyclomatic_complexity']
-    cognitive_change = after_metrics['cognitive_complexity'] - before_metrics['cognitive_complexity']
-    mi_change = after_metrics['maintainability_index'] - before_metrics['maintainability_index']
-    loc_change = after_metrics['lines_of_code'] - before_metrics['lines_of_code']
-
-    print(f"  Cyclomatic Complexity:    {cyclomatic_change:+d}")
-    print(f"  Cognitive Complexity:     {cognitive_change:+d}")
-    print(f"  Maintainability Index:    {mi_change:+.2f}")
-    print(f"  Lines of Code:            {loc_change:+d}")
-
-    print("\nASSESSMENT:")
-    if mi_change > 0:
-        print("  Code is MORE maintainable")
-    elif mi_change < 0:
-        print("  Code is LESS maintainable")
-    else:
-        print("  Maintainability unchanged")
-
-    if cyclomatic_change < 0:
-        print("  Complexity DECREASED")
-    elif cyclomatic_change > 0:
-        print("  Complexity INCREASED")
-    else:
-        print("  Complexity unchanged")
-
-    print("=" * 60)
-
-
-if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print("Usage: python compare-complexity.py <before_file> <after_file>")
-        sys.exit(1)
-
-    compare_files(sys.argv[1], sys.argv[2])
-```
-
-**Template:** `~/.claude/skills/code-review/templates/review-checklist.md`
-
-```markdown
-# Code Review Checklist
-
-## Security Checklist
-- [ ] No hardcoded credentials or secrets
-- [ ] Input validation on all user inputs
-- [ ] SQL injection prevention (parameterized queries)
-- [ ] CSRF protection on state-changing operations
-- [ ] XSS prevention with proper escaping
-- [ ] Authentication checks on protected endpoints
-- [ ] Authorization checks on resources
-- [ ] Secure password hashing (bcrypt, argon2)
-- [ ] No sensitive data in logs
-- [ ] HTTPS enforced
-
-## Performance Checklist
-- [ ] No N+1 queries
-- [ ] Appropriate use of indexes
-- [ ] Caching implemented where beneficial
-- [ ] No blocking operations on main thread
-- [ ] Async/await used correctly
-- [ ] Large datasets paginated
-- [ ] Database connections pooled
-- [ ] Regular expressions optimized
-- [ ] No unnecessary object creation
-- [ ] Memory leaks prevented
-
-## Quality Checklist
-- [ ] Functions < 50 lines
-- [ ] Clear variable naming
-- [ ] No duplicate code
-- [ ] Proper error handling
-- [ ] Comments explain WHY, not WHAT
-- [ ] No console.logs in production
-- [ ] Type checking (TypeScript/JSDoc)
-- [ ] SOLID principles followed
-- [ ] Design patterns applied correctly
-- [ ] Self-documenting code
-
-## Testing Checklist
-- [ ] Unit tests written
-- [ ] Edge cases covered
-- [ ] Error scenarios tested
-- [ ] Integration tests present
-- [ ] Coverage > 80%
-- [ ] No flaky tests
-- [ ] Mock external dependencies
-- [ ] Clear test names
-```
-
-**Template:** `~/.claude/skills/code-review/templates/finding-template.md`
-
-```markdown
-# Code Review Finding Template
-
-Use this template when documenting each issue found during code review.
-
----
-
-## Issue: [TITLE]
-
-### Severity
-- [ ] Critical (blocks deployment)
-- [ ] High (should fix before merge)
-- [ ] Medium (should fix soon)
-- [ ] Low (nice to have)
-
-### Category
-- [ ] Security
-- [ ] Performance
-- [ ] Code Quality
-- [ ] Maintainability
-- [ ] Testing
-- [ ] Design Pattern
-- [ ] Documentation
-
-### Location
-**File:** `src/components/UserCard.tsx`
-
-**Lines:** 45-52
-
-**Function/Method:** `renderUserDetails()`
-
-### Issue Description
-
-**What:** Describe what the issue is.
-
-**Why it matters:** Explain the impact and why this needs to be fixed.
-
-**Current behavior:** Show the problematic code or behavior.
-
-**Expected behavior:** Describe what should happen instead.
-
-### Code Example
-
-#### Current (Problematic)
-
-```typescript
-// Shows the N+1 query problem
-const users = fetchUsers();
-users.forEach(user => {
-  const posts = fetchUserPosts(user.id); // Query per user!
-  renderUserPosts(posts);
-});
-```
-
-#### Suggested Fix
-
-```typescript
-// Optimized with JOIN query
-const usersWithPosts = fetchUsersWithPosts();
-usersWithPosts.forEach(({ user, posts }) => {
-  renderUserPosts(posts);
-});
-```
-
-### Impact Analysis
-
-| Aspect | Impact | Severity |
-|--------|--------|----------|
-| Performance | 100+ queries for 20 users | High |
-| User Experience | Slow page load | High |
-| Scalability | Breaks at scale | Critical |
-| Maintainability | Hard to debug | Medium |
-
-### Related Issues
-
-- Similar issue in `AdminUserList.tsx` line 120
-- Related PR: #456
-- Related issue: #789
-
-### Additional Resources
-
-- [N+1 Query Problem](https://en.wikipedia.org/wiki/N%2B1_problem)
-- [Database Join Documentation](https://docs.example.com/joins)
-- [Performance Optimization Guide](./docs/performance.md)
-
-### Reviewer Notes
-
-- This is a common pattern in this codebase
-- Consider adding this to the code style guide
-- Might be worth creating a helper function
-
-### Author Response (for feedback)
-
-*To be filled by the code author:*
-
-- [ ] Fix implemented in commit: `abc123`
-- [ ] Fix status: Complete / In Progress / Needs Discussion
-- [ ] Questions or concerns: (describe)
-
----
-
-## Finding Statistics (for Reviewer)
-
-When reviewing multiple findings, track:
-
-- **Total Issues Found:** X
-- **Critical:** X
-- **High:** X
-- **Medium:** X
-- **Low:** X
-
-**Recommendation:** Approve / Request Changes / Needs Discussion
-
-**Overall Code Quality:** 1-5 stars
-```
-
-**Usage Example:**
-
-```markdown
-User: Review this React component code
-
-Claude: I'll conduct a comprehensive code review using my Code Review Skill.
-
-[Loads SKILL.md]
-[Analyzes code against checklist]
-[Runs Python metrics script]
-[Applies templates]
-
-## Code Review Results
-
-### Summary
-Quality Score: 3.5/5
-Key Findings: 7 items
-Priority Areas: Performance optimization, error handling
-
-### Critical Issues: 1
-
-**Issue**: N+1 Query Problem
-**Location**: UserComponent.tsx, lines 45-52
-**Impact**: Renders 100+ database queries for list of 20 users
-**Severity**: High
-**Fix**:
-```javascript
-// Before: N+1 queries
-const users = fetchUsers();
-users.forEach(user => fetchUserPosts(user.id)); // 20+ queries
-
-// After: Single query with JOIN
-const users = fetchUsersWithPosts(); // 1 query
-```
-
-### Performance Findings
-- Missing pagination on large lists
-- Recommendation: Use React.memo() for items
-- Database query: Could be optimized with index
-
-### Quality Findings
-- Function in line 20 is 127 lines (max: 50)
-- Missing error boundary
-- Props should have TypeScript types
-```
-
-### Example 2: Brand Voice Skill
+A skill that generates interactive HTML visualizations:
 
 **Directory Structure:**
 
 ```
-.claude/skills/brand-voice/
+~/.claude/skills/codebase-visualizer/
 ├── SKILL.md
-├── brand-guidelines.md
-├── tone-examples.md
-└── templates/
-    ├── email-template.txt
-    ├── social-post-template.txt
-    └── blog-post-template.md
+└── scripts/
+    └── visualize.py
 ```
 
-**File:** `.claude/skills/brand-voice/SKILL.md`
+**File:** `~/.claude/skills/codebase-visualizer/SKILL.md`
 
 ```yaml
 ---
-name: brand-voice-consistency
-description: Ensure all communication matches brand voice and tone guidelines. Use when creating marketing copy, customer communications, public-facing content, or when users mention brand voice, tone, or writing style.
+name: codebase-visualizer
+description: Generate an interactive collapsible tree visualization of your codebase. Use when exploring a new repo, understanding project structure, or identifying large files.
+allowed-tools: Bash(python *)
 ---
 
-# Brand Voice Skill
+# Codebase Visualizer
 
-## Overview
-This skill ensures all communications maintain consistent brand voice, tone, and messaging.
+Generate an interactive HTML tree view showing your project's file structure.
 
-## Brand Identity
+## Usage
 
-### Mission
-Help teams automate their development workflows with AI
+Run the visualization script from your project root:
 
-### Values
-- **Simplicity**: Make complex things simple
-- **Reliability**: Rock-solid execution
-- **Empowerment**: Enable human creativity
+```bash
+python ~/.claude/skills/codebase-visualizer/scripts/visualize.py .
+```
 
-### Tone of Voice
+This creates `codebase-map.html` and opens it in your default browser.
+
+## What the visualization shows
+
+- **Collapsible directories**: Click folders to expand/collapse
+- **File sizes**: Displayed next to each file
+- **Colors**: Different colors for different file types
+- **Directory totals**: Shows aggregate size of each folder
+```
+
+The bundled Python script does the heavy lifting while Claude handles orchestration.
+
+### Example 3: Deploy Skill (User-Invoked Only)
+
+```yaml
+---
+name: deploy
+description: Deploy the application to production
+disable-model-invocation: true
+allowed-tools: Bash(npm *), Bash(git *)
+---
+
+Deploy $ARGUMENTS to production:
+
+1. Run the test suite: `npm test`
+2. Build the application: `npm run build`
+3. Push to the deployment target
+4. Verify the deployment succeeded
+5. Report deployment status
+```
+
+### Example 4: Brand Voice Skill (Background Knowledge)
+
+```yaml
+---
+name: brand-voice
+description: Ensure all communication matches brand voice and tone guidelines. Use when creating marketing copy, customer communications, or public-facing content.
+user-invocable: false
+---
+
+## Tone of Voice
 - **Friendly but professional** - approachable without being casual
-- **Clear and concise** - avoid jargon, explain technical concepts simply
+- **Clear and concise** - avoid jargon
 - **Confident** - we know what we're doing
-- **Empathetic** - understand user needs and pain points
+- **Empathetic** - understand user needs
 
 ## Writing Guidelines
-
-### Do's
 - Use "you" when addressing readers
-- Use active voice: "Claude generates reports" not "Reports are generated by Claude"
-- Start with value proposition
-- Use concrete examples
+- Use active voice
 - Keep sentences under 20 words
-- Use lists for clarity
-- Include calls-to-action
+- Start with value proposition
 
-### Don'ts
-- Don't use corporate jargon
-- Don't patronize or oversimplify
-- Don't use "we believe" or "we think"
-- Don't use ALL CAPS except for emphasis
-- Don't create walls of text
-- Don't assume technical knowledge
-
-## Vocabulary
-
-### Preferred Terms
-- Claude (not "the Claude AI")
-- Code generation (not "auto-coding")
-- Agent (not "bot")
-- Streamline (not "revolutionize")
-- Integrate (not "synergize")
-
-### Avoid Terms
-- "Cutting-edge" (overused)
-- "Game-changer" (vague)
-- "Leverage" (corporate-speak)
-- "Utilize" (use "use")
-- "Paradigm shift" (unclear)
-
-**Good Example:**
-"Claude automates your code review process. Instead of manually checking each PR, Claude reviews security, performance, and quality—saving your team hours every week."
-
-Why it works: Clear value, specific benefits, action-oriented
-
-**Bad Example:**
-"Claude leverages cutting-edge AI to provide comprehensive software development solutions."
-
-Why it doesn't work: Vague, corporate jargon, no specific value
-
+For templates, see [templates/](templates/).
 ```
-
-**Template:** `email-template.txt`
-
-```
-Subject: [Clear, benefit-driven subject]
-
-Hi [Name],
-
-[Opening: What's the value for them]
-
-[Body: How it works / What they'll get]
-
-[Specific example or benefit]
-
-[Call to action: Clear next step]
-
-Best regards,
-[Name]
-```
-
-**Template:** `social-post-template.txt`
-
-```
-[Hook: Grab attention in first line]
-[2-3 lines: Value or interesting fact]
-[Call to action: Link, question, or engagement]
-[Emoji: 1-2 max for visual interest]
-```
-
-**File:** `tone-examples.md`
-
-```markdown
-Exciting announcement:
-"Save 8 hours per week on code reviews. Claude reviews your PRs automatically."
-
-Empathetic support:
-"We know deployments can be stressful. Claude handles testing so you don't have to worry."
-
-Confident product feature:
-"Claude doesn't just suggest code. It understands your architecture and maintains consistency."
-
-Educational blog post:
-"Let's explore how agents improve code review workflows. Here's what we learned..."
-```
-
-### Example 3: Documentation Generator Skill
-
-**File:** `.claude/skills/doc-generator/SKILL.md`
-
-```yaml
----
-name: api-documentation-generator
-description: Generate comprehensive, accurate API documentation from source code. Use when creating or updating API documentation, generating OpenAPI specs, or when users mention API docs, endpoints, or documentation.
----
-
-# API Documentation Generator Skill
-
-## Generates
-
-- OpenAPI/Swagger specifications
-- API endpoint documentation
-- SDK usage examples
-- Integration guides
-- Error code references
-- Authentication guides
-
-## Documentation Structure
-
-### For Each Endpoint
-<document>
-## GET /api/v1/users/:id
-
-### Description
-Brief explanation of what this endpoint does
-
-### Parameters
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| id | string | Yes | User ID |
-
-### Response
-**200 Success**
-
-{
-  "id": "usr_123",
-  "name": "John Doe",
-  "email": "john@example.com",
-  "created_at": "2025-01-15T10:30:00Z"
-}
-
-**404 Not Found**
-
-{
-  "error": "USER_NOT_FOUND",
-  "message": "User does not exist"
-}
-
-### Examples
-
-**cURL**
-curl -X GET "https://api.example.com/api/v1/users/usr_123" \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-**JavaScript**
-const user = await fetch('/api/v1/users/usr_123', {
-  headers: { 'Authorization': 'Bearer token' }
-}).then(r => r.json());
-
-**Python**
-response = requests.get(
-    'https://api.example.com/api/v1/users/usr_123',
-    headers={'Authorization': 'Bearer token'}
-)
-user = response.json()
-</document>
-```
-**Python Script:** `.claude/skills/doc-generator/scripts/generate-docs.py`
-
-```python
-#!/usr/bin/env python3
-import ast
-import json
-from typing import Dict, List
-
-class APIDocExtractor(ast.NodeVisitor):
-    """Extract API documentation from Python source code."""
-
-    def __init__(self):
-        self.endpoints = []
-
-    def visit_FunctionDef(self, node):
-        """Extract function documentation."""
-        if node.name.startswith('get_') or node.name.startswith('post_'):
-            doc = ast.get_docstring(node)
-            endpoint = {
-                'name': node.name,
-                'docstring': doc,
-                'params': [arg.arg for arg in node.args.args],
-                'returns': self._extract_return_type(node)
-            }
-            self.endpoints.append(endpoint)
-        self.generic_visit(node)
-
-    def _extract_return_type(self, node):
-        """Extract return type from function annotation."""
-        if node.returns:
-            return ast.unparse(node.returns)
-        return "Any"
-
-def generate_markdown_docs(endpoints: List[Dict]) -> str:
-    """Generate markdown documentation from endpoints."""
-    docs = "# API Documentation\n\n"
-
-    for endpoint in endpoints:
-        docs += f"## {endpoint['name']}\n\n"
-        docs += f"{endpoint['docstring']}\n\n"
-        docs += f"**Parameters**: {', '.join(endpoint['params'])}\n\n"
-        docs += f"**Returns**: {endpoint['returns']}\n\n"
-        docs += "---\n\n"
-
-    return docs
-
-if __name__ == '__main__':
-    import sys
-    with open(sys.argv[1], 'r') as f:
-        tree = ast.parse(f.read())
-
-    extractor = APIDocExtractor()
-    extractor.visit(tree)
-
-    markdown = generate_markdown_docs(extractor.endpoints)
-    print(markdown)
-```
-
-### Example 4: Multi-File Skill (Complex Structure)
-
-For complex skills with multiple reference files, scripts, and templates:
-
-**Directory Structure:**
-
-```
-pdf-processing/
-├── SKILL.md              # Required - main instructions
-├── FORMS.md              # Optional - detailed form-filling guide
-├── REFERENCE.md          # Optional - API reference
-└── scripts/
-    ├── fill_form.py      # Optional - utility scripts
-    └── validate.py
-```
-
-**File:** `pdf-processing/SKILL.md`
-
-```yaml
----
-name: pdf-processing
-description: Extract text, fill forms, merge PDFs. Use when working with PDF files, forms, or document extraction. Requires pypdf and pdfplumber packages.
----
-
-# PDF Processing
-
-## Quick Start
-
-Extract text:
-```python
-import pdfplumber
-with pdfplumber.open("doc.pdf") as pdf:
-    text = pdf.pages[0].extract_text()
-```
-
-For form filling, see [FORMS.md](FORMS.md).
-For detailed API reference, see [REFERENCE.md](REFERENCE.md).
-
-## Requirements
-
-Packages must be installed in your environment:
-```bash
-pip install pypdf pdfplumber
-```
-```
-
-**Important**: Claude reads additional files only when needed, using progressive disclosure to manage context efficiently. Reference files with relative links in your SKILL.md.
 
 ### Example 5: CLAUDE.md Generator Skill
 
-A skill for creating and maintaining optimal CLAUDE.md files following best practices.
-
-**Directory Structure:**
-
-```
-claude-md/
-└── SKILL.md
-```
-
-**File:** `~/.claude/skills/claude-md/SKILL.md`
-
 ```yaml
 ---
-description: Create or update CLAUDE.md files following best practices for optimal AI agent onboarding
+name: claude-md
+description: Create or update CLAUDE.md files following best practices for optimal AI agent onboarding. Use when users mention CLAUDE.md, project documentation, or AI onboarding.
 ---
 
 ## Core Principles
 
-**LLMs are stateless**: CLAUDE.md is the only file automatically included in every conversation. It serves as the primary onboarding document for AI agents into your codebase.
+**LLMs are stateless**: CLAUDE.md is the only file automatically included in every conversation.
 
 ### The Golden Rules
 
-1. **Less is More**: Frontier LLMs can follow ~150-200 instructions. Keep your CLAUDE.md focused and concise.
-2. **Universal Applicability**: Only include information relevant to EVERY session.
-3. **Don't Use Claude as a Linter**: Use deterministic tools (prettier, eslint) instead.
-4. **Never Auto-Generate**: Craft it manually with careful consideration.
+1. **Less is More**: Keep under 300 lines (ideally under 100)
+2. **Universal Applicability**: Only include information relevant to EVERY session
+3. **Don't Use Claude as a Linter**: Use deterministic tools instead
+4. **Never Auto-Generate**: Craft it manually with careful consideration
 
 ## Essential Sections
 
-A well-structured CLAUDE.md should include:
-
 - **Project Name**: Brief one-line description
 - **Tech Stack**: Primary language, frameworks, database
-- **Project Structure**: Only for monorepos or complex structures
 - **Development Commands**: Install, test, build commands
 - **Critical Conventions**: Only non-obvious, high-impact conventions
-- **Known Issues / Gotchas**: Things that consistently trip up developers
-
-## Quality Constraints
-
-- Target under 300 lines (ideally under 100)
-- No style rules (use linters)
-- No code snippets (use file references)
-- No task-specific instructions
+- **Known Issues / Gotchas**: Things that trip up developers
 ```
 
-**Key Features:**
-- Three operation modes: `create`, `update`, `audit`
-- Follows WHAT/WHY/HOW content strategy
-- Progressive disclosure for larger projects via `agent_docs/` folder
-- Validation checklist for quality assurance
-- Anti-pattern detection and removal
-
-**Usage Examples:**
-
-```
-User: /claude-md create
-Claude: [Analyzes project, creates optimized CLAUDE.md]
-
-User: /claude-md audit
-Claude: [Reports on current CLAUDE.md quality without modifications]
-
-User: /claude-md update
-Claude: [Improves existing CLAUDE.md following best practices]
-```
-
-### Example 6: Code Refactoring Skill
-
-A systematic refactoring skill based on Martin Fowler's methodology.
+### Example 6: Refactoring Skill with Scripts
 
 **Directory Structure:**
 
 ```
 refactor/
-├── SKILL.md                          # Main instructions & workflow
+├── SKILL.md
 ├── references/
-│   ├── code-smells.md                # Code smell catalog
-│   └── refactoring-catalog.md        # Refactoring techniques
+│   ├── code-smells.md
+│   └── refactoring-catalog.md
 ├── templates/
-│   └── refactoring-plan.md           # Planning template
+│   └── refactoring-plan.md
 └── scripts/
-    ├── analyze-complexity.py         # Complexity metrics
-    └── detect-smells.py              # Automated smell detection
+    ├── analyze-complexity.py
+    └── detect-smells.py
 ```
 
 **File:** `refactor/SKILL.md`
@@ -1144,7 +489,7 @@ refactor/
 ```yaml
 ---
 name: code-refactor
-description: Systematic code refactoring based on Martin Fowler's methodology. Use when users ask to refactor code, improve code structure, reduce technical debt, clean up legacy code, eliminate code smells, or improve code maintainability.
+description: Systematic code refactoring based on Martin Fowler's methodology. Use when users ask to refactor code, improve code structure, reduce technical debt, or eliminate code smells.
 ---
 
 # Code Refactoring Skill
@@ -1163,276 +508,208 @@ Phase 5: Incremental Implementation → Phase 6: Review & Iteration
 2. **Small Steps**: Make tiny, testable changes
 3. **Test-Driven**: Tests are the safety net
 4. **Continuous**: Refactoring is ongoing, not a one-time event
-5. **Collaborative**: User approval required at each phase
+
+For code smell catalog, see [references/code-smells.md](references/code-smells.md).
+For refactoring techniques, see [references/refactoring-catalog.md](references/refactoring-catalog.md).
 ```
 
-**Key Features:**
-- Phased approach with user approval checkpoints
-- Code smell catalog with severity assessment
-- Refactoring technique catalog mapped to smells
-- Automated complexity analysis scripts
-- Safe rollback strategies
+## Managing Skills
 
-**Usage:**
+### Viewing Available Skills
+
+Ask Claude directly:
 ```
-User: "Refactor this UserService class - it's gotten too large"
-
-Claude: [Loads refactor skill]
-1. Analyzes UserService for code smells
-2. Identifies: Large Class, Long Methods, Feature Envy
-3. Creates phased refactoring plan
-4. Requests approval before each phase
-5. Implements incrementally with test verification
+What Skills are available?
 ```
 
-## Skill Discovery & Invocation
+Or check the filesystem:
+```bash
+# List personal Skills
+ls ~/.claude/skills/
 
-```mermaid
-graph TD
-    A["User Request"] --> B["Claude Analyzes"]
-    B -->|Scans| C["Available Skills"]
-    C -->|Metadata check| D["Skill Description Match?"]
-    D -->|Yes| E["Load SKILL.md"]
-    D -->|No| F["Try next skill"]
-    F -->|More skills?| D
-    F -->|No more| G["Use general knowledge"]
-    E --> H["Extract Instructions"]
-    H --> I["Execute Skill"]
-    I --> J["Return Results"]
+# List project Skills
+ls .claude/skills/
 ```
 
-## Skills with Subagents
+### Testing a Skill
 
-Skills can be automatically loaded with subagents, enabling specialized task delegation:
+Two ways to test:
 
-```yaml
-# In subagent definition
-skills: pr-review, security-check
+**Let Claude invoke it automatically** by asking something that matches the description:
+```
+Can you help me review this code for security issues?
 ```
 
-This allows subagents to access and invoke specific skills autonomously.
-
-**Note**: Built-in agents (Explore, Plan, general-purpose) do not have access to user-defined skills.
-
-## Skill vs Other Features
-
-```mermaid
-graph TB
-    A["Extending Claude"]
-    B["Slash Commands"]
-    C["Subagents"]
-    D["Memory"]
-    E["MCP"]
-    F["Skills"]
-
-    A --> B
-    A --> C
-    A --> D
-    A --> E
-    A --> F
-
-    B -->|User-invoked| G["Quick shortcuts"]
-    C -->|Auto-delegated| H["Isolated contexts"]
-    D -->|Persistent| I["Cross-session context"]
-    E -->|Real-time| J["External data access"]
-    F -->|Auto-invoked| K["Autonomous execution"]
+**Or invoke it directly** with the skill name:
 ```
+/code-review src/auth/login.ts
+```
+
+### Updating a Skill
+
+Edit the `SKILL.md` file directly. Changes take effect on next Claude Code startup.
+
+```bash
+# Personal Skill
+code ~/.claude/skills/my-skill/SKILL.md
+
+# Project Skill
+code .claude/skills/my-skill/SKILL.md
+```
+
+### Restricting Claude's Skill Access
+
+Three ways to control which skills Claude can invoke:
+
+**Disable all skills** in `/permissions`:
+```
+# Add to deny rules:
+Skill
+```
+
+**Allow or deny specific skills**:
+```
+# Allow only specific skills
+Skill(commit)
+Skill(review-pr *)
+
+# Deny specific skills
+Skill(deploy *)
+```
+
+**Hide individual skills** by adding `disable-model-invocation: true` to their frontmatter.
 
 ## Best Practices
 
 ### 1. Make Descriptions Specific
+
 - **Bad (Vague)**: "Helps with documents"
 - **Good (Specific)**: "Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction."
 
 ### 2. Keep Skills Focused
+
 - One Skill = one capability
 - ✅ "PDF form filling"
 - ❌ "Document processing" (too broad)
 
 ### 3. Include Trigger Terms
-- Add keywords in descriptions that match user requests
-- Helps Claude discover the Skill more easily
-- Example: "Use when working with PDF files or when the user mentions PDFs, forms, or document extraction"
 
-### 4. Test Thoroughly
-- Ask questions matching your description
-- Have teammates test for discoverability
-- Verify YAML syntax
+Add keywords in descriptions that match user requests:
+```yaml
+description: Analyze Excel spreadsheets, generate pivot tables, create charts. Use when working with Excel files, spreadsheets, or .xlsx files.
+```
 
-### Additional Do's
+### 4. Keep SKILL.md Under 500 Lines
+
+Move detailed reference material to separate files that Claude loads as needed.
+
+### 5. Reference Supporting Files
+
+```markdown
+## Additional resources
+
+- For complete API details, see [reference.md](reference.md)
+- For usage examples, see [examples.md](examples.md)
+```
+
+### Do's
+
 - Use clear, descriptive names
 - Include comprehensive instructions
 - Add concrete examples
 - Package related scripts and templates
 - Test with real scenarios
-- Organize skills by domain/purpose
 - Document dependencies
 
 ### Don'ts
+
 - Don't create skills for one-time tasks
 - Don't duplicate existing functionality
 - Don't make skills too broad
-- Don't forget metadata in SKILL.md
-- Don't skip examples
-- Don't assume Claude knows skill context
-- Don't create circular dependencies
-- Don't ignore performance implications
+- Don't skip the description field
+- Don't install skills from untrusted sources without auditing
 
-### 5. Document Skill Versions
-
-Track changes to your skills over time:
-
-```markdown
-# My Skill
-
-## Version History
-- v2.0.0 (2025-01-15): Breaking changes - new output format
-- v1.1.0 (2025-01-01): Added chart generation feature
-- v1.0.0 (2024-12-01): Initial release
-```
-
-This helps your team understand skill evolution and identify when breaking changes were introduced.
-
-## Troubleshooting Guide
+## Troubleshooting
 
 ### Quick Reference
 
 | Issue | Solution |
 |-------|----------|
 | Claude doesn't use Skill | Make description more specific with trigger terms |
-| Skill file not found | Verify path: `~/.claude/skills/name/SKILL.md` or `.claude/skills/name/SKILL.md` |
-| YAML errors | Check opening/closing `---`, indentation, no tabs (spaces only) |
+| Skill file not found | Verify path: `~/.claude/skills/name/SKILL.md` |
+| YAML errors | Check `---` markers, indentation, no tabs |
 | Skills conflict | Use distinct trigger terms in descriptions |
-| Scripts not running | Check permissions with `chmod +x` and use forward slashes in paths |
+| Scripts not running | Check permissions: `chmod +x scripts/*.py` |
+| Claude doesn't see all skills | Too many skills; check `/context` for warnings |
 
-### Debugging Skipped or Non-Functional Skills
+### Skill Not Triggering
 
-#### Claude Doesn't Use My Skill
+If Claude doesn't use your skill when expected:
 
-**Problem: Vague description**
-```yaml
-# Too generic - Claude can't match this to requests
-description: Helps with data
-```
+1. Check the description includes keywords users would naturally say
+2. Verify the skill appears when asking "What skills are available?"
+3. Try rephrasing your request to match the description
+4. Invoke directly with `/skill-name` to test
 
-**Solution: Make it specific with triggers**
-```yaml
-description: Analyze Excel spreadsheets, generate pivot tables, create charts. Use when working with Excel files, spreadsheets, or .xlsx files.
-```
+### Skill Triggers Too Often
 
-**Problem: Invalid YAML frontmatter**
+If Claude uses your skill when you don't want it:
 
-Check your frontmatter:
-```bash
-cat SKILL.md | head -n 10
-```
+1. Make the description more specific
+2. Add `disable-model-invocation: true` for manual-only invocation
 
-Ensure:
-- Opening `---` on line 1
-- Closing `---` before Markdown content
-- Valid YAML syntax (no tabs, correct indentation)
-- No special characters that need escaping
+### Claude Doesn't See All Skills
 
-**Problem: Wrong file path**
+Skill descriptions have a character budget (default 15,000 characters). Run `/context` to check for warnings about excluded skills. Set `SLASH_COMMAND_TOOL_CHAR_BUDGET` environment variable to increase the limit.
 
-Verify the skill location:
-```bash
-# Personal Skills
-ls ~/.claude/skills/my-skill/SKILL.md
+## Security Considerations
 
-# Project Skills
-ls .claude/skills/my-skill/SKILL.md
-```
+**Only use Skills from trusted sources.** Skills provide Claude with capabilities through instructions and code—a malicious Skill can direct Claude to invoke tools or execute code in harmful ways.
 
-#### Skill Has Errors
+**Key security considerations:**
 
-**Check script permissions:**
-```bash
-chmod +x .claude/skills/my-skill/scripts/*.py
-```
+- **Audit thoroughly**: Review all files in the Skill directory
+- **External sources are risky**: Skills that fetch from external URLs can be compromised
+- **Tool misuse**: Malicious Skills can invoke tools in harmful ways
+- **Treat like installing software**: Only use Skills from trusted sources
 
-**Use forward slashes in paths:**
-- Correct: `scripts/helper.py`
-- Wrong: `scripts\helper.py` (Windows style)
+## Skills vs Other Features
 
-**Check dependencies:**
-```bash
-# Claude will automatically install or ask for permission
-pip install required-package
-```
+| Feature | Invocation | Best For |
+|---------|------------|----------|
+| **Skills** | Auto or `/name` | Reusable expertise, workflows |
+| **Slash Commands** | User-initiated `/name` | Quick shortcuts (merged into skills) |
+| **Subagents** | Auto-delegated | Isolated task execution |
+| **Memory (CLAUDE.md)** | Always loaded | Persistent project context |
+| **MCP** | Real-time | External data/service access |
+| **Hooks** | Event-driven | Automated side effects |
 
-#### Multiple Skills Conflict
+## Sharing Skills
 
-**Use distinct trigger terms** to help Claude choose the right Skill:
+### Project Skills (Team Sharing)
 
-```yaml
-# Skill 1 - Sales analysis
-description: Analyze sales data in Excel files and CRM exports. Use for sales reports, pipeline analysis, and revenue tracking.
-
-# Skill 2 - System logs
-description: Analyze log files and system metrics data. Use for performance monitoring, debugging, and system diagnostics.
-```
-
-## Sharing Skills with Your Team
-
-1. Create Skill in `.claude/skills/` (project-level)
+1. Create Skill in `.claude/skills/`
 2. Commit to git
 3. Team members pull changes — Skills available immediately
 
-For broader sharing, consider packaging your Skills as plugins.
-
-## Installation Instructions
-
-### For Personal Skills
-
-Copy skill folders to your personal skills directory:
+### Personal Skills
 
 ```bash
-# Copy individual skill
-cp -r code-review ~/.claude/skills/
-
-# Copy all skills
-cp -r * ~/.claude/skills/
+# Copy to personal directory
+cp -r my-skill ~/.claude/skills/
 
 # Make scripts executable
-chmod +x ~/.claude/skills/code-review/scripts/*.py
+chmod +x ~/.claude/skills/my-skill/scripts/*.py
 ```
 
-### For Project Skills
+### Plugin Distribution
 
-Copy skill folders to your project skills directory to share with team:
-
-```bash
-# Copy individual skill to project
-cp -r code-review /path/to/project/.claude/skills/
-
-# Copy all skills
-cp -r * /path/to/project/.claude/skills/
-
-# Commit to version control
-git add .claude/skills/
-git commit -m "Add project skills"
-```
-
-### Verifying Installation
-
-After copying skills:
-
-1. Check that SKILL.md exists in each skill directory
-2. Verify scripts have proper permissions: `ls -l ~/.claude/skills/code-review/scripts/`
-3. Test skill invocation with a sample request
-
-### Creating Custom Skills
-
-1. Create skill directory structure
-2. Write SKILL.md with metadata and instructions
-3. Add scripts and templates as needed
-4. Test by copying to skills directory
-5. Refine based on usage
+Package skills in a plugin's `skills/` directory for broader distribution.
 
 ## Additional Resources
 
 - [Official Skills Documentation](https://code.claude.com/docs/en/skills)
+- [Agent Skills Architecture Blog](https://claude.com/blog/equipping-agents-for-the-real-world-with-agent-skills)
 - [Slash Commands Guide](../01-slash-commands/) - User-initiated shortcuts
 - [Subagents Guide](../04-subagents/) - Delegated AI agents
 - [Memory Guide](../02-memory/) - Persistent context

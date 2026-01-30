@@ -15,6 +15,8 @@ You **MUST** consider the user input before proceeding. User should provide:
 - **Target audience**: Who the blog post is for (optional)
 - **Tone/Style**: Formal, casual, technical, etc. (optional)
 
+**IMPORTANT**: If the user is requesting updates to an **existing blog post**, skip steps 0-8 and start directly at **Step 9**. Read the existing draft file(s) first, then proceed with the iteration process.
+
 ## Execution Flow
 
 Follow these steps sequentially. **Do not skip steps or proceed without user approval where indicated.**

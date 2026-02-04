@@ -58,9 +58,9 @@
 
 ## References
 
-1. [Source Title](URL)
-2. [Source Title](URL)
-3. [Source Title](URL)
+1. [Source Title](#)
+2. [Source Title](#)
+3. [Source Title](#)
 
 ---
 

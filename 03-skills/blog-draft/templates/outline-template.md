@@ -84,9 +84,9 @@
 
 ## Sources to Cite
 
-1. [Source Name](URL) - Used for: [what information]
-2. [Source Name](URL) - Used for: [what information]
-3. [Source Name](URL) - Used for: [what information]
+1. [Source Name](#) - Used for: [what information]
+2. [Source Name](#) - Used for: [what information]
+3. [Source Name](#) - Used for: [what information]
 
 ---
 

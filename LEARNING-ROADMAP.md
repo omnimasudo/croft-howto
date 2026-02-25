@@ -34,6 +34,8 @@ Not everyone starts from the same place. Take this quick self-assessment to find
 
 > **Tip**: If you're unsure, start one level lower. It's better to review familiar material quickly than to miss foundational concepts.
 
+> **Interactive version**: Run `/self-assessment` in Claude Code for a guided, interactive quiz that scores your proficiency across all 10 feature areas and generates a personalized learning path.
+
 ---
 
 ## 🎯 Learning Philosophy
@@ -155,6 +157,8 @@ Once comfortable, read:
 - [01-slash-commands/README.md](01-slash-commands/README.md)
 - [02-memory/README.md](02-memory/README.md)
 
+> **Check your understanding**: Run `/lesson-quiz slash-commands` or `/lesson-quiz memory` in Claude Code to test what you've learned.
+
 ---
 
 ### Milestone 1B: Safe Exploration
@@ -197,6 +201,8 @@ cat error.log | claude -p "explain this error"
 - Read: [08-checkpoints/README.md](08-checkpoints/README.md)
 - Read: [10-cli/README.md](10-cli/README.md)
 - **Ready for Level 2!** Proceed to [Milestone 2A](#milestone-2a-automation-skills--hooks)
+
+> **Check your understanding**: Run `/lesson-quiz checkpoints` or `/lesson-quiz cli` to verify you're ready for Level 2.
 
 ---
 
@@ -274,6 +280,8 @@ chmod +x ~/.claude/hooks/pre-tool-check.sh
 - Read: [03-skills/README.md](03-skills/README.md)
 - Read: [06-hooks/README.md](06-hooks/README.md)
 
+> **Check your understanding**: Run `/lesson-quiz skills` or `/lesson-quiz hooks` to test your knowledge before moving on.
+
 ---
 
 ### Milestone 2B: Integration (MCP + Subagents)
@@ -322,6 +330,8 @@ Try this complete workflow:
 - Read: [05-mcp/README.md](05-mcp/README.md)
 - Read: [04-subagents/README.md](04-subagents/README.md)
 - **Ready for Level 3!** Proceed to [Milestone 3A](#milestone-3a-advanced-features)
+
+> **Check your understanding**: Run `/lesson-quiz mcp` or `/lesson-quiz subagents` to verify you're ready for Level 3.
 
 ---
 
@@ -392,6 +402,8 @@ claude --permission-mode acceptEdits "refactor the auth module"
 #### Next Steps
 - Read: [09-advanced-features/README.md](09-advanced-features/README.md)
 
+> **Check your understanding**: Run `/lesson-quiz advanced` to test your mastery of power user features.
+
 ---
 
 ### Milestone 3B: Team & Distribution (Plugins + CLI Mastery)
@@ -461,6 +473,27 @@ Create a simple CI/CD script:
 - Read: [10-cli/README.md](10-cli/README.md)
 - Create team-wide CLI shortcuts and plugins
 - Set up batch processing scripts
+
+> **Check your understanding**: Run `/lesson-quiz plugins` or `/lesson-quiz cli` to confirm your mastery.
+
+---
+
+## 🧪 Test Your Knowledge
+
+This repository includes two interactive skills you can use anytime in Claude Code to evaluate your understanding:
+
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| **Self-Assessment** | `/self-assessment` | Evaluate your overall proficiency across all 10 features. Choose Quick (2 min) or Deep (5 min) mode to get a personalized skill profile and learning path. |
+| **Lesson Quiz** | `/lesson-quiz [lesson]` | Test your understanding of a specific lesson with 10 questions. Use before a lesson (pre-test), during (progress check), or after (mastery verification). |
+
+**Examples:**
+```
+/self-assessment                  # Find your overall level
+/lesson-quiz hooks                # Quiz on Lesson 06: Hooks
+/lesson-quiz 03                   # Quiz on Lesson 03: Skills
+/lesson-quiz advanced-features    # Quiz on Lesson 09
+```
 
 ---
 
@@ -564,7 +597,7 @@ Create a simple CI/CD script:
 
 ## 📈 Progress Tracking
 
-Use these checklists to track your progress by level:
+Use these checklists to track your progress by level. Run `/self-assessment` anytime to get an updated skill profile, or `/lesson-quiz [lesson]` after each tutorial to verify your understanding.
 
 ### 🟢 Level 1: Beginner
 - [ ] Completed [01-slash-commands](01-slash-commands/)

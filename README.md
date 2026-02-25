@@ -98,7 +98,11 @@ This project complements [Anthropic's official documentation](https://docs.anthr
 
 ## 📚 Learning Path
 
-**Not sure where to start?** Take the [Self-Assessment Quiz](LEARNING-ROADMAP.md#-find-your-level) to find your recommended path.
+**Not sure where to start?** Take the [Self-Assessment Quiz](LEARNING-ROADMAP.md#-find-your-level) to find your recommended path, or run `/self-assessment` in Claude Code for an interactive version.
+
+> **Built-in skills**: This repo includes two interactive skills you can use directly in Claude Code:
+> - `/self-assessment` — Evaluate your overall Claude Code proficiency and get a personalized learning path
+> - `/lesson-quiz [lesson]` — Test your understanding of any specific lesson (e.g., `/lesson-quiz hooks`)
 
 | Order | Feature | Level | Time | Recommended For |
 |-------|---------|-------|------|-----------------|

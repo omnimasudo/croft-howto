@@ -18,6 +18,7 @@ This project complements [Anthropic's official documentation](https://docs.anthr
 | **Examples** | Basic snippets | Production-ready templates you can use immediately |
 | **Structure** | Feature-organized | Progressive learning path (beginner → advanced) |
 | **Onboarding** | Self-directed | Guided roadmap with time estimates |
+| **Self-Assessment** | None | Interactive quizzes to identify skill gaps and build a personalized learning path |
 
 **What you'll find here:**
 - Mermaid diagrams explaining how each feature works

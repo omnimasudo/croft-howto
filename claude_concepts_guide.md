@@ -722,7 +722,7 @@ sequenceDiagram
 
 **File:** `./src/api/CLAUDE.md`
 
-```markdown
+~~~~markdown
 # API Module Standards
 
 This file overrides root CLAUDE.md for everything in /src/api/
@@ -754,7 +754,7 @@ All responses must follow this structure:
 }
 ```
 
-Error responses:
+### Error responses:
 ```json
 {
   "success": false,
@@ -784,13 +784,13 @@ Error responses:
 - Cache duration: 5 minutes default
 - Invalidate on write operations
 - Tag cache keys with resource type
-```
+~~~~
 
 #### Example 3: Personal Memory
 
 **File:** `~/.claude/CLAUDE.md`
 
-```markdown
+~~~~markdown
 # My Development Preferences
 
 ## About Me
@@ -851,7 +851,7 @@ project/
 - **Format**: Prettier (100 char line length)
 - **Linter**: ESLint with airbnb config
 - **Test Framework**: Jest with React Testing Library
-```
+~~~~
 
 #### Example 4: Memory Update During Session
 
@@ -1034,7 +1034,7 @@ sequenceDiagram
 
 **Available GitHub MCP Tools:**
 
-```markdown
+~~~~markdown
 # GitHub MCP Tools
 
 ## Pull Request Management
@@ -1074,7 +1074,7 @@ Reviewers: @bob, @charlie
 - `list_commits` - Commit history
 - `get_commit` - Specific commit details
 - `create_commit` - Create new commit
-```
+~~~~
 
 #### Example 2: Database MCP Setup
 
@@ -1651,7 +1651,7 @@ if __name__ == '__main__':
 
 ## Template: finding-template.md
 
-```markdown
+~~~~markdown
 # Code Review Finding Template
 
 Use this template when documenting each issue found during code review.
@@ -1765,11 +1765,11 @@ When reviewing multiple findings, track:
 **Recommendation:** ✅ Approve / ⚠️ Request Changes / 🔄 Needs Discussion
 
 **Overall Code Quality:** 1-5 stars
-```
+~~~~
 
 ## Usage Example
 
-```markdown
+~~~~markdown
 User: Review this React component code
 
 Claude: I'll conduct a comprehensive code review using my Code Review Skill.
@@ -1811,7 +1811,7 @@ const users = fetchUsersWithPosts(); // 1 query
 - Function in line 20 is 127 lines (max: 50)
 - Missing error boundary
 - Props should have TypeScript types
-```
+~~~~
 
 #### Example 2: Brand Voice Skill
 
@@ -1956,7 +1956,7 @@ Educational blog post:
 
 **File:** `.claude/skills/doc-generator/SKILL.md`
 
-```yaml
+~~~~yaml
 ---
 name: API Documentation Generator
 description: Generate comprehensive, accurate API documentation from source code
@@ -2095,7 +2095,7 @@ if __name__ == '__main__':
 
     markdown = generate_markdown_docs(extractor.endpoints)
     print(markdown)
-```
+~~~~
 ### Skill Discovery & Invocation
 
 ```mermaid
@@ -2492,7 +2492,7 @@ graph TD
 
 **Example submission:**
 
-```markdown
+~~~~markdown
 # PR Review Plugin
 
 ## Description
@@ -2527,7 +2527,7 @@ Complete PR review workflow with security, testing, and documentation checks.
 - Claude Code 1.0+
 - GitHub access
 - CodeQL (optional)
-```
+~~~~
 
 ### Plugin vs Manual Configuration
 

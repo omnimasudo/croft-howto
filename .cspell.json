@@ -208,7 +208,11 @@
     "srcset",
     "overcomplicate",
     "Asana",
-    "oneline"
+    "oneline",
+    "anthropics",
+    "worktree",
+    "worktrees",
+    "dontAsk"
   ],
   "ignoreWords": [
     "luongnv89",

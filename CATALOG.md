@@ -7,7 +7,7 @@
 
 > Quick reference guide to all Claude Code features: commands, agents, skills, plugins, and hooks.
 
-**Navigation**: [Commands](#slash-commands) | [Sub-Agents](#sub-agents) | [Skills](#skills) | [Plugins](#plugins) | [MCP Servers](#mcp-servers) | [Hooks](#hooks) | [Memory](#memory-files) | [New Features](#new-features-march-2026)
+**Navigation**: [Commands](#slash-commands) | [Subagents](#subagents) | [Skills](#skills) | [Plugins](#plugins) | [MCP Servers](#mcp-servers) | [Hooks](#hooks) | [Memory](#memory-files) | [New Features](#new-features-march-2026)
 
 ---
 
@@ -16,7 +16,7 @@
 | Feature | Built-in | Examples | Total | Reference |
 |---------|----------|----------|-------|-----------|
 | **Slash Commands** | 55 | 8 | 63 | [01-slash-commands/](01-slash-commands/) |
-| **Sub-Agents** | 6 | 10 | 16 | [04-subagents/](04-subagents/) |
+| **Subagents** | 6 | 10 | 16 | [04-subagents/](04-subagents/) |
 | **Skills** | 5 bundled | 4 | 9 | [03-skills/](03-skills/) |
 | **Plugins** | - | 3 | 3 | [07-plugins/](07-plugins/) |
 | **MCP Servers** | 1 | 8 | 9 | [05-mcp/](05-mcp/) |
@@ -111,11 +111,11 @@ cp 01-slash-commands/*.md .claude/commands/
 
 ---
 
-## Sub-Agents
+## Subagents
 
 Specialized AI assistants with isolated contexts for specific tasks.
 
-### Built-in Sub-Agents
+### Built-in Subagents
 
 | Agent | Description | Tools | Model | When to Use |
 |-------|-------------|-------|-------|-------------|
@@ -126,7 +126,7 @@ Specialized AI assistants with isolated contexts for specific tasks.
 | **statusline-setup** | Status line configuration | Bash, Read, Write | Sonnet 4.6 | Configure status line display |
 | **Claude Code Guide** | Help and documentation | Read, Glob, Grep | Haiku 4.5 | Getting help, learning features |
 
-### Custom Sub-Agents (Examples)
+### Custom Subagents (Examples)
 
 | Agent | Description | When to Use | Scope | Installation |
 |-------|-------------|-------------|-------|--------------|
@@ -215,7 +215,7 @@ Bundled collections of commands, agents, MCP servers, and hooks.
 .claude-plugin/
 ├── plugin.json       # Manifest file
 ├── commands/         # Slash commands
-├── agents/           # Sub-agents
+├── agents/           # Subagents
 ├── skills/           # Skills
 ├── mcp/              # MCP configurations
 ├── hooks/            # Hook scripts
@@ -363,7 +363,7 @@ Persistent context loaded automatically across sessions.
 | **Project Rules** | `.claude/rules/` | Project (team) | Modular project rules |
 | **User** | `~/.claude/CLAUDE.md` | User (personal) | Personal preferences |
 | **User Rules** | `~/.claude/rules/` | User (personal) | Modular personal rules |
-| **Local** | `./CLAUDE.local.md` | Local (git-ignored) | Machine-specific overrides |
+| **Local** | `./CLAUDE.local.md` | Local (git-ignored) | Machine-specific overrides (not in official docs as of March 2026; may be legacy) |
 | **Auto Memory** | Automatic | Session | Auto-captured insights and corrections |
 
 > **Scope**: `Organization` = managed by admins, `Project` = shared with team via git, `User` = personal preferences, `Local` = not committed, `Session` = auto-managed
@@ -407,7 +407,7 @@ cp 02-memory/personal-CLAUDE.md ~/.claude/CLAUDE.md
 | Quick shortcut | Slash Command | Manual, immediate |
 | Persistent context | Memory | Auto-loaded |
 | Complex automation | Skill | Auto-invoked |
-| Specialized task | Sub-Agent | Isolated context |
+| Specialized task | Subagent | Isolated context |
 | External data | MCP Server | Real-time access |
 | Event automation | Hook | Event-triggered |
 | Complete solution | Plugin | All-in-one bundle |
@@ -418,7 +418,7 @@ cp 02-memory/personal-CLAUDE.md ~/.claude/CLAUDE.md
 |----------|---------|---------|
 | 1. Essential | Memory | `cp 02-memory/project-CLAUDE.md ./CLAUDE.md` |
 | 2. Daily Use | Slash Commands | `cp 01-slash-commands/*.md .claude/commands/` |
-| 3. Quality | Sub-Agents | `cp 04-subagents/*.md .claude/agents/` |
+| 3. Quality | Subagents | `cp 04-subagents/*.md .claude/agents/` |
 | 4. Automation | Hooks | `cp 06-hooks/*.sh ~/.claude/hooks/ && chmod +x ~/.claude/hooks/*.sh` |
 | 5. External | MCP | `claude mcp add github -- npx -y @modelcontextprotocol/server-github` |
 | 6. Advanced | Skills | `cp -r 03-skills/* ~/.claude/skills/` |

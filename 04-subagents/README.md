@@ -734,7 +734,7 @@ graph TB
     C -->|Results only| A
     D -->|Results only| A
 
-    style A fill:#e1f5ff
+    style A fill:#e1f5fe
     style B fill:#fff9c4
     style C fill:#fff9c4
     style D fill:#fff9c4

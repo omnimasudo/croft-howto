@@ -1066,7 +1066,7 @@ Claude will prompt you to choose which memory file to update.
 For the most up-to-date information, refer to the official Claude Code documentation:
 
 - **[Memory Documentation](https://code.claude.com/docs/en/memory)** - Complete memory system reference
-- **[Slash Commands Reference](https://code.claude.com/docs/en/slash-commands)** - All built-in commands including `/init` and `/memory`
+- **[Slash Commands Reference](https://code.claude.com/docs/en/interactive-mode)** - All built-in commands including `/init` and `/memory`
 - **[CLI Reference](https://code.claude.com/docs/en/cli-reference)** - Command-line interface documentation
 
 ### Key Technical Details from Official Docs

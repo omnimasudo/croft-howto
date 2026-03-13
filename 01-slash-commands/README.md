@@ -67,7 +67,7 @@ Built-in commands are shortcuts for common actions. Type `/` in Claude Code to s
 | `/remote-env` | Configure remote session environment (claude.ai subscribers) |
 | `/rename <name>` | Rename the current session |
 | `/resume [session]` | Resume a conversation by ID or name |
-| `/review` | **Deprecated** — install the [`code-review` plugin](https://github.com/anthropics/claude-code-marketplace/blob/main/code-review/README.md) instead: `claude plugin install code-review@claude-code-marketplace` |
+| `/review` | **Deprecated** — install the `code-review` plugin instead: `claude plugin install code-review@claude-code-marketplace` |
 | `/rewind` | Rewind the conversation and/or code |
 | `/sandbox` | Enable sandboxed bash tool with filesystem and network isolation |
 | `/security-review` | Complete a security review of pending changes |

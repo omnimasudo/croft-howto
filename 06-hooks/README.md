@@ -55,6 +55,7 @@ Hooks are configured in settings files with a specific structure:
 | `type` | Hook type: `"command"` (bash), `"prompt"` (LLM), or `"http"` (webhook) | `"command"` |
 | `command` | Shell command to execute | `"$CLAUDE_PROJECT_DIR/.claude/hooks/format.sh"` |
 | `timeout` | Optional timeout in seconds (default 60) | `30` |
+| `once` | If `true`, run the hook only once per session | `true` |
 
 ### Matcher Patterns
 
@@ -83,7 +84,9 @@ The default hook type. Executes a shell command and communicates via JSON stdin/
 
 ### HTTP Hooks
 
-Remote webhook endpoints that receive the same JSON input as command hooks. HTTP hooks are routed through the sandbox when sandboxing is enabled. Environment variable interpolation in URLs requires an explicit `allowedEnvVars` list for security.
+> Added in v2.1.63.
+
+Remote webhook endpoints that receive the same JSON input as command hooks. HTTP hooks POST JSON to the URL and receive a JSON response. HTTP hooks are routed through the sandbox when sandboxing is enabled. Environment variable interpolation in URLs requires an explicit `allowedEnvVars` list for security.
 
 ```json
 {
@@ -119,10 +122,12 @@ The LLM evaluates the prompt and returns a structured decision (see [Prompt-Base
 
 ## Hook Events
 
-Claude Code supports **16 hook events**:
+Claude Code supports **18 hook events**:
 
 | Event | When Triggered | Matcher Input | Can Block | Common Use |
 |-------|---------------|---------------|-----------|------------|
+| **InstructionsLoaded** | After CLAUDE.md files loaded | (none) | No | Modify/filter instructions |
+| **Setup** | During initial setup | (none) | No | One-time initialization |
 | **PreToolUse** | Before tool execution | Tool name | Yes | Validate, modify inputs |
 | **PostToolUse** | After tool completion | Tool name | Yes (block) | Add context, feedback |
 | **PermissionRequest** | Permission dialog shown | Tool name | Yes | Auto-approve/deny |
@@ -401,9 +406,24 @@ All hooks receive JSON input via stdin:
     "file_path": "/path/to/file.js",
     "content": "..."
   },
-  "tool_use_id": "toolu_01ABC123..."
+  "tool_use_id": "toolu_01ABC123...",
+  "agent_id": "agent-abc123",
+  "agent_type": "main",
+  "worktree": "/path/to/worktree"
 }
 ```
+
+**Common fields:**
+
+| Field | Description |
+|-------|-------------|
+| `session_id` | Unique session identifier |
+| `transcript_path` | Path to the conversation transcript file |
+| `cwd` | Current working directory |
+| `hook_event_name` | Name of the event that triggered the hook |
+| `agent_id` | Identifier of the agent running this hook |
+| `agent_type` | Type of agent (`"main"`, subagent type name, etc.) |
+| `worktree` | Path to the git worktree, if the agent is running in one |
 
 ### Exit Codes
 
@@ -440,6 +460,7 @@ All hooks receive JSON input via stdin:
 | `CLAUDE_ENV_FILE` | SessionStart only | File path for persisting env vars |
 | `CLAUDE_CODE_REMOTE` | All hooks | `"true"` if running in web environment |
 | `${CLAUDE_PLUGIN_ROOT}` | Plugin hooks | Path to plugin directory |
+| `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS` | SessionEnd hooks | Configurable timeout in milliseconds for SessionEnd hooks (overrides default) |
 
 ## Prompt-Based Hooks
 

@@ -209,7 +209,7 @@ Extended thinking is a deliberate, step-by-step reasoning process where Claude:
 
 **Automatic activation**:
 - Enabled by default for all models (Opus 4.6, Sonnet 4.6, Haiku 4.5)
-- Opus 4.6: Adaptive reasoning with effort levels (low/medium/high)
+- Opus 4.6: Adaptive reasoning with effort levels: low (○), medium (◐), high (●)
 - Other models: Fixed budget up to 31,999 tokens
 
 **Configuration methods**:
@@ -223,7 +223,7 @@ export MAX_THINKING_TOKENS=1024
 
 **Effort level** (Opus 4.6 only):
 ```bash
-export CLAUDE_CODE_EFFORT_LEVEL=high   # low, medium, or high
+export CLAUDE_CODE_EFFORT_LEVEL=high   # low (○), medium (◐), or high (●)
 ```
 
 > **Note:** Words like "think" or "ultrathink" in prompts are interpreted as regular prompt instructions, not special keywords or triggers.
@@ -314,7 +314,7 @@ Extended thinking is controlled via environment variables and keyboard shortcuts
 # Set thinking token budget
 export MAX_THINKING_TOKENS=16000
 
-# Set effort level (Opus 4.6 only)
+# Set effort level (Opus 4.6 only): low (○), medium (◐), or high (●)
 export CLAUDE_CODE_EFFORT_LEVEL=high
 ```
 

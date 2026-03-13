@@ -24,34 +24,46 @@ Built-in commands are shortcuts for common actions. Type `/` in Claude Code to s
 |---------|---------|
 | `/add-dir` | Add additional working directories |
 | `/agents` | Manage custom AI subagents for specialized tasks |
+| `/btw <question>` | Side question without adding to conversation |
+| `/chrome` | Configure Chrome browser integration |
 | `/clear` | Clear conversation history |
 | `/compact [instructions]` | Compact conversation with optional focus instructions |
 | `/config` | Open the Settings interface (Config tab) |
-| `/context` | Visualize current context usage as a colored grid |
+| `/context` | Visualize context usage with actionable optimization suggestions |
 | `/copy` | Copy the last assistant response to clipboard |
 | `/cost` | Show token usage statistics |
 | `/desktop` | Hand off CLI session to Desktop app (macOS/Windows) |
+| `/diff` | Interactive diff viewer for uncommitted changes |
 | `/doctor` | Checks the health of your Claude Code installation |
 | `/exit` | Exit the REPL |
 | `/export [filename]` | Export the current conversation to a file or clipboard |
+| `/extra-usage` | Configure extra usage for rate limits |
 | `/fast` | Toggle fast mode (same model, faster output) |
+| `/feedback` | Submit feedback (alias: `/bug`) |
 | `/fork` | Fork the current session into a new conversation |
 | `/help` | Get usage help |
 | `/hooks` | Manage hook configurations for tool events |
 | `/ide` | Manage IDE integrations and show status |
 | `/init` | Initialize project with `CLAUDE.md` guide |
+| `/insights` | Analyze session patterns and friction points |
 | `/install-github-app` | Set up Claude GitHub Actions for a repository |
+| `/install-slack-app` | Install Claude Slack app |
+| `/keybindings` | Open keybindings configuration |
 | `/login` | Switch Anthropic accounts |
 | `/logout` | Sign out from your Anthropic account |
 | `/mcp` | Manage MCP server connections and OAuth authentication |
 | `/memory` | Edit `CLAUDE.md` memory files |
+| `/mobile` | QR code for Claude mobile app (aliases: `/ios`, `/android`) |
 | `/model` | Select or change the AI model |
+| `/passes` | Share free week of Claude Code |
 | `/permissions` | View or update permissions |
 | `/plan` | Enter plan mode directly from the prompt |
 | `/plugin` | Manage Claude Code plugins |
 | `/pr-comments` | View pull request comments |
 | `/privacy-settings` | View and update your privacy settings |
 | `/release-notes` | View release notes |
+| `/reload-plugins` | Reload active plugins without restart |
+| `/remote-control` | Make session available for remote control (alias: `/rc`) |
 | `/remote-env` | Configure remote session environment (claude.ai subscribers) |
 | `/rename <name>` | Rename the current session |
 | `/resume [session]` | Resume a conversation by ID or name |
@@ -59,13 +71,16 @@ Built-in commands are shortcuts for common actions. Type `/` in Claude Code to s
 | `/rewind` | Rewind the conversation and/or code |
 | `/sandbox` | Enable sandboxed bash tool with filesystem and network isolation |
 | `/security-review` | Complete a security review of pending changes |
+| `/skills` | List available skills |
 | `/stats` | Visualize daily usage, session history, streaks, and model preferences |
 | `/status` | Open the Settings interface (Status tab) |
 | `/statusline` | Set up Claude Code's status line UI |
+| `/stickers` | Order Claude Code stickers |
 | `/tasks` | List and manage background tasks |
 | `/teleport` | Resume remote session from claude.ai by session ID |
 | `/terminal-setup` | Install Shift+Enter key binding for newlines |
 | `/theme` | Change the color theme |
+| `/upgrade` | Open upgrade page |
 | `/usage` | Show plan usage limits and rate limit status |
 | `/vim` | Enter vim mode for alternating insert and command modes |
 

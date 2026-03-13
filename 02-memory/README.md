@@ -269,6 +269,26 @@ graph TD
     style I fill:#e1f5fe,stroke:#333,color:#333
 ```
 
+## Excluding CLAUDE.md Files with `claudeMdExcludes`
+
+In large monorepos, some CLAUDE.md files may be irrelevant to your current work. The `claudeMdExcludes` setting lets you skip specific CLAUDE.md files so they are not loaded into context:
+
+```jsonc
+// In ~/.claude/settings.json or .claude/settings.json
+{
+  "claudeMdExcludes": [
+    "packages/legacy-app/CLAUDE.md",
+    "vendors/**/CLAUDE.md"
+  ]
+}
+```
+
+Patterns are matched against paths relative to the project root. This is particularly useful for:
+
+- Monorepos with many sub-projects, where only some are relevant
+- Repositories that contain vendored or third-party CLAUDE.md files
+- Reducing noise in Claude's context window by excluding stale or unrelated instructions
+
 ## Modular Rules System
 
 Create organized, path-specific rules using the `.claude/rules/` directory structure. Rules can be defined at both the project level and user level:
@@ -406,6 +426,31 @@ graph TD
 ├── api-conventions.md     # Topic file (loaded on demand)
 └── testing-patterns.md    # Topic file (loaded on demand)
 ```
+
+### Version Requirement
+
+Auto memory requires **Claude Code v2.1.59 or later**. If you are on an older version, upgrade first:
+
+```bash
+npm install -g @anthropic-ai/claude-code@latest
+```
+
+### Custom Auto Memory Directory
+
+By default, auto memory is stored in `~/.claude/projects/<project>/memory/`. You can change this location using the `autoMemoryDirectory` setting (available since **v2.1.74**):
+
+```jsonc
+// In ~/.claude/settings.json or .claude/settings.json
+{
+  "autoMemoryDirectory": "/path/to/custom/memory/directory"
+}
+```
+
+This is useful when you want to:
+
+- Store auto memory in a shared or synced location
+- Separate auto memory from the default Claude configuration directory
+- Use a project-specific path outside the default hierarchy
 
 ### Controlling Auto Memory
 

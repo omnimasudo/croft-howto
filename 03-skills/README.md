@@ -217,6 +217,7 @@ Skills support dynamic values:
 | `$ARGUMENTS` | All arguments passed when invoking the skill |
 | `$ARGUMENTS[N]` or `$N` | Access specific argument by index (0-based) |
 | `${CLAUDE_SESSION_ID}` | Current session ID |
+| `${CLAUDE_SKILL_DIR}` | Directory containing the skill's SKILL.md file |
 
 **Example:**
 
@@ -724,6 +725,20 @@ Skill descriptions are loaded at **2% of the context window** (fallback: **16,00
 | **Memory (CLAUDE.md)** | Always loaded | Persistent project context |
 | **MCP** | Real-time | External data/service access |
 | **Hooks** | Event-driven | Automated side effects |
+
+## Bundled Skills
+
+Claude Code ships with several built-in skills that are always available without installation:
+
+| Skill | Description |
+|-------|-------------|
+| `/simplify` | Review changed files for reuse, quality, and efficiency; spawns 3 parallel review agents |
+| `/batch <instruction>` | Orchestrate large-scale parallel changes across codebase using git worktrees |
+| `/debug [description]` | Troubleshoot current session by reading debug log |
+| `/loop [interval] <prompt>` | Run prompt repeatedly on interval (e.g., `/loop 5m check the deploy`) |
+| `/claude-api` | Load Claude API/SDK reference; auto-activates on `anthropic`/`@anthropic-ai/sdk` imports |
+
+These skills are available out-of-the-box and do not need to be installed or configured. They follow the same SKILL.md format as custom skills.
 
 ## Sharing Skills
 

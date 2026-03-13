@@ -135,10 +135,37 @@ claude mcp add --transport http my-service https://my-service.example.com/mcp \
 | **Token storage** | Tokens are stored securely in your system keychain |
 | **Step-up auth** | Supports step-up authentication for privileged operations |
 | **Discovery caching** | OAuth discovery metadata is cached for faster reconnections |
+| **Metadata override** | `oauth.authServerMetadataUrl` in `.mcp.json` to override default OAuth metadata discovery |
+
+#### Overriding OAuth Metadata Discovery
+
+If your MCP server returns errors on the standard OAuth metadata endpoint (`/.well-known/oauth-authorization-server`) but exposes a working OIDC endpoint, you can tell Claude Code to fetch OAuth metadata from a specific URL. Set `authServerMetadataUrl` in the `oauth` object of your server config:
+
+```json
+{
+  "mcpServers": {
+    "my-server": {
+      "type": "http",
+      "url": "https://mcp.example.com/mcp",
+      "oauth": {
+        "authServerMetadataUrl": "https://auth.example.com/.well-known/openid-configuration"
+      }
+    }
+  }
+}
+```
+
+The URL must use `https://`. This option requires Claude Code v2.1.64 or later.
 
 ### Claude.ai MCP Connectors
 
 MCP servers configured in your Claude.ai account are automatically available in Claude Code. This means any MCP connections you set up through the Claude.ai web interface will be accessible without additional configuration.
+
+To disable Claude.ai MCP servers in Claude Code, set the `ENABLE_CLAUDEAI_MCP_SERVERS` environment variable to `false`:
+
+```bash
+ENABLE_CLAUDEAI_MCP_SERVERS=false claude
+```
 
 > **Note:** This feature is only available for users logged in with Claude.ai accounts.
 
@@ -201,9 +228,9 @@ MCP configurations can be stored at different scopes with varying levels of shar
 
 | Scope | Location | Description | Shared With | Requires Approval |
 |-------|----------|-------------|-------------|------------------|
-| **Local** (default) | `~/.claude.json` | Private to current user | Just you | No |
+| **Local** (default) | `~/.claude.json` (under project path) | Private to current user, current project only (was called `project` in older versions) | Just you | No |
 | **Project** | `.mcp.json` | Checked into git repository | Team members | Yes (first use) |
-| **User** | `~/.claude.json` | Available across all projects | Just you | No |
+| **User** | `~/.claude.json` | Available across all projects (was called `global` in older versions) | Just you | No |
 
 ### Using Project Scope
 
@@ -651,6 +678,160 @@ The maximum output limit is configurable via the `MAX_MCP_OUTPUT_TOKENS` environ
 # Increase the max output to 50,000 tokens
 export MAX_MCP_OUTPUT_TOKENS=50000
 ```
+
+## Solving Context Bloat with Code Execution
+
+As MCP adoption scales, connecting to dozens of servers with hundreds or thousands of tools creates a significant challenge: **context bloat**. This is arguably the biggest problem with MCP at scale, and Anthropic's engineering team has proposed an elegant solution — using code execution instead of direct tool calls.
+
+> **Source**: [Code Execution with MCP: Building More Efficient Agents](https://www.anthropic.com/engineering/code-execution-with-mcp) — Anthropic Engineering Blog
+
+### The Problem: Two Sources of Token Waste
+
+**1. Tool definitions overload the context window**
+
+Most MCP clients load all tool definitions upfront. When connected to thousands of tools, the model must process hundreds of thousands of tokens before it even reads the user's request.
+
+**2. Intermediate results consume additional tokens**
+
+Every intermediate tool result passes through the model's context. Consider transferring a meeting transcript from Google Drive to Salesforce — the full transcript flows through context **twice**: once when reading it, and again when writing it to the destination. A 2-hour meeting transcript could mean 50,000+ extra tokens.
+
+```mermaid
+graph LR
+    A["Model"] -->|"Tool Call: getDocument"| B["MCP Server"]
+    B -->|"Full transcript (50K tokens)"| A
+    A -->|"Tool Call: updateRecord<br/>(re-sends full transcript)"| B
+    B -->|"Confirmation"| A
+
+    style A fill:#ffcdd2,stroke:#333,color:#333
+    style B fill:#f3e5f5,stroke:#333,color:#333
+```
+
+### The Solution: MCP Tools as Code APIs
+
+Instead of passing tool definitions and results through the context window, the agent **writes code** that calls MCP tools as APIs. The code runs in a sandboxed execution environment, and only the final result returns to the model.
+
+```mermaid
+graph LR
+    A["Model"] -->|"Writes code"| B["Code Execution<br/>Environment"]
+    B -->|"Calls tools directly"| C["MCP Servers"]
+    C -->|"Data stays in<br/>execution env"| B
+    B -->|"Only final result<br/>(minimal tokens)"| A
+
+    style A fill:#c8e6c9,stroke:#333,color:#333
+    style B fill:#e1f5fe,stroke:#333,color:#333
+    style C fill:#f3e5f5,stroke:#333,color:#333
+```
+
+#### How It Works
+
+MCP tools are presented as a file tree of typed functions:
+
+```
+servers/
+├── google-drive/
+│   ├── getDocument.ts
+│   └── index.ts
+├── salesforce/
+│   ├── updateRecord.ts
+│   └── index.ts
+└── ...
+```
+
+Each tool file contains a typed wrapper:
+
+```typescript
+// ./servers/google-drive/getDocument.ts
+import { callMCPTool } from "../../../client.js";
+
+interface GetDocumentInput {
+  documentId: string;
+}
+
+interface GetDocumentResponse {
+  content: string;
+}
+
+export async function getDocument(
+  input: GetDocumentInput
+): Promise<GetDocumentResponse> {
+  return callMCPTool<GetDocumentResponse>(
+    'google_drive__get_document', input
+  );
+}
+```
+
+The agent then writes code to orchestrate the tools:
+
+```typescript
+import * as gdrive from './servers/google-drive';
+import * as salesforce from './servers/salesforce';
+
+// Data flows directly between tools — never through the model
+const transcript = (
+  await gdrive.getDocument({ documentId: 'abc123' })
+).content;
+
+await salesforce.updateRecord({
+  objectType: 'SalesMeeting',
+  recordId: '00Q5f000001abcXYZ',
+  data: { Notes: transcript }
+});
+```
+
+**Result: Token usage drops from ~150,000 to ~2,000 — a 98.7% reduction.**
+
+### Key Benefits
+
+| Benefit | Description |
+|---------|-------------|
+| **Progressive Disclosure** | Agent browses the filesystem to load only the tool definitions it needs, instead of all tools upfront |
+| **Context-Efficient Results** | Data is filtered/transformed in the execution environment before returning to the model |
+| **Powerful Control Flow** | Loops, conditionals, and error handling run in code without round-tripping through the model |
+| **Privacy Preservation** | Intermediate data (PII, sensitive records) stays in the execution environment; never enters the model context |
+| **State Persistence** | Agents can save intermediate results to files and build reusable skill functions |
+
+#### Example: Filtering Large Datasets
+
+```typescript
+// Without code execution — all 10,000 rows flow through context
+// TOOL CALL: gdrive.getSheet(sheetId: 'abc123')
+//   -> returns 10,000 rows in context
+
+// With code execution — filter in the execution environment
+const allRows = await gdrive.getSheet({ sheetId: 'abc123' });
+const pendingOrders = allRows.filter(
+  row => row["Status"] === 'pending'
+);
+console.log(`Found ${pendingOrders.length} pending orders`);
+console.log(pendingOrders.slice(0, 5)); // Only 5 rows reach the model
+```
+
+#### Example: Loop Without Round-Tripping
+
+```typescript
+// Poll for a deployment notification — runs entirely in code
+let found = false;
+while (!found) {
+  const messages = await slack.getChannelHistory({
+    channel: 'C123456'
+  });
+  found = messages.some(
+    m => m.text.includes('deployment complete')
+  );
+  if (!found) await new Promise(r => setTimeout(r, 5000));
+}
+console.log('Deployment notification received');
+```
+
+### Trade-offs to Consider
+
+Code execution introduces its own complexity. Running agent-generated code requires:
+
+- A **secure sandboxed execution environment** with appropriate resource limits
+- **Monitoring and logging** of executed code
+- Additional **infrastructure overhead** compared to direct tool calls
+
+The benefits — reduced token costs, lower latency, improved tool composition — should be weighed against these implementation costs. For agents with only a few MCP servers, direct tool calls may be simpler. For agents at scale (dozens of servers, hundreds of tools), code execution is a significant improvement.
 
 ## Best Practices
 

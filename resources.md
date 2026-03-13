@@ -16,6 +16,12 @@
 | Anthropic Cookbook | Code examples and tutorials | [github.com/anthropics/anthropic-cookbook](https://github.com/anthropics/anthropic-cookbook) |
 | Claude Code Skills | Community skills repository | [github.com/anthropics/skills](https://github.com/anthropics/skills) |
 
+## Anthropic Engineering Blog
+
+| Article | Description | Link |
+|---------|-------------|------|
+| Code Execution with MCP | How to solve MCP context bloat using code execution — 98.7% token reduction | [anthropic.com/engineering/code-execution-with-mcp](https://www.anthropic.com/engineering/code-execution-with-mcp) |
+
 ---
 
 ## Mastering Claude Code in 30 Minutes

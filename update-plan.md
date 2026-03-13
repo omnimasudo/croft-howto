@@ -109,97 +109,51 @@ Content existed but was missing significant features that shipped in Jan–Mar 2
 
 ---
 
-## Phase 3: New Feature Coverage (Content Gaps)
+## Phase 3: New Feature Coverage (Content Gaps) ✅ COMPLETED
 
-These are significant features that exist in official docs but have no corresponding content in the guide. Each needs a decision: create tutorial content, add a TODO note, or skip.
+> **Completed**: 2026-03-13
 
-### Task 3.1: Create Agent Teams tutorial content
+These are significant features that existed in official docs but had no or minimal corresponding content in the guide. All 8 tasks completed — new tutorial content added.
 
-- **Directory**: `04-subagents/README.md` (add section) or new file
-- **Content needed**:
-  - What agent teams are vs. subagents (comparison table)
-  - How to enable (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`)
-  - Starting a team, display modes (in-process vs tmux)
-  - Task assignment, teammate messaging, plan approval
-  - Architecture: team lead, teammates, shared task list, mailbox
-  - Best practices: team size (3-5), task sizing, file conflict avoidance
-  - Limitations (experimental, no session resumption, no nested teams)
-- **Priority**: High — major new capability
-- **Source**: `code.claude.com/docs/en/agent-teams`
+### Task 3.1: Expand Agent Teams tutorial content ✅
 
-### Task 3.2: Create Scheduled Tasks / `/loop` documentation
+- **File modified**: `04-subagents/README.md`
+- **Change**: Expanded Agent Teams section from 25 lines to ~140 lines. Added subagents vs agent teams comparison table, enabling instructions (env var + settings.json), starting a team example, display modes table, Mermaid architecture diagram (Team Lead → Shared Task List → Teammates + Mailbox), task assignment and messaging, plan approval workflow, hook events table (TeammateIdle, TaskCompleted), best practices (5 items), limitations (6 items)
 
-- **Directory**: `09-advanced-features/README.md` (add section)
-- **Content needed**:
-  - `/loop [interval] <prompt>` command usage
-  - Cron scheduling tools for recurring prompts
-  - `CLAUDE_CODE_DISABLE_CRON` env var
-  - Use cases: polling deploys, babysitting PRs
-- **Priority**: Medium — useful automation feature
-- **Source**: `code.claude.com/docs/en/scheduled-tasks`
+### Task 3.2: Add Scheduled Tasks / `/loop` documentation ✅
 
-### Task 3.3: Create Chrome Integration section
+- **File modified**: `09-advanced-features/README.md`
+- **Change**: Added new "Scheduled Tasks" section (~80 lines) between Background Tasks and Permission Modes. Covers `/loop` command syntax, one-time reminders, CronCreate/CronList/CronDelete tools table, behavior details table (jitter, missed fires, persistence), `CLAUDE_CODE_DISABLE_CRON` env var, deployment monitoring example
 
-- **Directory**: `09-advanced-features/README.md` (add section)
-- **Content needed**:
-  - `--chrome` / `--no-chrome` flags
-  - `/chrome` command for configuration
-  - Browser debugging and web testing capabilities
-- **Priority**: Medium — beta feature but useful for web developers
-- **Source**: `code.claude.com/docs/en/chrome`
+### Task 3.3: Add Chrome Integration section ✅
 
-### Task 3.4: Create Remote Control section
+- **File modified**: `09-advanced-features/README.md`
+- **Change**: Added new "Chrome Integration" section (~65 lines) between Interactive Features and Remote Control. Covers enabling via `--chrome`/`/chrome`, capabilities table (6 items), site-level permissions, how it works, known limitations (Brave/Arc, WSL, third-party providers)
 
-- **Directory**: `09-advanced-features/README.md` (add section or expand existing)
-- **Content needed**:
-  - `/remote-control` command (alias `/rc`)
-  - `claude remote-control` CLI subcommand
-  - Controlling local sessions from claude.ai or Claude app
-  - Optional name argument for custom session titles
-- **Priority**: Medium — enables mobile/cross-device workflows
-- **Source**: `code.claude.com/docs/en/remote-control`
+### Task 3.4: Expand Remote Control section ✅
 
-### Task 3.5: Document Plugin Marketplaces
+- **File modified**: `09-advanced-features/README.md`
+- **Change**: Expanded Remote Control from 18 lines to ~75 lines. Added version/plan requirements, CLI + REPL commands, flags table (--name, --verbose, --sandbox), 3 connection methods (QR code, URL, find by name), security details, Remote Control vs Claude Code on Web comparison table, limitations
 
-- **File**: `07-plugins/README.md` (add section)
-- **Content needed**:
-  - Creating and distributing plugin marketplaces
-  - Official marketplace submission (claude.ai/settings/plugins/submit)
-  - `/plugin marketplace` commands
-  - `strictKnownMarketplaces`, `extraKnownMarketplaces` settings
-- **Priority**: Medium — plugin ecosystem is maturing
-- **Source**: `code.claude.com/docs/en/plugin-marketplaces`, `code.claude.com/docs/en/discover-plugins`
+### Task 3.5: Expand Plugin Marketplaces ✅
 
-### Task 3.6: Document LSP Servers in Plugins
+- **File modified**: `07-plugins/README.md`
+- **Change**: Added ~80 lines after existing marketplace section. New subsections: marketplace.json schema with code example and field reference table, plugin source types table (6 sources: relative, GitHub, git URL, git-subdir, npm, pip), distribution methods, strict mode with `strictKnownMarketplaces` allowlist
 
-- **File**: `07-plugins/README.md` (add section)
-- **Content needed**:
-  - `.lsp.json` configuration format
-  - Language server setup for code intelligence
-  - Example Go/Python/TypeScript LSP configs
-- **Priority**: Low — niche feature, official marketplace covers common languages
-- **Source**: `code.claude.com/docs/en/plugins-reference#lsp-servers`
+### Task 3.6: Expand LSP Servers in Plugins ✅
 
-### Task 3.7: Document Keyboard Shortcuts Customization
+- **File modified**: `07-plugins/README.md`
+- **Change**: Expanded LSP section from 15 lines to ~70 lines. Added `.lsp.json` configuration locations, 12-field reference table, 3 example configs (Go/gopls, Python/pyright, TypeScript), available LSP plugins table, LSP capabilities summary
 
-- **File**: `09-advanced-features/README.md` (add section)
-- **Content needed**:
-  - `/keybindings` command
-  - `~/.claude/keybindings.json` configuration
-  - Available keybinding actions (voice:pushToTalk, chat:newline, etc.)
-  - Context-aware bindings, chord support
-- **Priority**: Low — power user feature
-- **Source**: `code.claude.com/docs/en/keybindings`
+### Task 3.7: Expand Keyboard Shortcuts Customization ✅
 
-### Task 3.8: Document Desktop App
+- **File modified**: `09-advanced-features/README.md`
+- **Change**: Added ~60 lines after existing keyboard shortcuts tables. New subsections: customizing keybindings (`/keybindings` command, v2.1.18+), JSON configuration format example, available contexts table (18 contexts), chord support with keystroke syntax, reserved and conflicting keys table
 
-- **File**: `09-advanced-features/README.md` (expand existing mention)
-- **Content needed**:
-  - Download links (macOS, Windows, Windows ARM64)
-  - `/desktop` command to hand off session
-  - Visual diff review, multiple sessions, cloud session management
-- **Priority**: Low — mentioned briefly already, needs expansion
-- **Source**: `code.claude.com/docs/en/desktop`, `code.claude.com/docs/en/desktop-quickstart`
+### Task 3.8: Expand Desktop App ✅
+
+- **File modified**: `09-advanced-features/README.md`
+- **Change**: Expanded Desktop App from 20 lines to ~100 lines. Added installation info, core features table (6 features), `.claude/launch.json` app preview config, connectors table (6 connectors), remote/SSH sessions, permission modes table, enterprise features
 
 ---
 
@@ -282,7 +236,7 @@ After Phases 1-3, these reference documents need updates to reflect all changes.
 |-------|-------|----------|-----------------|
 | **Phase 1** | 8 tasks | ✅ Completed 2026-03-13 | Small edits, 1 subagent batch |
 | **Phase 2** | 10 tasks (2 skipped) | ✅ Completed 2026-03-13 | 6 files modified, 2 already complete |
-| **Phase 3** | 8 tasks | Valuable — new feature tutorials | New content creation, 3-4 subagent batches |
+| **Phase 3** | 8 tasks | ✅ Completed 2026-03-13 | 3 files modified, ~612 net lines added |
 | **Phase 4** | 6 tasks | Required — cascade reference updates | Medium edits after Phases 1-3 |
 | **Phase 5** | 4 tasks | Required — quality gate before merge | Automated + manual review |
 

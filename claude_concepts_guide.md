@@ -534,6 +534,10 @@ graph TB
 | Long-running analysis | ✅ Yes | Prevents main context exhaustion |
 | Single task | ❌ No | Adds latency unnecessarily |
 
+### Agent Teams
+
+Agent Teams coordinate multiple agents working on related tasks. Rather than delegating to one subagent at a time, Agent Teams allow the main agent to orchestrate a group of agents that collaborate, share intermediate results, and work toward a common goal. This is useful for large-scale tasks like full-stack feature development where a frontend agent, backend agent, and testing agent work in parallel.
+
 ---
 
 ## Memory
@@ -1301,6 +1305,20 @@ graph TB
     E --> E1["Generate PDFs"]
     E --> E2["Fill forms"]
 ```
+
+### Bundled Skills
+
+Claude Code now includes 5 bundled skills available out of the box:
+
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| **Simplify** | `/simplify` | Simplify complex code or explanations |
+| **Batch** | `/batch` | Run operations across multiple files or items |
+| **Debug** | `/debug` | Systematic debugging of issues with root cause analysis |
+| **Loop** | `/loop` | Schedule recurring tasks on a timer |
+| **Claude API** | `/claude-api` | Interact with the Anthropic API directly |
+
+These bundled skills are always available and do not require installation or configuration.
 
 ### Practical Examples
 
@@ -2800,6 +2818,8 @@ Hooks are event-driven shell commands that execute automatically in response to 
 | **WorktreeCreate** | When a worktree is created | Environment setup, dependency install |
 | **WorktreeRemove** | When a worktree is removed | Cleanup, resource deallocation |
 | **ConfigChange** | When configuration changes | Validation, propagation |
+| **InstructionsLoaded** | When memory/instruction files are loaded | Validation, transformation, augmentation |
+| **Setup** | During agent initialization | Environment preparation, dependency checks |
 
 ### Common Hooks
 
@@ -3004,6 +3024,23 @@ cat error.log | claude -p "explain this error"
 claude -p --output-format json "list all functions in src/"
 ```
 
+### Scheduled Tasks
+
+Run tasks on a repeating schedule using the `/loop` command.
+
+**Usage:**
+```bash
+/loop every 30m "Run tests and report failures"
+/loop every 2h "Check for dependency updates"
+/loop every 1d "Generate daily summary of code changes"
+```
+
+Scheduled tasks run in the background and report results when complete. They are useful for continuous monitoring, periodic checks, and automated maintenance workflows.
+
+### Chrome Integration
+
+Claude Code can integrate with the Chrome browser for web automation tasks. This enables capabilities like navigating web pages, filling forms, taking screenshots, and extracting data from websites directly within your development workflow.
+
 ### Session Management
 
 Manage multiple work sessions.
@@ -3070,6 +3107,6 @@ Complete configuration example:
 
 ---
 
-*Last updated: February 2026*
+*Last updated: March 2026*
 *For Claude Haiku 4.5, Sonnet 4.6, and Opus 4.6*
-*Now includes: Hooks, Checkpoints, Planning Mode, Extended Thinking, Background Tasks, Permission Modes, Headless Mode, Session Management, and Auto Memory*
+*Now includes: Hooks, Checkpoints, Planning Mode, Extended Thinking, Background Tasks, Permission Modes, Headless Mode, Session Management, Auto Memory, Agent Teams, Scheduled Tasks, Chrome Integration, and Bundled Skills*

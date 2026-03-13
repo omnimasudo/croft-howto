@@ -7,7 +7,7 @@
 
 > Quick reference guide to all Claude Code features: commands, agents, skills, plugins, and hooks.
 
-**Navigation**: [Commands](#slash-commands) | [Sub-Agents](#sub-agents) | [Skills](#skills) | [Plugins](#plugins) | [MCP Servers](#mcp-servers) | [Hooks](#hooks) | [Memory](#memory-files) | [New Features](#new-features-february-2026)
+**Navigation**: [Commands](#slash-commands) | [Sub-Agents](#sub-agents) | [Skills](#skills) | [Plugins](#plugins) | [MCP Servers](#mcp-servers) | [Hooks](#hooks) | [Memory](#memory-files) | [New Features](#new-features-march-2026)
 
 ---
 
@@ -15,14 +15,14 @@
 
 | Feature | Built-in | Examples | Total | Reference |
 |---------|----------|----------|-------|-----------|
-| **Slash Commands** | 40 | 8 | 48 | [01-slash-commands/](01-slash-commands/) |
+| **Slash Commands** | 55 | 8 | 63 | [01-slash-commands/](01-slash-commands/) |
 | **Sub-Agents** | 6 | 10 | 16 | [04-subagents/](04-subagents/) |
-| **Skills** | - | 4 | 4 | [03-skills/](03-skills/) |
+| **Skills** | 5 bundled | 4 | 9 | [03-skills/](03-skills/) |
 | **Plugins** | - | 3 | 3 | [07-plugins/](07-plugins/) |
 | **MCP Servers** | 1 | 8 | 9 | [05-mcp/](05-mcp/) |
-| **Hooks** | 16 events | 7 | 7 | [06-hooks/](06-hooks/) |
+| **Hooks** | 18 events | 7 | 7 | [06-hooks/](06-hooks/) |
 | **Memory** | 7 types | 3 | 3 | [02-memory/](02-memory/) |
-| **Total** | **70** | **43** | **90** | |
+| **Total** | **92** | **43** | **110** | |
 
 ---
 
@@ -35,15 +35,22 @@ Commands are user-invoked shortcuts that execute specific actions.
 | Command | Description | When to Use |
 |---------|-------------|-------------|
 | `/help` | Show help information | Get started, learn commands |
+| `/btw` | Side question without adding to context | Quick tangent questions |
+| `/chrome` | Configure Chrome integration | Browser automation |
 | `/clear` | Clear conversation history | Start fresh, reduce context |
-| `/model` | Switch AI model | Change performance/cost |
+| `/diff` | Interactive diff viewer | Review changes |
 | `/config` | View/edit configuration | Customize behavior |
 | `/status` | Show session status | Check current state |
 | `/agents` | List available agents | See delegation options |
 | `/skills` | List available skills | See auto-invoke capabilities |
 | `/hooks` | List configured hooks | Debug automation |
+| `/insights` | Analyze session patterns | Session optimization |
+| `/install-slack-app` | Install Claude Slack app | Slack integration |
+| `/keybindings` | Customize keyboard shortcuts | Key customization |
 | `/mcp` | List MCP servers | Check external integrations |
 | `/memory` | View loaded memory files | Debug context loading |
+| `/mobile` | Generate mobile QR code | Mobile access |
+| `/passes` | View usage passes | Subscription info |
 | `/plugin` | Manage plugins | Install/remove extensions |
 | `/plan` | Enter planning mode | Complex implementations |
 | `/rewind` | Rewind to checkpoint | Undo changes, explore alternatives |
@@ -51,18 +58,21 @@ Commands are user-invoked shortcuts that execute specific actions.
 | `/cost` | Show token usage costs | Monitor spending |
 | `/context` | Show context window usage | Manage conversation length |
 | `/export` | Export conversation | Save for reference |
+| `/extra-usage` | Configure extra usage limits | Rate limit management |
+| `/feedback` | Submit feedback or bug report | Report issues |
 | `/login` | Authenticate with Anthropic | Access features |
 | `/logout` | Sign out | Switch accounts |
 | `/sandbox` | Toggle sandbox mode | Safe command execution |
 | `/vim` | Toggle vim mode | Vim-style editing |
 | `/doctor` | Run diagnostics | Troubleshoot issues |
+| `/reload-plugins` | Reload installed plugins | Plugin management |
 | `/release-notes` | Show release notes | Check new features |
+| `/remote-control` | Enable remote control | Remote access |
 | `/permissions` | Manage permissions | Control access |
 | `/session` | Manage sessions | Multi-session workflows |
 | `/rename` | Rename current session | Organize sessions |
 | `/resume` | Resume previous session | Continue work |
 | `/todo` | View/manage todo list | Track tasks |
-| `/todos` | View all project TODOs | Track outstanding items |
 | `/tasks` | View background tasks | Monitor async operations |
 | `/copy` | Copy last response to clipboard | Share output quickly |
 | `/teleport` | Transfer session to another machine | Continue work remotely |
@@ -72,8 +82,10 @@ Commands are user-invoked shortcuts that execute specific actions.
 | `/fork` | Fork current conversation | Explore alternatives |
 | `/stats` | Show session statistics | Review session metrics |
 | `/statusline` | Configure status line | Customize status display |
+| `/stickers` | View session stickers | Fun rewards |
 | `/fast` | Toggle fast output mode | Speed up responses |
 | `/terminal-setup` | Configure terminal integration | Setup terminal features |
+| `/upgrade` | Check for updates | Version management |
 
 ### Custom Commands (Examples)
 
@@ -170,6 +182,16 @@ Auto-invoked capabilities with instructions, scripts, and templates.
 ```bash
 cp -r 03-skills/* ~/.claude/skills/
 ```
+
+### Bundled Skills
+
+| Skill | Description | When Auto-Invoked |
+|-------|-------------|-------------------|
+| `/simplify` | Review code for quality | After writing code |
+| `/batch` | Run prompts on multiple files | Batch operations |
+| `/debug` | Debug failing tests/errors | Debugging sessions |
+| `/loop` | Run prompts on interval | Recurring tasks |
+| `/claude-api` | Build apps with Claude API | API development |
 
 ---
 
@@ -279,6 +301,8 @@ Event-driven automation that executes shell commands on Claude Code events.
 | `WorktreeCreate` | Worktree created | Git worktree created | Setup worktree environment |
 | `WorktreeRemove` | Worktree removed | Git worktree removed | Cleanup worktree resources |
 | `ConfigChange` | Configuration updated | Settings modified | React to config changes |
+| `InstructionsLoaded` | Instructions loaded | Memory files processed | Custom instruction handling |
+| `Setup` | Agent setup | Agent initialization | Environment configuration |
 | `TeammateIdle` | Teammate agent idle | Agent team coordination | Distribute work |
 | `TaskCompleted` | Task finished | Background task done | Post-task processing |
 
@@ -354,7 +378,7 @@ cp 02-memory/personal-CLAUDE.md ~/.claude/CLAUDE.md
 
 ---
 
-## New Features (February 2026)
+## New Features (March 2026)
 
 | Feature | Description | How to Use |
 |---------|-------------|------------|
@@ -368,6 +392,9 @@ cp 02-memory/personal-CLAUDE.md ~/.claude/CLAUDE.md
 | **Sandboxing** | Isolated execution environments for safety | Use `/sandbox` to toggle; runs commands in restricted environments |
 | **MCP OAuth** | OAuth authentication for MCP servers | Configure OAuth credentials in MCP server settings for secure access |
 | **MCP Tool Search** | Search and discover MCP tools dynamically | Use tool search to find available MCP tools across connected servers |
+| **Scheduled Tasks** | Set up recurring tasks with `/loop` and cron tools | Use `/loop 5m /command` or CronCreate tool |
+| **Chrome Integration** | Browser automation with headless Chromium | Use `--chrome` flag or `/chrome` command |
+| **Keyboard Customization** | Customize keybindings including chord support | Use `/keybindings` or edit `~/.claude/keybindings.json` |
 
 ---
 
@@ -427,4 +454,4 @@ chmod +x ~/.claude/hooks/*.sh
 
 ---
 
-**Last Updated**: February 2026
+**Last Updated**: March 2026

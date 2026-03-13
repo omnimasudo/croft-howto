@@ -369,6 +369,7 @@ Before starting Level 3, make sure you're comfortable with these Level 2 concept
 ✅ Background task management
 ✅ Auto Memory for learned preferences
 ✅ Remote control, desktop app, and web sessions
+✅ Agent Teams for multi-agent collaboration
 
 #### Hands-on Exercises
 
@@ -390,6 +391,14 @@ claude --permission-mode acceptEdits "refactor the auth module"
 # 4. Run tests in background
 # 5. If tests fail, rewind to checkpoint
 # 6. Try alternative approach
+
+# Exercise 5: Enable agent teams
+export CLAUDE_AGENT_TEAMS=1
+# Ask Claude: "Implement feature X using a team approach"
+
+# Exercise 6: Scheduled tasks
+/loop 5m /check-status
+# Or use CronCreate for persistent scheduled tasks
 ```
 
 #### Success Criteria
@@ -398,6 +407,8 @@ claude --permission-mode acceptEdits "refactor the auth module"
 - [ ] Toggled extended thinking with Alt+T / Option+T
 - [ ] Used background tasks for long operations
 - [ ] Understand Remote Control, Desktop App, and Web sessions
+- [ ] Enabled and used Agent Teams for collaborative tasks
+- [ ] Used `/loop` for recurring tasks or scheduled monitoring
 
 #### Next Steps
 - Read: [09-advanced-features/README.md](09-advanced-features/README.md)
@@ -672,10 +683,12 @@ Once you've completed all milestones:
 4. **Try Web Sessions** - Use Claude Code through browser-based interfaces for remote development
 5. **Use the Desktop App** - Access Claude Code features through the native desktop application
 6. **Leverage Auto Memory** - Let Claude learn your preferences automatically over time
-7. **Contribute examples** - Share with the community
-8. **Mentor others** - Help teammates learn
-9. **Optimize workflows** - Continuously improve based on usage
-10. **Stay updated** - Follow Claude Code releases and new features
+7. **Set up Agent Teams** - Coordinate multiple agents on complex, multi-faceted tasks
+8. **Use Scheduled Tasks** - Automate recurring checks with `/loop` and cron tools
+9. **Contribute examples** - Share with the community
+10. **Mentor others** - Help teammates learn
+11. **Optimize workflows** - Continuously improve based on usage
+12. **Stay updated** - Follow Claude Code releases and new features
 
 ---
 
@@ -703,7 +716,7 @@ Once you've completed all milestones:
 
 ---
 
-**Last Updated**: February 2026
+**Last Updated**: March 2026
 **Maintained by**: Claude How-To Contributors
 **License**: Educational purposes, free to use and adapt
 

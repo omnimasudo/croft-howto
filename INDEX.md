@@ -221,6 +221,7 @@ Event-driven automation scripts that execute automatically.
 **Hook Types**:
 - Tool Hooks: PreToolUse:*, PostToolUse:*
 - Session Hooks: Stop, SubagentStop, SubagentStart
+- Agent Hooks: InstructionsLoaded, Setup
 - Lifecycle Hooks: Notification, ConfigChange, WorktreeCreate, WorktreeRemove
 
 ---
@@ -366,6 +367,11 @@ Advanced capabilities for complex workflows.
 | `README.md` | Complete guide | All advanced features documentation |
 | `config-examples.json` | Configuration examples | 10+ use-case-specific configurations |
 | `planning-mode-examples.md` | Planning examples | REST API, database migration, refactoring |
+| Scheduled Tasks | Recurring tasks with `/loop` and cron tools | Automated recurring workflows |
+| Chrome Integration | Browser automation via headless Chromium | Web testing and scraping |
+| Remote Control (expanded) | Connection methods, security, comparison table | Remote session management |
+| Keyboard Customization | Custom keybindings, chord support, contexts | Personalized shortcuts |
+| Desktop App (expanded) | Connectors, launch.json, enterprise features | Desktop integration |
 | | | |
 
 **Advanced Features Covered**:
@@ -412,6 +418,31 @@ Advanced capabilities for complex workflows.
 - Comprehensive settings management
 - Environment-specific configs
 - Per-project customization
+
+### Scheduled Tasks
+- Recurring tasks with `/loop` command
+- Cron tools: CronCreate, CronList, CronDelete
+- Automated recurring workflows
+
+### Chrome Integration
+- Browser automation via headless Chromium
+- Web testing and scraping capabilities
+- Page interaction and data extraction
+
+### Remote Control (expanded)
+- Connection methods and protocols
+- Security considerations and best practices
+- Comparison table of remote access options
+
+### Keyboard Customization
+- Custom keybindings configuration
+- Chord support for multi-key shortcuts
+- Context-aware keybinding activation
+
+### Desktop App (expanded)
+- Connectors for IDE integration
+- launch.json configuration
+- Enterprise features and deployment
 
 ---
 
@@ -841,7 +872,7 @@ Want to add more examples? Follow the structure:
 
 ---
 
-**Last Updated**: February 2026
+**Last Updated**: March 2026
 **Total Examples**: 100+ files
 **Categories**: 10 features
 **Hooks**: 8 automation scripts

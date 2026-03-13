@@ -13,21 +13,23 @@ Comprehensive guide to Claude Code's advanced capabilities including planning mo
 2. [Planning Mode](#planning-mode)
 3. [Extended Thinking](#extended-thinking)
 4. [Background Tasks](#background-tasks)
-5. [Permission Mode](#permission-mode)
-6. [Headless Mode](#headless-mode)
-7. [Session Management](#session-management)
-8. [Interactive Features](#interactive-features)
-9. [Remote Control](#remote-control)
-10. [Web Sessions](#web-sessions)
-11. [Desktop App](#desktop-app)
-12. [Task List](#task-list)
-13. [Prompt Suggestions](#prompt-suggestions)
-14. [Git Worktrees](#git-worktrees)
-15. [Sandboxing](#sandboxing)
-16. [Managed Settings (Enterprise)](#managed-settings-enterprise)
-17. [Configuration and Settings](#configuration-and-settings)
-18. [Best Practices](#best-practices)
-19. [Related Concepts](#related-concepts)
+5. [Scheduled Tasks](#scheduled-tasks)
+6. [Permission Mode](#permission-mode)
+7. [Headless Mode](#headless-mode)
+8. [Session Management](#session-management)
+9. [Interactive Features](#interactive-features)
+10. [Chrome Integration](#chrome-integration)
+11. [Remote Control](#remote-control)
+12. [Web Sessions](#web-sessions)
+13. [Desktop App](#desktop-app)
+14. [Task List](#task-list)
+15. [Prompt Suggestions](#prompt-suggestions)
+16. [Git Worktrees](#git-worktrees)
+17. [Sandboxing](#sandboxing)
+18. [Managed Settings (Enterprise)](#managed-settings-enterprise)
+19. [Configuration and Settings](#configuration-and-settings)
+20. [Best Practices](#best-practices)
+21. [Related Concepts](#related-concepts)
 
 ---
 
@@ -447,6 +449,72 @@ Claude: [Shows linter output from bg-5002]
 
 ---
 
+## Scheduled Tasks
+
+Scheduled Tasks let you run prompts automatically on a recurring schedule or as one-time reminders. Tasks are session-scoped — they run while Claude Code is active and are cleared when the session ends. Available since v2.1.72+.
+
+### The `/loop` command
+
+```bash
+# Explicit interval
+/loop 5m check if the deployment finished
+
+# Natural language
+/loop check build status every 30 minutes
+```
+
+Standard 5-field cron expressions are also supported for precise scheduling.
+
+### One-time reminders
+
+Set reminders that fire once at a specific time:
+
+```
+remind me at 3pm to push the release branch
+in 45 minutes, run the integration tests
+```
+
+### Managing scheduled tasks
+
+| Tool | Description |
+|------|-------------|
+| `CronCreate` | Create a new scheduled task |
+| `CronList` | List all active scheduled tasks |
+| `CronDelete` | Remove a scheduled task |
+
+**Limits and behavior**:
+- Up to **50 scheduled tasks** per session
+- Session-scoped — cleared when the session ends
+- Recurring tasks auto-expire after **3 days**
+- Tasks only fire while Claude Code is running — no catch-up for missed fires
+
+### Behavior details
+
+| Aspect | Detail |
+|--------|--------|
+| **Recurring jitter** | Up to 10% of the interval (max 15 minutes) |
+| **One-shot jitter** | Up to 90 seconds on :00/:30 boundaries |
+| **Missed fires** | No catch-up — skipped if Claude Code was not running |
+| **Persistence** | Not persisted across restarts |
+
+### Disabling scheduled tasks
+
+```bash
+export CLAUDE_CODE_DISABLE_CRON=1
+```
+
+### Example: monitoring a deployment
+
+```
+/loop 5m check the deployment status of the staging environment.
+        If the deploy succeeded, notify me and stop looping.
+        If it failed, show the error logs.
+```
+
+> **Tip**: Scheduled tasks are session-scoped. For persistent automation that survives restarts, use CI/CD pipelines, GitHub Actions, or Desktop App scheduled tasks instead.
+
+---
+
 ## Permission Modes
 
 Permission modes control what actions Claude can take without explicit approval.
@@ -749,6 +817,79 @@ Claude Code supports keyboard shortcuts for efficiency. Here's the complete refe
 | `Tab` | Autocomplete |
 | `↑ / ↓` | Command history |
 
+### Customizing keybindings
+
+Create custom keyboard shortcuts by running `/keybindings`, which opens `~/.claude/keybindings.json` for editing (v2.1.18+).
+
+**Configuration format**:
+
+```json
+{
+  "$schema": "https://www.schemastore.org/claude-code-keybindings.json",
+  "bindings": [
+    {
+      "context": "Chat",
+      "bindings": {
+        "ctrl+e": "chat:externalEditor",
+        "ctrl+u": null,
+        "ctrl+k ctrl+s": "chat:stash"
+      }
+    },
+    {
+      "context": "Confirmation",
+      "bindings": {
+        "ctrl+a": "confirmation:yes"
+      }
+    }
+  ]
+}
+```
+
+Set a binding to `null` to unbind a default shortcut.
+
+### Available contexts
+
+Keybindings are scoped to specific UI contexts:
+
+| Context | Key Actions |
+|---------|-------------|
+| **Chat** | `submit`, `cancel`, `cycleMode`, `modelPicker`, `thinkingToggle`, `undo`, `externalEditor`, `stash`, `imagePaste` |
+| **Confirmation** | `yes`, `no`, `previous`, `next`, `nextField`, `cycleMode`, `toggleExplanation` |
+| **Global** | `interrupt`, `exit`, `toggleTodos`, `toggleTranscript` |
+| **Autocomplete** | `accept`, `dismiss`, `next`, `previous` |
+| **HistorySearch** | `search`, `previous`, `next` |
+| **Settings** | Context-specific settings navigation |
+| **Tabs** | Tab switching and management |
+| **Help** | Help panel navigation |
+
+There are 18 contexts total including `Transcript`, `Task`, `ThemePicker`, `Attachments`, `Footer`, `MessageSelector`, `DiffDialog`, `ModelPicker`, and `Select`.
+
+### Chord support
+
+Keybindings support chord sequences (multi-key combinations):
+
+```
+"ctrl+k ctrl+s"   → Two-key sequence: press ctrl+k, then ctrl+s
+"ctrl+shift+p"    → Simultaneous modifier keys
+```
+
+**Keystroke syntax**:
+- **Modifiers**: `ctrl`, `alt` (or `opt`), `shift`, `meta` (or `cmd`)
+- **Uppercase implies Shift**: `K` is equivalent to `shift+k`
+- **Special keys**: `escape`, `enter`, `return`, `tab`, `space`, `backspace`, `delete`, arrow keys
+
+### Reserved and conflicting keys
+
+| Key | Status | Notes |
+|-----|--------|-------|
+| `Ctrl+C` | Reserved | Cannot be rebound (interrupt) |
+| `Ctrl+D` | Reserved | Cannot be rebound (exit) |
+| `Ctrl+B` | Terminal conflict | tmux prefix key |
+| `Ctrl+A` | Terminal conflict | GNU Screen prefix key |
+| `Ctrl+Z` | Terminal conflict | Process suspend |
+
+> **Tip**: If a shortcut does not work, check for conflicts with your terminal emulator or multiplexer.
+
 ### Tab Completion
 
 Claude Code provides intelligent tab completion:
@@ -848,23 +989,123 @@ Use this for quick command execution without switching contexts.
 
 ---
 
+## Chrome Integration
+
+Chrome Integration connects Claude Code to your Chrome or Microsoft Edge browser for live web automation and debugging. This is a beta feature available since v2.0.73+ (Edge support added in v1.0.36+).
+
+### Enabling Chrome Integration
+
+**At startup**:
+
+```bash
+claude --chrome      # Enable Chrome connection
+claude --no-chrome   # Disable Chrome connection
+```
+
+**Within a session**:
+
+```
+/chrome
+```
+
+Select "Enabled by default" to activate Chrome Integration for all future sessions. Claude Code shares your browser's login state, so it can interact with authenticated web apps.
+
+### Capabilities
+
+| Capability | Description |
+|------------|-------------|
+| **Live debugging** | Read console logs, inspect DOM elements, debug JavaScript in real time |
+| **Design verification** | Compare rendered pages against design mockups |
+| **Form validation** | Test form submissions, input validation, and error handling |
+| **Web app testing** | Interact with authenticated apps (Gmail, Google Docs, Notion, etc.) |
+| **Data extraction** | Scrape and process content from web pages |
+| **Session recording** | Record browser interactions as GIF files |
+
+### Site-level permissions
+
+The Chrome extension manages per-site access. Grant or revoke access for specific sites at any time through the extension popup. Claude Code only interacts with sites you have explicitly allowed.
+
+### How it works
+
+Claude Code controls the browser in a visible window — you can watch actions happen in real time. When the browser encounters a login page or CAPTCHA, Claude pauses and waits for you to handle it manually before continuing.
+
+### Known limitations
+
+- **Browser support**: Chrome and Edge only — Brave, Arc, and other Chromium browsers are not supported
+- **WSL**: Not available in Windows Subsystem for Linux
+- **Third-party providers**: Not supported with Bedrock, Vertex, or Foundry API providers
+- **Service worker idle**: The Chrome extension service worker may go idle during extended sessions
+
+> **Tip**: Chrome Integration is a beta feature. Browser support may expand in future releases.
+
+---
+
 ## Remote Control
 
-Remote Control allows you to control a locally running Claude Code instance from Claude.ai or the Claude app. This is useful when you want to interact with Claude Code through a web interface while it runs against your local codebase.
+Remote Control lets you continue a locally running Claude Code session from your phone, tablet, or any browser. Your local session keeps running on your machine — nothing moves to the cloud. Available on Pro, Max, Team, and Enterprise plans (v2.1.51+).
 
 ### Starting Remote Control
 
+**From the CLI**:
+
 ```bash
+# Start with default session name
 claude remote-control
+
+# Start with a custom name
+claude remote-control --name "Auth Refactor"
 ```
 
-This starts a Remote Control session that bridges your local Claude Code environment with the Claude.ai web interface. You can then issue commands from the browser that execute against your local file system and tools.
+**From within a session**:
 
-### Use Cases
+```
+/remote-control
+/remote-control "Auth Refactor"
+```
 
-- Control Claude Code from a mobile device or tablet
-- Collaborate with team members through a shared web interface
-- Use the richer Claude.ai UI while maintaining local tool execution
+**Available flags**:
+
+| Flag | Description |
+|------|-------------|
+| `--name "title"` | Custom session title for easy identification |
+| `--verbose` | Show detailed connection logs |
+| `--sandbox` | Enable filesystem and network isolation |
+| `--no-sandbox` | Disable sandboxing (default) |
+
+### Connecting to a session
+
+Three ways to connect from another device:
+
+1. **Session URL** — Printed to the terminal when the session starts; open in any browser
+2. **QR code** — Press `spacebar` after starting to display a scannable QR code
+3. **Find by name** — Browse your sessions at claude.ai/code or in the Claude mobile app (iOS/Android)
+
+### Security
+
+- **No inbound ports** opened on your machine
+- **Outbound HTTPS only** over TLS
+- **Scoped credentials** — multiple short-lived, narrowly scoped tokens
+- **Session isolation** — each remote session is independent
+
+### Remote Control vs Claude Code on the web
+
+| Aspect | Remote Control | Claude Code on Web |
+|--------|---------------|-------------------|
+| **Execution** | Runs on your machine | Runs on Anthropic cloud |
+| **Local tools** | Full access to local MCP servers, files, and CLI | No local dependencies |
+| **Use case** | Continue local work from another device | Start fresh from any browser |
+
+### Limitations
+
+- One remote session per Claude Code instance
+- Terminal must stay open on the host machine
+- Session times out after ~10 minutes if the network is unreachable
+
+### Use cases
+
+- Control Claude Code from a mobile device or tablet while away from your desk
+- Use the richer claude.ai UI while maintaining local tool execution
+- Quick code reviews on the go with your full local development environment
 
 ---
 
@@ -905,24 +1146,85 @@ Or from within an interactive REPL:
 
 ## Desktop App
 
-The Claude Code Desktop App provides a standalone application for visual diff review and managing multiple sessions. Available for macOS and Windows.
+The Claude Code Desktop App provides a standalone application with visual diff review, parallel sessions, and integrated connectors. Available for macOS and Windows (Pro, Max, Team, and Enterprise plans).
 
-### Handing Off from CLI
+### Installation
 
-If you are in a CLI session and want to switch to the Desktop App:
+Download from [claude.ai](https://claude.ai) for your platform:
+- **macOS**: Universal build (Apple Silicon and Intel)
+- **Windows**: x64 and ARM64 installers available
+
+See the [Desktop Quickstart](https://code.claude.com/docs/en/desktop-quickstart) for setup instructions.
+
+### Handing off from CLI
+
+Transfer your current CLI session to the Desktop App:
 
 ```
 /desktop
 ```
 
-This transfers your current session to the Desktop App for a richer visual experience.
+### Core features
 
-### Features
+| Feature | Description |
+|---------|-------------|
+| **Diff view** | File-by-file visual review with inline comments; Claude reads comments and revises |
+| **App preview** | Auto-starts dev servers with an embedded browser for live verification |
+| **PR monitoring** | GitHub CLI integration with auto-fix CI failures and auto-merge when checks pass |
+| **Parallel sessions** | Multiple sessions in the sidebar with automatic Git worktree isolation |
+| **Scheduled tasks** | Recurring tasks (hourly, daily, weekdays, weekly) that run while the app is open |
+| **Rich rendering** | Code, markdown, and diagram rendering with syntax highlighting |
 
-- Visual diff review for file changes
-- Multiple simultaneous sessions in tabs
-- Rich rendering of code, markdown, and diagrams
-- Available for macOS and Windows
+### App preview configuration
+
+Configure dev server behavior in `.claude/launch.json`:
+
+```json
+{
+  "command": "npm run dev",
+  "port": 3000,
+  "readyPattern": "ready on",
+  "persistCookies": true
+}
+```
+
+### Connectors
+
+Connect external services for richer context:
+
+| Connector | Capability |
+|-----------|------------|
+| **GitHub** | PR monitoring, issue tracking, code review |
+| **Slack** | Notifications, channel context |
+| **Linear** | Issue tracking, sprint management |
+| **Notion** | Documentation, knowledge base access |
+| **Asana** | Task management, project tracking |
+| **Calendar** | Schedule awareness, meeting context |
+
+> **Note**: Connectors are not available for remote (cloud) sessions.
+
+### Remote and SSH sessions
+
+- **Remote sessions**: Run on Anthropic cloud infrastructure; continue even when the app is closed. Accessible from claude.ai/code or the Claude mobile app
+- **SSH sessions**: Connect to remote machines over SSH with full access to the remote filesystem and tools. Claude Code must be installed on the remote machine
+
+### Permission modes in Desktop
+
+The Desktop App supports the same 4 permission modes as the CLI:
+
+| Mode | Behavior |
+|------|----------|
+| **Ask permissions** (default) | Review and approve every edit and command |
+| **Auto accept edits** | File edits auto-approved; commands require manual approval |
+| **Plan mode** | Review approach before any changes are made |
+| **Bypass permissions** | Automatic execution (sandbox-only, admin-controlled) |
+
+### Enterprise features
+
+- **Admin console**: Control Code tab access and permission settings for the organization
+- **MDM deployment**: Deploy via MDM on macOS or MSIX on Windows
+- **SSO integration**: Require single sign-on for organization members
+- **Managed settings**: Centrally manage team configuration and model availability
 
 ---
 
@@ -1248,3 +1550,8 @@ For more information about Claude Code and related features:
 - [MCP Guide](../05-mcp/) - External data access
 - [Hooks Guide](../06-hooks/) - Event-driven automation
 - [Plugins Guide](../07-plugins/) - Bundled extensions
+- [Official Scheduled Tasks Documentation](https://code.claude.com/docs/en/scheduled-tasks)
+- [Official Chrome Integration Documentation](https://code.claude.com/docs/en/chrome)
+- [Official Remote Control Documentation](https://code.claude.com/docs/en/remote-control)
+- [Official Keybindings Documentation](https://code.claude.com/docs/en/keybindings)
+- [Official Desktop App Documentation](https://code.claude.com/docs/en/desktop)

@@ -119,9 +119,34 @@ my-plugin/
     └── plugin.test.js
 ```
 
-## LSP Server Configuration
+### LSP server configuration
 
-Plugins can include Language Server Protocol (LSP) support via `.lsp.json`:
+Plugins can include Language Server Protocol (LSP) support for real-time code intelligence. LSP servers provide diagnostics, code navigation, and symbol information as you work.
+
+**Configuration locations**:
+- `.lsp.json` file in the plugin root directory
+- Inline `lsp` key in `plugin.json`
+
+#### Field reference
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `command` | Yes | LSP server binary (must be in PATH) |
+| `extensionToLanguage` | Yes | Maps file extensions to language IDs |
+| `args` | No | Command-line arguments for the server |
+| `transport` | No | Communication method: `stdio` (default) or `socket` |
+| `env` | No | Environment variables for the server process |
+| `initializationOptions` | No | Options sent during LSP initialization |
+| `settings` | No | Workspace configuration passed to the server |
+| `workspaceFolder` | No | Override the workspace folder path |
+| `startupTimeout` | No | Maximum time (ms) to wait for server startup |
+| `shutdownTimeout` | No | Maximum time (ms) for graceful shutdown |
+| `restartOnCrash` | No | Automatically restart if the server crashes |
+| `maxRestarts` | No | Maximum restart attempts before giving up |
+
+#### Example configurations
+
+**Go (gopls)**:
 
 ```json
 {
@@ -134,6 +159,57 @@ Plugins can include Language Server Protocol (LSP) support via `.lsp.json`:
   }
 }
 ```
+
+**Python (pyright)**:
+
+```json
+{
+  "python": {
+    "command": "pyright-langserver",
+    "args": ["--stdio"],
+    "extensionToLanguage": {
+      ".py": "python",
+      ".pyi": "python"
+    }
+  }
+}
+```
+
+**TypeScript**:
+
+```json
+{
+  "typescript": {
+    "command": "typescript-language-server",
+    "args": ["--stdio"],
+    "extensionToLanguage": {
+      ".ts": "typescript",
+      ".tsx": "typescriptreact",
+      ".js": "javascript",
+      ".jsx": "javascriptreact"
+    }
+  }
+}
+```
+
+#### Available LSP plugins
+
+The official marketplace includes pre-configured LSP plugins:
+
+| Plugin | Language | Server Binary | Install Command |
+|--------|----------|---------------|----------------|
+| `pyright-lsp` | Python | `pyright-langserver` | `pip install pyright` |
+| `typescript-lsp` | TypeScript/JavaScript | `typescript-language-server` | `npm install -g typescript-language-server typescript` |
+| `rust-lsp` | Rust | `rust-analyzer` | Install via `rustup component add rust-analyzer` |
+
+#### LSP capabilities
+
+Once configured, LSP servers provide:
+
+- **Instant diagnostics** — errors and warnings appear immediately after edits
+- **Code navigation** — go to definition, find references, implementations
+- **Hover information** — type signatures and documentation on hover
+- **Symbol listing** — browse symbols in the current file or workspace
 
 ## Plugin Settings
 
@@ -326,6 +402,106 @@ Enterprise and advanced users can control marketplace behavior through settings:
 - **Default git timeout**: Increased from 30s to 120s for large plugin repositories
 - **Custom npm registries**: Plugins can specify custom npm registry URLs for dependency resolution
 - **Version pinning**: Lock plugins to specific versions for reproducible environments
+
+### Marketplace definition schema
+
+Plugin marketplaces are defined in `.claude-plugin/marketplace.json`:
+
+```json
+{
+  "name": "my-team-plugins",
+  "owner": "my-org",
+  "plugins": [
+    {
+      "name": "code-standards",
+      "source": "./plugins/code-standards",
+      "description": "Enforce team coding standards",
+      "version": "1.2.0",
+      "author": "platform-team"
+    },
+    {
+      "name": "deploy-helper",
+      "source": {
+        "source": "github",
+        "repo": "my-org/deploy-helper",
+        "ref": "v2.0.0"
+      },
+      "description": "Deployment automation workflows"
+    }
+  ]
+}
+```
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | Yes | Marketplace name in kebab-case |
+| `owner` | Yes | Organization or user who maintains the marketplace |
+| `plugins` | Yes | Array of plugin entries |
+| `plugins[].name` | Yes | Plugin name (kebab-case) |
+| `plugins[].source` | Yes | Plugin source (path string or source object) |
+| `plugins[].description` | No | Brief plugin description |
+| `plugins[].version` | No | Semantic version string |
+| `plugins[].author` | No | Plugin author name |
+
+### Plugin source types
+
+Plugins can be sourced from multiple locations:
+
+| Source | Syntax | Example |
+|--------|--------|---------|
+| **Relative path** | String path | `"./plugins/my-plugin"` |
+| **GitHub** | `{ "source": "github", "repo": "owner/repo" }` | `{ "source": "github", "repo": "acme/lint-plugin", "ref": "v1.0" }` |
+| **Git URL** | `{ "source": "url", "url": "..." }` | `{ "source": "url", "url": "https://git.internal/plugin.git" }` |
+| **Git subdirectory** | `{ "source": "git-subdir", "url": "...", "path": "..." }` | `{ "source": "git-subdir", "url": "https://github.com/org/monorepo.git", "path": "packages/plugin" }` |
+| **npm** | `{ "source": "npm", "package": "..." }` | `{ "source": "npm", "package": "@acme/claude-plugin", "version": "^2.0" }` |
+| **pip** | `{ "source": "pip", "package": "..." }` | `{ "source": "pip", "package": "claude-data-plugin", "version": ">=1.0" }` |
+
+GitHub and git sources support optional `ref` (branch/tag) and `sha` (commit hash) fields for version pinning.
+
+### Distribution methods
+
+**GitHub (recommended)**:
+```bash
+# Users add your marketplace
+/plugin marketplace add owner/repo-name
+```
+
+**Other git services** (full URL required):
+```bash
+/plugin marketplace add https://gitlab.com/org/marketplace-repo.git
+```
+
+**Private repositories**: Supported via git credential helpers or environment tokens. Users must have read access to the repository.
+
+**Official marketplace submission**: Submit plugins to the Anthropic-curated marketplace for broader distribution.
+
+### Strict mode
+
+Control how marketplace definitions interact with local `plugin.json` files:
+
+| Setting | Behavior |
+|---------|----------|
+| `strict: true` (default) | Local `plugin.json` is authoritative; marketplace entry supplements it |
+| `strict: false` | Marketplace entry is the entire plugin definition |
+
+**Organization restrictions** with `strictKnownMarketplaces`:
+
+| Value | Effect |
+|-------|--------|
+| Not set | No restrictions — users can add any marketplace |
+| Empty array `[]` | Lockdown — no marketplaces allowed |
+| Array of patterns | Allowlist — only matching marketplaces can be added |
+
+```json
+{
+  "strictKnownMarketplaces": [
+    "my-org/*",
+    "github.com/trusted-vendor/*"
+  ]
+}
+```
+
+> **Warning**: In strict mode with `strictKnownMarketplaces`, users can only install plugins from allowlisted marketplaces. This is useful for enterprise environments requiring controlled plugin distribution.
 
 ## Plugin Installation & Lifecycle
 

@@ -15,6 +15,12 @@
 | MCP Servers | Official MCP server implementations | [github.com/modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers) |
 | Anthropic Cookbook | Code examples and tutorials | [github.com/anthropics/anthropic-cookbook](https://github.com/anthropics/anthropic-cookbook) |
 | Claude Code Skills | Community skills repository | [github.com/anthropics/skills](https://github.com/anthropics/skills) |
+| Agent Teams | Multi-agent coordination and collaboration | [code.claude.com/docs/en/agent-teams](https://code.claude.com/docs/en/agent-teams) |
+| Scheduled Tasks | Recurring tasks with /loop and cron | [code.claude.com/docs/en/scheduled-tasks](https://code.claude.com/docs/en/scheduled-tasks) |
+| Chrome Integration | Browser automation | [code.claude.com/docs/en/chrome](https://code.claude.com/docs/en/chrome) |
+| Keybindings | Keyboard shortcut customization | [code.claude.com/docs/en/keybindings](https://code.claude.com/docs/en/keybindings) |
+| Desktop App | Native desktop application | [code.claude.com/docs/en/desktop](https://code.claude.com/docs/en/desktop) |
+| Remote Control | Remote session control | [code.claude.com/docs/en/remote-control](https://code.claude.com/docs/en/remote-control) |
 
 ## Anthropic Engineering Blog
 
@@ -219,7 +225,7 @@ These steps capture the core recommendations for smooth workflows with Claude Co
 
 ---
 
-## New Features & Capabilities (February 2026)
+## New Features & Capabilities (March 2026)
 
 ### Key Feature Resources
 
@@ -233,3 +239,7 @@ These steps capture the core recommendations for smooth workflows with Claude Co
 | **Permission Modes** | Fine-grained control: default, acceptEdits, plan, dontAsk, bypassPermissions | [Advanced Features](09-advanced-features/) |
 | **7-Tier Memory** | Managed Policy, Project, Project Rules, User, User Rules, Local, Auto Memory | [Memory Guide](02-memory/) |
 | **Hook Events** | PreToolUse, PostToolUse, Stop, SubagentStop, SubagentStart, Notification, and more | [Hooks Guide](06-hooks/) |
+| **Agent Teams** | Coordinate multiple agents working together on complex tasks | [Subagents Guide](04-subagents/) |
+| **Scheduled Tasks** | Set up recurring tasks with `/loop` and cron tools | [Advanced Features](09-advanced-features/) |
+| **Chrome Integration** | Browser automation with headless Chromium | [Advanced Features](09-advanced-features/) |
+| **Keyboard Customization** | Customize keybindings including chord sequences | [Advanced Features](09-advanced-features/) |

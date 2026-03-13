@@ -129,6 +129,7 @@ claude -r "session"    # Resume session by name/ID
 | **Git Worktrees** | Built-in | `/worktree` |
 | **Auto Memory** | Built-in | Auto-saves to CLAUDE.md |
 | **Task List** | Built-in | `/task list` |
+| **Bundled Skills** | Built-in | `/simplify`, `/loop`, `/claude-api` |
 
 ---
 
@@ -235,6 +236,26 @@ claude --permission-mode plan
 
 # Experiment safely - checkpoints are created automatically
 # If you need to rewind: press Esc+Esc or use /rewind
+```
+
+### Agent Teams
+```bash
+# Enable agent teams
+export CLAUDE_AGENT_TEAMS=1
+
+# Or in settings.json
+{ "agentTeams": { "enabled": true } }
+
+# Start with: "Implement feature X using a team approach"
+```
+
+### Scheduled Tasks
+```bash
+# Run a command every 5 minutes
+/loop 5m /check-status
+
+# One-time reminder
+/loop 30m "remind me to check the deploy"
 ```
 
 ---
@@ -352,7 +373,7 @@ cp -r 03-skills/code-review ~/.claude/skills/
 
 ---
 
-## New Features (February 2026)
+## New Features (March 2026)
 
 | Feature | Description | Usage |
 |---------|-------------|-------|
@@ -363,6 +384,10 @@ cp -r 03-skills/code-review ~/.claude/skills/
 | **Auto Memory** | Automatic memory saving from conversations | Claude auto-saves key context to CLAUDE.md |
 | **Git Worktrees** | Isolated workspaces for parallel development | `/worktree` to create isolated workspace |
 | **Model Selection** | Switch between Sonnet 4.6 and Opus 4.6 | `/model` or `--model` flag |
+| **Agent Teams** | Coordinate multiple agents on tasks | Enable with `CLAUDE_AGENT_TEAMS=1` env var |
+| **Scheduled Tasks** | Recurring tasks with `/loop` | `/loop 5m /command` or CronCreate tool |
+| **Chrome Integration** | Browser automation | `--chrome` flag or `/chrome` command |
+| **Keyboard Customization** | Custom keybindings | `/keybindings` command |
 
 ---
 

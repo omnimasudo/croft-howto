@@ -85,3 +85,5 @@ promo-video/
 
 # Video files (too large for git)
 *.mp4
+
+update-plan*.md

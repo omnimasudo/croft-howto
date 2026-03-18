@@ -3,82 +3,211 @@
   <img alt="Claude How To" src="resources/logos/claude-howto-logo.svg">
 </picture>
 
-# Claude How To
+[![GitHub Stars](https://img.shields.io/github/stars/luongnv89/claude-howto?style=flat&color=gold)](https://github.com/luongnv89/claude-howto/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/luongnv89/claude-howto?style=flat)](https://github.com/luongnv89/claude-howto/network/members)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-2.1.1-brightgreen)](CHANGELOG.md)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-2.1+-purple)](https://code.claude.com)
 
-> A visual, example-driven guide to Claude Code — from basic concepts to advanced agents, with copy-paste templates that bring immediate value.
+# Master Claude Code in a Weekend
 
-## Why This Guide?
+Go from typing `claude` to orchestrating agents, hooks, skills, and MCP servers — with visual tutorials, copy-paste templates, and a guided learning path.
 
-This project complements [Anthropic's official documentation](https://code.claude.com/docs/en/overview) with a different approach:
+**[Get Started in 15 Minutes](#-get-started-in-15-minutes)** | **[Find Your Level](#-not-sure-where-to-start)** | **[Browse the Feature Catalog](CATALOG.md)**
+
+---
+
+## The Problem
+
+You installed Claude Code. You ran a few prompts. Now what?
+
+- **The official docs describe features — but don't show you how to combine them.** You know slash commands exist, but not how to chain them with hooks, memory, and subagents into a workflow that actually saves hours.
+- **There's no clear learning path.** Should you learn MCP before hooks? Skills before subagents? You end up skimming everything and mastering nothing.
+- **Examples are too basic.** A "hello world" slash command doesn't help you build a production code review pipeline that uses memory, delegates to specialized agents, and runs security scans automatically.
+
+You're leaving 90% of Claude Code's power on the table — and you don't know what you don't know.
+
+---
+
+## How Claude How To Fixes This
+
+This isn't another feature reference. It's a **structured, visual, example-driven guide** that teaches you to use every Claude Code feature with real-world templates you can copy into your project today.
 
 | | Official Docs | This Guide |
 |--|---------------|------------|
-| **Format** | Reference documentation | Visual tutorials with diagrams |
+| **Format** | Reference documentation | Visual tutorials with Mermaid diagrams |
 | **Depth** | Feature descriptions | How it works under the hood |
-| **Examples** | Basic snippets | Production-ready templates you can use immediately |
-| **Structure** | Feature-organized | Progressive learning path (beginner → advanced) |
+| **Examples** | Basic snippets | Production-ready templates you use immediately |
+| **Structure** | Feature-organized | Progressive learning path (beginner to advanced) |
 | **Onboarding** | Self-directed | Guided roadmap with time estimates |
-| **Self-Assessment** | None | Interactive quizzes to identify skill gaps and build a personalized learning path |
+| **Self-Assessment** | None | Interactive quizzes to find your gaps and build a personalized path |
 
-**What you'll find here:**
-- Mermaid diagrams explaining how each feature works
-- Ready-to-use configurations you can copy into your project
-- Real-world examples with context and best practices
-- Clear progression from `/help` to building custom agents
-- Troubleshooting guides based on common issues
+### What you get:
 
----
+- **10 tutorial modules** covering every Claude Code feature — from slash commands to custom agent teams
+- **Copy-paste configs** — slash commands, CLAUDE.md templates, hook scripts, MCP configs, subagent definitions, and full plugin bundles
+- **Mermaid diagrams** showing how each feature works internally, so you understand *why*, not just *how*
+- **A guided learning path** that takes you from beginner to power user in 11-13 hours
+- **Built-in self-assessment** — run `/self-assessment` or `/lesson-quiz hooks` directly in Claude Code to identify gaps
 
-## Table of Contents
-
-- [Why This Guide?](#why-this-guide)
-- [Feature Catalog](#-feature-catalog)
-- [Quick Navigation](#quick-navigation)
-- [Learning Path](#-learning-path)
-- [Quick Reference](#-quick-reference-choose-your-features)
-- [Getting Started](#-getting-started)
-- **Features**
-  - [01. Slash Commands](#01-slash-commands)
-  - [02. Memory](#02-memory)
-  - [03. Skills](#03-skills)
-  - [04. Subagents](#04-subagents)
-  - [05. MCP Protocol](#05-mcp-protocol)
-  - [06. Hooks](#06-hooks)
-  - [07. Plugins](#07-plugins)
-  - [08. Checkpoints](#08-checkpoints-and-rewind)
-  - [09. Advanced Features](#09-advanced-features)
-  - [10. CLI Reference](#10-cli-reference)
-- [Directory Structure](#directory-structure)
-- [Installation Quick Reference](#installation-quick-reference)
-- [Example Workflows](#example-workflows)
-- [Best Practices](#best-practices)
-- [Troubleshooting](#troubleshooting)
-- [Testing](#testing)
-- [Additional Resources](#additional-resources)
-- [Contributing](#contributing)
-- [EPUB Generation](#epub-generation)
-- [Contributors](#contributors)
-- [Star History](#star-history)
+**[Start the Learning Path  ->](LEARNING-ROADMAP.md)**
 
 ---
 
-## Feature Catalog
+## How It Works
 
-**Looking for a quick reference?** Check out our comprehensive **[Feature Catalog](CATALOG.md)** for:
+### 1. Find your level
 
-- All slash commands (built-in and custom) with descriptions
-- Sub-agents and their capabilities
-- Skills with auto-invocation triggers
-- Plugins with components and installation commands
-- MCP servers for external integrations
-- Hooks for event-driven automation
-- One-command installation for each feature
+Take the [self-assessment quiz](LEARNING-ROADMAP.md#-find-your-level) or run `/self-assessment` in Claude Code. Get a personalized roadmap based on what you already know.
 
-**[View Full Catalog](CATALOG.md)**
+### 2. Follow the guided path
+
+Work through 10 modules in order — each builds on the last. Copy templates directly into your project as you learn.
+
+### 3. Combine features into workflows
+
+The real power is in combining features. Learn to wire slash commands + memory + subagents + hooks into automated pipelines that handle code reviews, deployments, and documentation generation.
+
+### 4. Test your understanding
+
+Run `/lesson-quiz [topic]` after each module. The quiz pinpoints what you missed so you can fill gaps fast.
+
+**[Get Started in 15 Minutes](#-get-started-in-15-minutes)**
 
 ---
 
-## Quick Navigation
+## Trusted by 1,100+ Developers
+
+- **1,100+ GitHub stars** from developers who use Claude Code daily
+- **78 forks** — teams adapting this guide for their own workflows
+- **Actively maintained** — synced with every Claude Code release (latest: v2.1.1, March 2026)
+- **Community-driven** — contributions from developers who share their real-world configurations
+
+[![Star History Chart](https://api.star-history.com/svg?repos=luongnv89/claude-howto&type=Date)](https://star-history.com/#luongnv89/claude-howto&Date)
+
+---
+
+## Not Sure Where to Start?
+
+Take the self-assessment or pick your level:
+
+| Level | You can... | Start here | Time |
+|-------|-----------|------------|------|
+| **Beginner** | Start Claude Code and chat | [Slash Commands](01-slash-commands/) | ~2.5 hours |
+| **Intermediate** | Use CLAUDE.md and custom commands | [Skills](03-skills/) | ~3.5 hours |
+| **Advanced** | Configure MCP servers and hooks | [Advanced Features](09-advanced-features/) | ~5 hours |
+
+**Full learning path with all 10 modules:**
+
+| Order | Module | Level | Time |
+|-------|--------|-------|------|
+| 1 | [Slash Commands](01-slash-commands/) | Beginner | 30 min |
+| 2 | [Memory](02-memory/) | Beginner+ | 45 min |
+| 3 | [Checkpoints](08-checkpoints/) | Intermediate | 45 min |
+| 4 | [CLI Basics](10-cli/) | Beginner+ | 30 min |
+| 5 | [Skills](03-skills/) | Intermediate | 1 hour |
+| 6 | [Hooks](06-hooks/) | Intermediate | 1 hour |
+| 7 | [MCP](05-mcp/) | Intermediate+ | 1 hour |
+| 8 | [Subagents](04-subagents/) | Intermediate+ | 1.5 hours |
+| 9 | [Advanced Features](09-advanced-features/) | Advanced | 2-3 hours |
+| 10 | [Plugins](07-plugins/) | Advanced | 2 hours |
+
+**[Complete Learning Roadmap ->](LEARNING-ROADMAP.md)**
+
+---
+
+## Get Started in 15 Minutes
+
+```bash
+# 1. Clone the guide
+git clone https://github.com/luongnv89/claude-howto.git
+cd claude-howto
+
+# 2. Copy your first slash command
+mkdir -p /path/to/your-project/.claude/commands
+cp 01-slash-commands/optimize.md /path/to/your-project/.claude/commands/
+
+# 3. Try it — in Claude Code, type:
+# /optimize
+
+# 4. Ready for more? Set up project memory:
+cp 02-memory/project-CLAUDE.md /path/to/your-project/CLAUDE.md
+
+# 5. Install a skill:
+cp -r 03-skills/code-review ~/.claude/skills/
+```
+
+Want the full setup? Here's the **1-hour essential setup**:
+
+```bash
+# Slash commands (15 min)
+cp 01-slash-commands/*.md .claude/commands/
+
+# Project memory (15 min)
+cp 02-memory/project-CLAUDE.md ./CLAUDE.md
+
+# Install a skill (15 min)
+cp -r 03-skills/code-review ~/.claude/skills/
+
+# Weekend goal: add hooks, subagents, MCP, and plugins
+# Follow the learning path for guided setup
+```
+
+**[View the Full Installation Reference](#installation-quick-reference)**
+
+---
+
+## What Can You Build With This?
+
+| Use Case | Features You'll Combine |
+|----------|------------------------|
+| **Automated Code Review** | Slash Commands + Subagents + Memory + MCP |
+| **Team Onboarding** | Memory + Slash Commands + Plugins |
+| **CI/CD Automation** | CLI Reference + Hooks + Background Tasks |
+| **Documentation Generation** | Skills + Subagents + Plugins |
+| **Security Audits** | Subagents + Skills + Hooks (read-only mode) |
+| **DevOps Pipelines** | Plugins + MCP + Hooks + Background Tasks |
+| **Complex Refactoring** | Checkpoints + Planning Mode + Hooks |
+
+---
+
+## FAQ
+
+**Is this free?**
+Yes. MIT licensed, free forever. Use it in personal projects, at work, in your team — no restrictions beyond including the license notice.
+
+**Is this maintained?**
+Actively. The guide is synced with every Claude Code release. Current version: v2.1.1 (March 2026), compatible with Claude Code 2.1+.
+
+**How is this different from the official docs?**
+The official docs are a feature reference. This guide is a tutorial with diagrams, production-ready templates, and a progressive learning path. They complement each other — start here to learn, reference the docs when you need specifics.
+
+**How long does it take to go through everything?**
+11-13 hours for the full path. But you'll get immediate value in 15 minutes — just copy a slash command template and try it.
+
+**Can I use this with Claude Sonnet / Haiku / Opus?**
+Yes. All templates work with Claude Sonnet 4.6, Claude Opus 4.6, and Claude Haiku 4.5.
+
+**Can I contribute?**
+Absolutely. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. We welcome new examples, bug fixes, documentation improvements, and community templates.
+
+**Can I read this offline?**
+Yes. Run `uv run scripts/build_epub.py` to generate an EPUB ebook with all content and rendered diagrams.
+
+---
+
+## Start Mastering Claude Code Today
+
+You already have Claude Code installed. The only thing between you and 10x productivity is knowing how to use it. This guide gives you the structured path, the visual explanations, and the copy-paste templates to get there.
+
+MIT licensed. Free forever. Clone it, fork it, make it yours.
+
+**[Start the Learning Path ->](LEARNING-ROADMAP.md)** | **[Browse the Feature Catalog](CATALOG.md)** | **[Get Started in 15 Minutes](#-get-started-in-15-minutes)**
+
+---
+
+<details>
+<summary>Quick Navigation — All Features</summary>
 
 | Feature | Description | Folder |
 |---------|-------------|--------|
@@ -95,37 +224,10 @@ This project complements [Anthropic's official documentation](https://code.claud
 | **CLI Reference** | Commands, flags, and options | [10-cli/](10-cli/) |
 | **Blog Posts** | Real-world usage examples | [Blog Posts](https://medium.com/@luongnv89) |
 
----
+</details>
 
-## 📚 Learning Path
-
-**Not sure where to start?** Take the [Self-Assessment Quiz](LEARNING-ROADMAP.md#-find-your-level) to find your recommended path, or run `/self-assessment` in Claude Code for an interactive version.
-
-> **Built-in skills**: This repo includes two interactive skills you can use directly in Claude Code:
-> - `/self-assessment` — Evaluate your overall Claude Code proficiency and get a personalized learning path
-> - `/lesson-quiz [lesson]` — Test your understanding of any specific lesson (e.g., `/lesson-quiz hooks`)
-
-| Order | Feature | Level | Time | Recommended For |
-|-------|---------|-------|------|-----------------|
-| **1** | [Slash Commands](01-slash-commands/) | ⭐ Beginner | 30 min | Level 1 start |
-| **2** | [Memory](02-memory/) | ⭐⭐ Beginner+ | 45 min | Level 1 |
-| **3** | [Checkpoints](08-checkpoints/) | ⭐⭐ Intermediate | 45 min | Level 1 |
-| **4** | [CLI Basics](10-cli/) | ⭐⭐ Beginner+ | 30 min | Level 1 |
-| **5** | [Skills](03-skills/) | ⭐⭐ Intermediate | 1 hour | Level 2 start |
-| **6** | [Hooks](06-hooks/) | ⭐⭐ Intermediate | 1 hour | Level 2 |
-| **7** | [MCP](05-mcp/) | ⭐⭐⭐ Intermediate+ | 1 hour | Level 2 |
-| **8** | [Subagents](04-subagents/) | ⭐⭐⭐ Intermediate+ | 1.5 hours | Level 2 |
-| **9** | [Advanced](09-advanced-features/) | ⭐⭐⭐⭐⭐ Advanced | 2-3 hours | Level 3 start |
-| **10** | [Plugins](07-plugins/) | ⭐⭐⭐⭐ Advanced | 2 hours | Level 3 |
-| **11** | [CLI Mastery](10-cli/) | ⭐⭐⭐ Advanced | 1 hour | Level 3 |
-
-**Total**: ~11-13 hours | 📖 **[Complete Learning Roadmap →](LEARNING-ROADMAP.md)**
-
----
-
-## 🎯 Quick Reference: Choose Your Features
-
-### Feature Comparison
+<details>
+<summary>Feature Comparison</summary>
 
 | Feature | Invocation | Persistence | Best For |
 |---------|-----------|------------|----------|
@@ -141,63 +243,50 @@ This project complements [Anthropic's official documentation](https://code.claud
 | **Background Tasks** | Manual | Task duration | Long-running operations |
 | **CLI Reference** | Terminal commands | Session/Script | Automation & scripting |
 
-### Use Case Matrix
+</details>
 
-| Use Case | Recommended Features |
-|----------|---------------------|
-| **Team Onboarding** | Memory + Slash Commands + Plugins |
-| **Code Quality** | Subagents + Skills + Memory + Hooks |
-| **Documentation** | Skills + Subagents + Plugins |
-| **DevOps** | Plugins + MCP + Hooks + Background Tasks |
-| **Security Review** | Subagents + Skills + Hooks (read-only mode) |
-| **API Integration** | MCP + Memory |
-| **Quick Tasks** | Slash Commands |
-| **Complex Projects** | All Features + Planning Mode |
-| **Refactoring** | Checkpoints + Planning Mode + Hooks |
-| **Learning/Experimentation** | Checkpoints + Extended Thinking + Permission Mode |
-| **CI/CD Automation** | CLI Reference + Hooks + Background Tasks |
-| **Performance Optimization** | Planning Mode + Checkpoints + Background Tasks |
-| **Script Automation** | CLI Reference + Hooks + MCP |
-| **Batch Processing** | CLI Reference + Background Tasks |
+<details>
+<summary>Installation Quick Reference</summary>
 
----
-
-## ⚡ Getting Started
-
-### 15 Minutes - First Steps
 ```bash
-# Copy your first slash command
-cp 01-slash-commands/optimize.md .claude/commands/
-
-# Try it!
-# In Claude Code: /optimize
-```
-
-### 1 Hour - Essential Setup
-```bash
-# 1. Slash commands (15 min)
+# Slash Commands
 cp 01-slash-commands/*.md .claude/commands/
 
-# 2. Project memory (15 min)
+# Memory
 cp 02-memory/project-CLAUDE.md ./CLAUDE.md
 
-# 3. Install a skill (15 min)
+# Skills
 cp -r 03-skills/code-review ~/.claude/skills/
 
-# 4. Try them together (15 min)
-# See how they work in harmony!
+# Subagents
+cp 04-subagents/*.md .claude/agents/
+
+# MCP
+export GITHUB_TOKEN="token"
+claude mcp add github -- npx -y @modelcontextprotocol/server-github
+
+# Hooks
+mkdir -p ~/.claude/hooks
+cp 06-hooks/*.sh ~/.claude/hooks/
+chmod +x ~/.claude/hooks/*.sh
+
+# Plugins
+/plugin install pr-review
+
+# Checkpoints (auto-enabled, configure in settings)
+# See 08-checkpoints/README.md
+
+# Advanced Features (configure in settings)
+# See 09-advanced-features/config-examples.json
+
+# CLI Reference (no installation needed)
+# See 10-cli/README.md for usage examples
 ```
 
-### Weekend - Full Setup
-- **Day 1**: Slash Commands, Memory, Skills, Hooks
-- **Day 2**: Subagents, MCP integration, Plugins
-- **Result**: Complete Claude Code power user setup
+</details>
 
-📖 **[Detailed milestones and exercises →](LEARNING-ROADMAP.md)**
-
----
-
-## 01. Slash Commands
+<details>
+<summary>01. Slash Commands</summary>
 
 **Location**: [01-slash-commands/](01-slash-commands/)
 
@@ -222,9 +311,10 @@ cp 01-slash-commands/*.md /path/to/project/.claude/commands/
 
 **Learn More**: [Discovering Claude Code Slash Commands](https://medium.com/@luongnv89/discovering-claude-code-slash-commands-cdc17f0dfb29)
 
----
+</details>
 
-## 02. Memory
+<details>
+<summary>02. Memory</summary>
 
 **Location**: [02-memory/](02-memory/)
 
@@ -249,9 +339,10 @@ cp 02-memory/personal-CLAUDE.md ~/.claude/CLAUDE.md
 
 **Usage**: Automatically loaded by Claude
 
----
+</details>
 
-## 03. Skills
+<details>
+<summary>03. Skills</summary>
 
 **Location**: [03-skills/](03-skills/)
 
@@ -273,9 +364,10 @@ cp -r 03-skills/code-review /path/to/project/.claude/skills/
 
 **Usage**: Automatically invoked when relevant
 
----
+</details>
 
-## 04. Subagents
+<details>
+<summary>04. Subagents</summary>
 
 **Location**: [04-subagents/](04-subagents/)
 
@@ -295,9 +387,10 @@ cp 04-subagents/*.md /path/to/project/.claude/agents/
 
 **Usage**: Automatically delegated by main agent
 
----
+</details>
 
-## 05. MCP Protocol
+<details>
+<summary>05. MCP Protocol</summary>
 
 **Location**: [05-mcp/](05-mcp/)
 
@@ -323,9 +416,10 @@ claude mcp add github -- npx -y @modelcontextprotocol/server-github
 
 **Usage**: MCP tools are automatically available to Claude once configured
 
----
+</details>
 
-## 06. Hooks
+<details>
+<summary>06. Hooks</summary>
 
 **Location**: [06-hooks/](06-hooks/)
 
@@ -369,9 +463,10 @@ Configure hooks in `~/.claude/settings.json`:
 - **Session Hooks**: `Stop`, `SubagentStop`, `SubagentStart`
 - **Lifecycle Hooks**: `Notification`, `ConfigChange`, `WorktreeCreate`, `WorktreeRemove`
 
----
+</details>
 
-## 07. Plugins
+<details>
+<summary>07. Plugins</summary>
 
 **Location**: [07-plugins/](07-plugins/)
 
@@ -391,9 +486,10 @@ Configure hooks in `~/.claude/settings.json`:
 
 **Usage**: Use bundled slash commands and features
 
----
+</details>
 
-## 08. Checkpoints and Rewind
+<details>
+<summary>08. Checkpoints and Rewind</summary>
 
 **Location**: [08-checkpoints/](08-checkpoints/)
 
@@ -425,147 +521,34 @@ Configure hooks in `~/.claude/settings.json`:
 - Compare alternative solutions
 - A/B testing different designs
 
-**Example Workflow**:
-```
-1. Work normally (checkpoints are created automatically)
-2. Try experimental approach
-3. If it works: Continue
-4. If it fails: Press Esc+Esc or /rewind to go back
-```
+</details>
 
----
-
-## 09. Advanced Features
+<details>
+<summary>09. Advanced Features</summary>
 
 **Location**: [09-advanced-features/](09-advanced-features/)
 
 **What**: Advanced capabilities for complex workflows and automation
 
-### Planning Mode
-
-Create detailed implementation plans before coding:
-```
-User: /plan Implement user authentication system
-
-Claude: [Creates comprehensive step-by-step plan]
-
-User: Approve and proceed
-```
-
-**Benefits**: Clear roadmap, time estimates, risk assessment
-
-### Extended Thinking
-
-Deep reasoning for complex problems. Toggle with `Alt+T` / `Option+T`, or set `MAX_THINKING_TOKENS` environment variable:
-```bash
-# Toggle in-session: press Alt+T (Option+T on macOS)
-
-# Or set via environment variable
-MAX_THINKING_TOKENS=10000 claude
-
-# Then ask complex questions
-User: Should we use microservices or monolith?
-Claude: [Analyzes trade-offs systematically with extended reasoning]
-```
-
-**Benefits**: Better architectural decisions, thorough analysis
-
-### Background Tasks
-
-Run long operations without blocking:
-```
-User: Run tests in background
-
-Claude: Started bg-1234, you can continue working
-
-[Later] Test results: 245 passed, 3 failed
-```
-
-**Benefits**: Parallel development, no waiting
-
-### Permission Modes
-
-Control what Claude can do:
-- **`default`**: Standard permissions with confirmation prompts
-- **`acceptEdits`**: Auto-accept file edits, confirm other actions
-- **`plan`**: Analysis and planning only, no modifications
-- **`dontAsk`**: Accept all actions without confirmation
-- **`bypassPermissions`**: Skip all permission checks (dangerous)
-
-```bash
-claude --permission-mode plan          # Code review mode
-claude --permission-mode acceptEdits   # Learning mode
-claude --permission-mode default       # Standard mode
-```
-
-### Headless Mode
-
-Run Claude Code in CI/CD and automation:
-```bash
-claude -p "Run tests and generate report"
-```
-
-**Use Cases**: CI/CD, automated reviews, batch processing
-
-### Session Management
-
-Manage multiple work sessions:
-```bash
-/resume                          # Resume a previous session interactively
-/rename                          # Rename the current session
-/fork                            # Fork the current session
-claude -c                        # Continue the most recent session
-claude -r "session"              # Resume a session matching the query
-```
-
-### Interactive Features
-
-**Keyboard Shortcuts**: Ctrl+R (search), Tab (complete), ↑/↓ (history)
-
-**Command History**: Access previous commands
-
-**Multi-line Input**: Complex prompts across multiple lines
-
-### Configuration
-
-Customize Claude Code behavior in `~/.claude/settings.json`:
-```json
-{
-  "permissions": {
-    "allow": ["Read", "Glob", "Grep", "Bash(git *)"],
-    "deny": ["Bash(rm -rf *)"]
-  },
-  "hooks": {
-    "PreToolUse": [{
-      "matcher": "Write",
-      "hooks": ["~/.claude/hooks/format-code.sh"]
-    }]
-  },
-  "env": {
-    "MAX_THINKING_TOKENS": "10000"
-  }
-}
-```
+**Includes**:
+- **Planning Mode** — Create detailed implementation plans before coding
+- **Extended Thinking** — Deep reasoning for complex problems (toggle with `Alt+T` / `Option+T`)
+- **Background Tasks** — Run long operations without blocking
+- **Permission Modes** — `default`, `acceptEdits`, `plan`, `dontAsk`, `bypassPermissions`
+- **Headless Mode** — Run Claude Code in CI/CD: `claude -p "Run tests and generate report"`
+- **Session Management** — `/resume`, `/rename`, `/fork`, `claude -c`, `claude -r`
+- **Configuration** — Customize behavior in `~/.claude/settings.json`
 
 See [config-examples.json](09-advanced-features/config-examples.json) for complete configurations.
 
----
+</details>
 
-## 10. CLI Reference
+<details>
+<summary>10. CLI Reference</summary>
 
 **Location**: [10-cli/](10-cli/)
 
 **What**: Complete command-line interface reference for Claude Code
-
-**Key Areas**:
-- CLI commands (`claude`, `claude -p`, `claude -c`, `claude -r`)
-- Core flags (print mode, continue, resume, version)
-- Model & configuration (`--model`, `--agents`)
-- System prompt customization
-- Tool & permission management
-- Output formats (text, JSON, stream-JSON)
-- MCP configuration
-- Session management
 
 **Quick Examples**:
 ```bash
@@ -585,19 +568,66 @@ claude -p --output-format json "list functions"
 claude -r "feature-auth" "continue implementation"
 ```
 
-**Use Cases**:
-- CI/CD pipeline integration
-- Script automation and piping
-- Batch processing
-- Multi-session workflows
-- Custom agent configurations
+**Use Cases**: CI/CD pipeline integration, script automation, batch processing, multi-session workflows, custom agent configurations
 
----
+</details>
 
-## Directory Structure
+<details>
+<summary>Example Workflows</summary>
 
+### Complete Code Review Workflow
+
+```markdown
+# Uses: Slash Commands + Subagents + Memory + MCP
+
+User: /review-pr
+
+Claude:
+1. Loads project memory (coding standards)
+2. Fetches PR via GitHub MCP
+3. Delegates to code-reviewer subagent
+4. Delegates to test-engineer subagent
+5. Synthesizes findings
+6. Provides comprehensive review
 ```
 
+### Automated Documentation
+
+```markdown
+# Uses: Skills + Subagents + Memory
+
+User: "Generate API documentation for the auth module"
+
+Claude:
+1. Loads project memory (doc standards)
+2. Detects doc generation request
+3. Auto-invokes doc-generator skill
+4. Delegates to api-documenter subagent
+5. Creates comprehensive docs with examples
+```
+
+### DevOps Deployment
+
+```markdown
+# Uses: Plugins + MCP + Hooks
+
+User: /deploy production
+
+Claude:
+1. Runs pre-deploy hook (validates environment)
+2. Delegates to deployment-specialist subagent
+3. Executes deployment via Kubernetes MCP
+4. Monitors progress
+5. Runs post-deploy hook (health checks)
+6. Reports status
+```
+
+</details>
+
+<details>
+<summary>Directory Structure</summary>
+
+```
 ├── 01-slash-commands/
 │   ├── optimize.md
 │   ├── pr.md
@@ -658,101 +688,12 @@ claude -r "feature-auth" "continue implementation"
 └── README.md (this file)
 ```
 
----
+</details>
 
-## Installation Quick Reference
+<details>
+<summary>Best Practices</summary>
 
-```bash
-# Slash Commands
-cp 01-slash-commands/*.md .claude/commands/
-
-# Memory
-cp 02-memory/project-CLAUDE.md ./CLAUDE.md
-
-# Skills
-cp -r 03-skills/code-review ~/.claude/skills/
-
-# Subagents
-cp 04-subagents/*.md .claude/agents/
-
-# MCP
-export GITHUB_TOKEN="token"
-claude mcp add github -- npx -y @modelcontextprotocol/server-github
-
-# Hooks
-mkdir -p ~/.claude/hooks
-cp 06-hooks/*.sh ~/.claude/hooks/
-chmod +x ~/.claude/hooks/*.sh
-
-# Plugins
-/plugin install pr-review
-
-# Checkpoints (auto-enabled, configure in settings)
-# See 08-checkpoints/README.md
-
-# Advanced Features (configure in settings)
-# See 09-advanced-features/config-examples.json
-
-# CLI Reference (no installation needed)
-# See 10-cli/README.md for usage examples
-```
-
----
-
-## Example Workflows
-
-### 1. Complete Code Review Workflow
-
-```markdown
-# Uses: Slash Commands + Subagents + Memory + MCP
-
-User: /review-pr
-
-Claude:
-1. Loads project memory (coding standards)
-2. Fetches PR via GitHub MCP
-3. Delegates to code-reviewer subagent
-4. Delegates to test-engineer subagent
-5. Synthesizes findings
-6. Provides comprehensive review
-```
-
-### 2. Automated Documentation
-
-```markdown
-# Uses: Skills + Subagents + Memory
-
-User: "Generate API documentation for the auth module"
-
-Claude:
-1. Loads project memory (doc standards)
-2. Detects doc generation request
-3. Auto-invokes doc-generator skill
-4. Delegates to api-documenter subagent
-5. Creates comprehensive docs with examples
-```
-
-### 3. DevOps Deployment
-
-```markdown
-# Uses: Plugins + MCP + Hooks
-
-User: /deploy production
-
-Claude:
-1. Runs pre-deploy hook (validates environment)
-2. Delegates to deployment-specialist subagent
-3. Executes deployment via Kubernetes MCP
-4. Monitors progress
-5. Runs post-deploy hook (health checks)
-6. Reports status
-```
-
----
-
-## Best Practices
-
-### Do's ✅
+### Do's
 - Start simple with slash commands
 - Add features incrementally
 - Use memory for team standards
@@ -761,7 +702,7 @@ Claude:
 - Version control project configurations
 - Share plugins with team
 
-### Don'ts ❌
+### Don'ts
 - Don't create redundant features
 - Don't hardcode credentials
 - Don't skip documentation
@@ -769,9 +710,10 @@ Claude:
 - Don't ignore security best practices
 - Don't commit sensitive data
 
----
+</details>
 
-## Troubleshooting
+<details>
+<summary>Troubleshooting</summary>
 
 ### Feature Not Loading
 1. Check file location and naming
@@ -789,15 +731,14 @@ Claude:
 1. Check tool permissions
 2. Verify agent description clarity
 3. Review task complexity
-6. Test agent independently
+4. Test agent independently
 
----
+</details>
 
-## Testing
+<details>
+<summary>Testing</summary>
 
-This project includes comprehensive automated testing to ensure code quality and reliability.
-
-### Testing Overview
+This project includes comprehensive automated testing:
 
 - **Unit Tests**: Python tests using pytest (Python 3.10, 3.11, 3.12)
 - **Code Quality**: Linting and formatting with Ruff
@@ -805,8 +746,6 @@ This project includes comprehensive automated testing to ensure code quality and
 - **Type Checking**: Static type analysis with mypy
 - **Build Verification**: EPUB generation testing
 - **Coverage Tracking**: Codecov integration
-
-### Running Tests Locally
 
 ```bash
 # Install development dependencies
@@ -829,38 +768,27 @@ bandit -c pyproject.toml -r scripts/ --exclude scripts/tests/
 mypy scripts/ --ignore-missing-imports
 ```
 
-### Automated Testing on GitHub
+Tests run automatically on every push to `main`/`develop` and every PR to `main`. See [TESTING.md](.github/TESTING.md) for detailed information.
 
-Tests run automatically on:
-- Every push to `main` or `develop` branches
-- Every pull request to `main`
+</details>
 
-View test results in the GitHub Actions tab or check the [TESTING.md](.github/TESTING.md) guide for detailed information.
+<details>
+<summary>EPUB Generation</summary>
 
-### Writing Tests
+Want to read this guide offline? Generate an EPUB ebook:
 
-When contributing, please include tests for new functionality:
+```bash
+uv run scripts/build_epub.py
+```
 
-1. **Write tests** in `scripts/tests/test_*.py`
-2. **Run tests locally** to verify they pass
-3. **Check coverage** with `pytest --cov=scripts`
-4. **Submit with PR** - tests are required for all contributions
+This creates `claude-howto-guide.epub` with all content, including rendered Mermaid diagrams.
 
-For detailed testing guidelines, see [TESTING.md](.github/TESTING.md).
+See [scripts/README.md](scripts/README.md) for more options.
 
----
+</details>
 
-## Additional Resources
-
-- [Claude Code Documentation](https://code.claude.com/docs/en/overview)
-- [MCP Protocol Specification](https://modelcontextprotocol.io)
-- [Skills Repository](https://github.com/luongnv89/skills) - Collection of ready-to-use skills
-- [Anthropic Cookbook](https://github.com/anthropics/anthropic-cookbook)
-- [Boris Cherny's Claude Code Workflow](https://x.com/bcherny/status/2007179832300581177) - The creator of Claude Code shares his systematized workflow: parallel agents, shared CLAUDE.md, Plan mode, slash commands, subagents, and verification hooks for autonomous long-running sessions. Key insights include turning recurring workflows into reusable commands and wiring Claude into team tools (GitHub, Slack, BigQuery, Sentry) for end-to-end work with feedback loops.
-
----
-
-## Contributing
+<details>
+<summary>Contributing</summary>
 
 Found an issue or want to contribute an example? We'd love your help!
 
@@ -883,8 +811,6 @@ If you discover a security vulnerability, please report it responsibly:
 2. **Or read** [.github/SECURITY_REPORTING.md](.github/SECURITY_REPORTING.md) for detailed instructions
 3. **Do NOT** open a public issue for security vulnerabilities
 
-Security issues are taken seriously and will be addressed promptly. See [SECURITY.md](SECURITY.md) for our full security policy.
-
 Quick start:
 1. Fork and clone the repository
 2. Create a descriptive branch (`add/feature-name`, `fix/bug`, `docs/improvement`)
@@ -893,33 +819,18 @@ Quick start:
 
 **Need help?** Open an issue or discussion, and we'll guide you through the process.
 
----
+</details>
 
-## License
+<details>
+<summary>Additional Resources</summary>
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
+- [Claude Code Documentation](https://code.claude.com/docs/en/overview)
+- [MCP Protocol Specification](https://modelcontextprotocol.io)
+- [Skills Repository](https://github.com/luongnv89/skills) - Collection of ready-to-use skills
+- [Anthropic Cookbook](https://github.com/anthropics/anthropic-cookbook)
+- [Boris Cherny's Claude Code Workflow](https://x.com/bcherny/status/2007179832300581177) - The creator of Claude Code shares his systematized workflow: parallel agents, shared CLAUDE.md, Plan mode, slash commands, subagents, and verification hooks for autonomous long-running sessions.
 
-You are free to:
-- Use this guide and examples in your projects
-- Modify and adapt the content
-- Share and distribute
-- Use for commercial purposes
-
-The only requirement is to include a copy of the license and copyright notice.
-
----
-
-## EPUB Generation
-
-Want to read this guide offline? Generate an EPUB ebook:
-
-```bash
-uv run scripts/build_epub.py
-```
-
-This creates `claude-howto-guide.epub` with all content, including rendered Mermaid diagrams.
-
-See [scripts/README.md](scripts/README.md) for more options.
+</details>
 
 ---
 
@@ -934,9 +845,9 @@ Thanks to everyone who has contributed to this project!
 
 ---
 
-## Star History
+## License
 
-[![Star History Chart](https://api.star-history.com/svg?repos=luongnv89/claude-howto&type=Date)](https://star-history.com/#luongnv89/claude-howto&Date)
+MIT License - see [LICENSE](LICENSE). Free to use, modify, and distribute. The only requirement is including the license notice.
 
 ---
 

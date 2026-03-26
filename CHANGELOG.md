@@ -1,5 +1,28 @@
 # Changelog
 
+## v2.2.0 — 2026-03-26
+
+### Documentation
+
+- Sync all tutorials and references with Claude Code v2.1.84 (f78c094) @luongnv89
+  - Update slash commands to 55+ built-in + 5 bundled skills, mark 3 deprecated
+  - Expand hook events from 18 to 25, add `agent` hook type (now 4 types)
+  - Add Auto Mode, Channels, Voice Dictation to advanced features
+  - Add `effort`, `shell` skill frontmatter fields; `initialPrompt`, `disallowedTools` agent fields
+  - Add WebSocket MCP transport, elicitation, 2KB tool cap
+  - Add plugin LSP support, `userConfig`, `${CLAUDE_PLUGIN_DATA}`
+  - Update all reference docs (CATALOG, QUICK_REFERENCE, LEARNING-ROADMAP, INDEX)
+- Rewrite README as landing-page-structured guide (32a0776) @luongnv89
+
+### Bug Fixes
+
+- Add missing cSpell words and README sections for CI compliance (93f9d51) @luongnv89
+- Add `Sandboxing` to cSpell dictionary (b80ce6f) @luongnv89
+
+**Full Changelog**: https://github.com/luongnv89/claude-howto/compare/v2.1.1...v2.2.0
+
+---
+
 ## v2.1.1 — 2026-03-13
 
 ### Bug Fixes

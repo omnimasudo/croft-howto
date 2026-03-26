@@ -5,31 +5,34 @@
 
 # Advanced Features
 
-Comprehensive guide to Claude Code's advanced capabilities including planning mode, extended thinking, background tasks, permission modes, print mode (non-interactive), session management, interactive features, remote control, web sessions, desktop app, task list, prompt suggestions, git worktrees, sandboxing, managed settings, and configuration.
+Comprehensive guide to Claude Code's advanced capabilities including planning mode, extended thinking, auto mode, background tasks, permission modes, print mode (non-interactive), session management, interactive features, channels, voice dictation, remote control, web sessions, desktop app, task list, prompt suggestions, git worktrees, sandboxing, managed settings, and configuration.
 
 ## Table of Contents
 
 1. [Overview](#overview)
 2. [Planning Mode](#planning-mode)
 3. [Extended Thinking](#extended-thinking)
-4. [Background Tasks](#background-tasks)
-5. [Scheduled Tasks](#scheduled-tasks)
-6. [Permission Mode](#permission-mode)
-7. [Headless Mode](#headless-mode)
-8. [Session Management](#session-management)
-9. [Interactive Features](#interactive-features)
-10. [Chrome Integration](#chrome-integration)
-11. [Remote Control](#remote-control)
-12. [Web Sessions](#web-sessions)
-13. [Desktop App](#desktop-app)
-14. [Task List](#task-list)
-15. [Prompt Suggestions](#prompt-suggestions)
-16. [Git Worktrees](#git-worktrees)
-17. [Sandboxing](#sandboxing)
-18. [Managed Settings (Enterprise)](#managed-settings-enterprise)
-19. [Configuration and Settings](#configuration-and-settings)
-20. [Best Practices](#best-practices)
-21. [Related Concepts](#related-concepts)
+4. [Auto Mode](#auto-mode)
+5. [Background Tasks](#background-tasks)
+6. [Scheduled Tasks](#scheduled-tasks)
+7. [Permission Modes](#permission-modes)
+8. [Headless Mode](#headless-mode)
+9. [Session Management](#session-management)
+10. [Interactive Features](#interactive-features)
+11. [Voice Dictation](#voice-dictation)
+12. [Channels](#channels)
+13. [Chrome Integration](#chrome-integration)
+14. [Remote Control](#remote-control)
+15. [Web Sessions](#web-sessions)
+16. [Desktop App](#desktop-app)
+17. [Task List](#task-list)
+18. [Prompt Suggestions](#prompt-suggestions)
+19. [Git Worktrees](#git-worktrees)
+20. [Sandboxing](#sandboxing)
+21. [Managed Settings (Enterprise)](#managed-settings-enterprise)
+22. [Configuration and Settings](#configuration-and-settings)
+23. [Best Practices](#best-practices)
+24. [Related Concepts](#related-concepts)
 
 ---
 
@@ -40,11 +43,14 @@ Advanced features in Claude Code extend the core capabilities with planning, rea
 **Key advanced features include:**
 - **Planning Mode**: Create detailed implementation plans before coding
 - **Extended Thinking**: Deep reasoning for complex problems
+- **Auto Mode**: Background safety classifier reviews each action before execution (Research Preview)
 - **Background Tasks**: Run long operations without blocking the conversation
-- **Permission Modes**: Control what Claude can do (`default`, `acceptEdits`, `plan`, `dontAsk`, `bypassPermissions`)
+- **Permission Modes**: Control what Claude can do (`default`, `acceptEdits`, `plan`, `auto`, `dontAsk`, `bypassPermissions`)
 - **Print Mode**: Run Claude Code non-interactively for automation and CI/CD (`claude -p`)
 - **Session Management**: Manage multiple work sessions
 - **Interactive Features**: Keyboard shortcuts, multi-line input, and command history
+- **Voice Dictation**: Push-to-talk voice input with 20-language STT support
+- **Channels**: MCP servers push messages into running sessions (Research Preview)
 - **Remote Control**: Control Claude Code from Claude.ai or the Claude app
 - **Web Sessions**: Run Claude Code in the browser at claude.ai/code
 - **Desktop App**: Standalone app for visual diff review and multiple sessions
@@ -211,12 +217,13 @@ Extended thinking is a deliberate, step-by-step reasoning process where Claude:
 
 **Automatic activation**:
 - Enabled by default for all models (Opus 4.6, Sonnet 4.6, Haiku 4.5)
-- Opus 4.6: Adaptive reasoning with effort levels: low (○), medium (◐), high (●)
+- Opus 4.6: Adaptive reasoning with effort levels: `low` (○), `medium` (◐), `high` (●), `max` (Opus 4.6 only)
 - Other models: Fixed budget up to 31,999 tokens
 
 **Configuration methods**:
 - Toggle: `Alt+T` / `Option+T`, or via `/config`
 - View reasoning: `Ctrl+O` (verbose mode)
+- Set effort: `/effort` command or `--effort` flag
 
 **Custom budget**:
 ```bash
@@ -225,10 +232,20 @@ export MAX_THINKING_TOKENS=1024
 
 **Effort level** (Opus 4.6 only):
 ```bash
-export CLAUDE_CODE_EFFORT_LEVEL=high   # low (○), medium (◐), or high (●)
+export CLAUDE_CODE_EFFORT_LEVEL=high   # low (○), medium (◐), high (●), or max (Opus 4.6 only)
 ```
 
-> **Note:** Words like "think" or "ultrathink" in prompts are interpreted as regular prompt instructions, not special keywords or triggers.
+**CLI flag**:
+```bash
+claude --effort high "complex architectural review"
+```
+
+**Slash command**:
+```
+/effort high
+```
+
+> **Note:** The keyword "ultrathink" in prompts activates deep reasoning mode. Effort levels `low`, `medium`, `high`, and `max` (Opus 4.6 only) control how much reasoning Claude performs.
 
 ### Benefits of Extended Thinking
 
@@ -310,17 +327,101 @@ This approach balances your current constraints (team size, timeline, DevOps res
 
 ### Extended Thinking Configuration
 
-Extended thinking is controlled via environment variables and keyboard shortcuts rather than JSON config:
+Extended thinking is controlled via environment variables, keyboard shortcuts, and CLI flags:
 
 ```bash
 # Set thinking token budget
 export MAX_THINKING_TOKENS=16000
 
-# Set effort level (Opus 4.6 only): low (○), medium (◐), or high (●)
+# Set effort level (Opus 4.6 only): low (○), medium (◐), high (●), or max (Opus 4.6 only)
 export CLAUDE_CODE_EFFORT_LEVEL=high
 ```
 
-Toggle during a session with `Alt+T` / `Option+T`, or configure via `/config`.
+Toggle during a session with `Alt+T` / `Option+T`, set effort with `/effort`, or configure via `/config`.
+
+---
+
+## Auto Mode
+
+Auto Mode is a Research Preview permission mode (March 2026) that uses a background safety classifier to review each action before execution. It allows Claude to work autonomously while blocking dangerous operations.
+
+### Requirements
+
+- **Plan**: Team plan (Enterprise and API rolling out)
+- **Model**: Claude Sonnet 4.6 or Opus 4.6
+- **Classifier**: Runs on Claude Sonnet 4.6 (adds extra token cost)
+
+### Enabling Auto Mode
+
+```bash
+# Unlock auto mode with CLI flag
+claude --enable-auto-mode
+
+# Then cycle to it with Shift+Tab in the REPL
+```
+
+Or set it as the default permission mode:
+
+```bash
+claude --permission-mode auto
+```
+
+Setting via config:
+```json
+{
+  "permissions": {
+    "defaultMode": "auto"
+  }
+}
+```
+
+### How the Classifier Works
+
+The background classifier evaluates each action using the following decision order:
+
+1. **Allow/deny rules** -- Explicit permission rules are checked first
+2. **Read-only/edits auto-approved** -- File reads and edits pass automatically
+3. **Classifier** -- The background classifier reviews the action
+4. **Fallback** -- Falls back to prompting after 3 consecutive or 20 total blocks
+
+### Default Blocked Actions
+
+Auto mode blocks the following by default:
+
+| Blocked Action | Example |
+|----------------|---------|
+| Pipe-to-shell installs | `curl \| bash` |
+| Sending sensitive data externally | API keys, credentials over network |
+| Production deploys | Deploy commands targeting production |
+| Mass deletion | `rm -rf` on large directories |
+| IAM changes | Permission and role modifications |
+| Force push to main | `git push --force origin main` |
+
+### Default Allowed Actions
+
+| Allowed Action | Example |
+|----------------|---------|
+| Local file operations | Read, write, edit project files |
+| Declared dependency installs | `npm install`, `pip install` from manifest |
+| Read-only HTTP | `curl` for fetching documentation |
+| Pushing to current branch | `git push origin feature-branch` |
+
+### Configuring Auto Mode
+
+**Print default rules as JSON**:
+```bash
+claude auto-mode defaults
+```
+
+**Configure trusted infrastructure** via the `autoMode.environment` managed setting for enterprise deployments. This allows administrators to define trusted CI/CD environments, deployment targets, and infrastructure patterns.
+
+### Fallback Behavior
+
+When the classifier is uncertain, auto mode falls back to prompting the user:
+- After **3 consecutive** classifier blocks
+- After **20 total** classifier blocks in a session
+
+This ensures the user always retains control when the classifier cannot confidently approve an action.
 
 ---
 
@@ -497,6 +598,16 @@ in 45 minutes, run the integration tests
 | **Missed fires** | No catch-up — skipped if Claude Code was not running |
 | **Persistence** | Not persisted across restarts |
 
+### Cloud Scheduled Tasks
+
+Use `/schedule` to create Cloud scheduled tasks that run on Anthropic infrastructure:
+
+```
+/schedule daily at 9am run the test suite and report failures
+```
+
+Cloud scheduled tasks persist across restarts and do not require Claude Code to be running locally.
+
 ### Disabling scheduled tasks
 
 ```bash
@@ -523,17 +634,20 @@ Permission modes control what actions Claude can take without explicit approval.
 
 | Mode | Behavior |
 |---|---|
-| `default` | Standard: prompts for permission |
-| `acceptEdits` | Auto-accepts file edits |
-| `plan` | Read-only analysis mode |
-| `dontAsk` | Auto-denies unless pre-approved |
-| `bypassPermissions` | Skips all checks (dangerous) |
+| `default` | Read files only; prompts for all other actions |
+| `acceptEdits` | Read and edit files; prompts for commands |
+| `plan` | Read files only (research mode, no edits) |
+| `auto` | All actions with background safety classifier checks (Research Preview) |
+| `bypassPermissions` | All actions, no permission checks (dangerous) |
+| `dontAsk` | Only pre-approved tools execute; all others denied |
+
+Cycle through modes with `Shift+Tab` in the CLI. Set a default with the `--permission-mode` flag or the `permissions.defaultMode` setting.
 
 ### Activation Methods
 
 **Keyboard shortcut**:
 ```bash
-Shift + Tab  # or Alt + M on Windows/Linux
+Shift + Tab  # Cycle through all 6 modes
 ```
 
 **Slash command**:
@@ -544,11 +658,16 @@ Shift + Tab  # or Alt + M on Windows/Linux
 **CLI flag**:
 ```bash
 claude --permission-mode plan
+claude --permission-mode auto
 ```
 
-**Environment variable**:
-```bash
-export CLAUDE_PERMISSION_MODE=plan
+**Setting**:
+```json
+{
+  "permissions": {
+    "defaultMode": "auto"
+  }
+}
 ```
 
 ### Permission Mode Examples
@@ -989,6 +1108,70 @@ Use this for quick command execution without switching contexts.
 
 ---
 
+## Voice Dictation
+
+Voice Dictation provides push-to-talk voice input for Claude Code, allowing you to speak your prompts instead of typing them.
+
+### Activating Voice Dictation
+
+```
+/voice
+```
+
+### Features
+
+| Feature | Description |
+|---------|-------------|
+| **Push-to-talk** | Hold a key to record, release to send |
+| **20 languages** | Speech-to-text supports 20 languages |
+| **Custom keybinding** | Configure the push-to-talk key via `/keybindings` |
+| **Account requirement** | Requires a Claude.ai account for STT processing |
+
+### Configuration
+
+Customize the push-to-talk keybinding in your keybindings file (`/keybindings`). Voice dictation uses your Claude.ai account for speech-to-text processing.
+
+---
+
+## Channels
+
+Channels (Research Preview) allow MCP servers to push messages into running Claude Code sessions, enabling real-time integrations with external services.
+
+### Subscribing to Channels
+
+```bash
+# Subscribe to channel plugins at startup
+claude --channels discord,telegram
+```
+
+### Supported Integrations
+
+| Integration | Description |
+|-------------|-------------|
+| **Discord** | Receive and respond to Discord messages in your session |
+| **Telegram** | Receive and respond to Telegram messages in your session |
+
+### Configuration
+
+**Managed setting** for enterprise deployments:
+
+```json
+{
+  "allowedChannelPlugins": ["discord", "telegram"]
+}
+```
+
+The `allowedChannelPlugins` managed setting controls which channel plugins are permitted across the organization.
+
+### How It Works
+
+1. MCP servers act as channel plugins that connect to external services
+2. Incoming messages are pushed into the active Claude Code session
+3. Claude can read and respond to messages within the session context
+4. Channel plugins must be approved via the `allowedChannelPlugins` managed setting
+
+---
+
 ## Chrome Integration
 
 Chrome Integration connects Claude Code to your Chrome or Microsoft Edge browser for live web automation and debugging. This is a beta feature available since v2.0.73+ (Edge support added in v1.0.36+).
@@ -1291,6 +1474,26 @@ Worktrees are created at:
 <repo>/.claude/worktrees/<name>
 ```
 
+### Sparse Checkout for Monorepos
+
+Use the `worktree.sparsePaths` setting to perform sparse-checkout in monorepos, reducing disk usage and clone time:
+
+```json
+{
+  "worktree": {
+    "sparsePaths": ["packages/my-package", "shared/"]
+  }
+}
+```
+
+### Worktree Tools and Hooks
+
+| Item | Description |
+|------|-------------|
+| `ExitWorktree` | Tool to exit and clean up the current worktree |
+| `WorktreeCreate` | Hook event fired when a worktree is created |
+| `WorktreeRemove` | Hook event fired when a worktree is removed |
+
 ### Auto-Cleanup
 
 If no changes are made in the worktree, it is automatically cleaned up when the session ends.
@@ -1300,6 +1503,7 @@ If no changes are made in the worktree, it is automatically cleaned up when the 
 - Work on a feature branch while keeping main branch untouched
 - Run tests in isolation without affecting the working directory
 - Try experimental changes in a disposable environment
+- Sparse-checkout specific packages in monorepos for faster startup
 
 ---
 
@@ -1307,11 +1511,53 @@ If no changes are made in the worktree, it is automatically cleaned up when the 
 
 Sandboxing provides OS-level filesystem and network isolation for Bash commands executed by Claude Code. This is complementary to permission rules and provides an additional security layer.
 
+### Enabling Sandboxing
+
+**Slash command**:
+```
+/sandbox
+```
+
+**CLI flags**:
+```bash
+claude --sandbox       # Enable sandboxing
+claude --no-sandbox    # Disable sandboxing
+```
+
+### Configuration Settings
+
+| Setting | Description |
+|---------|-------------|
+| `sandbox.enabled` | Enable or disable sandboxing |
+| `sandbox.failIfUnavailable` | Fail if sandboxing cannot be activated |
+| `sandbox.filesystem.allowWrite` | Paths allowed for write access |
+| `sandbox.filesystem.allowRead` | Paths allowed for read access |
+| `sandbox.filesystem.denyRead` | Paths denied for read access |
+| `sandbox.enableWeakerNetworkIsolation` | Enable weaker network isolation on macOS |
+
+### Example Configuration
+
+```json
+{
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "filesystem": {
+      "allowWrite": ["/Users/me/project"],
+      "allowRead": ["/Users/me/project", "/usr/local/lib"],
+      "denyRead": ["/Users/me/.ssh", "/Users/me/.aws"]
+    },
+    "enableWeakerNetworkIsolation": true
+  }
+}
+```
+
 ### How It Works
 
 - Bash commands run in a sandboxed environment with restricted filesystem access
 - Network access can be isolated to prevent unintended external connections
 - Works alongside permission rules for defense in depth
+- On macOS, use `sandbox.enableWeakerNetworkIsolation` for network restrictions (full network isolation is not available on macOS)
 
 ### Use Cases
 
@@ -1327,11 +1573,23 @@ Managed Settings enable enterprise administrators to deploy Claude Code configur
 
 ### Deployment Methods
 
-| Platform | Method |
-|----------|--------|
-| macOS | Managed plist files (MDM) |
-| Windows | Windows Registry |
-| Cross-platform | Managed configuration files |
+| Platform | Method | Since |
+|----------|--------|-------|
+| macOS | Managed plist files (MDM) | v2.1.51+ |
+| Windows | Windows Registry | v2.1.51+ |
+| Cross-platform | Managed configuration files | v2.1.51+ |
+| Cross-platform | Managed drop-ins (`managed-settings.d/` directory) | v2.1.83+ |
+
+### Managed Drop-ins
+
+Since v2.1.83, administrators can deploy multiple managed settings files into a `managed-settings.d/` directory. Files are merged in alphabetical order, allowing modular configuration across teams:
+
+```
+~/.claude/managed-settings.d/
+  00-org-defaults.json
+  10-team-policies.json
+  20-project-overrides.json
+```
 
 ### Available Managed Settings
 
@@ -1339,6 +1597,8 @@ Managed Settings enable enterprise administrators to deploy Claude Code configur
 |---------|-------------|
 | `disableBypassPermissionsMode` | Prevent users from enabling bypass permissions |
 | `availableModels` | Restrict which models users can select |
+| `allowedChannelPlugins` | Control which channel plugins are permitted |
+| `autoMode.environment` | Configure trusted infrastructure for auto mode |
 | Custom policies | Organization-specific permission and tool policies |
 
 ### Example: macOS Plist
@@ -1447,8 +1707,14 @@ export CLAUDE_CODE_EFFORT_LEVEL=high
 # Feature toggles
 export CLAUDE_CODE_DISABLE_AUTO_MEMORY=true
 export CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=true
+export CLAUDE_CODE_DISABLE_CRON=1
+export CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=true
+export CLAUDE_CODE_DISABLE_TERMINAL_TITLE=true
+export CLAUDE_CODE_DISABLE_1M_CONTEXT=true
+export CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK=true
 export CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=false
 export CLAUDE_CODE_ENABLE_TASKS=true
+export CLAUDE_CODE_SIMPLE=true              # Set by --bare flag
 
 # MCP configuration
 export MAX_MCP_OUTPUT_TOKENS=50000
@@ -1459,6 +1725,18 @@ export CLAUDE_CODE_TASK_LIST_ID=my-project-tasks
 
 # Agent teams (experimental)
 export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=true
+
+# Subagent and plugin configuration
+export CLAUDE_CODE_SUBAGENT_MODEL=sonnet
+export CLAUDE_CODE_PLUGIN_SEED_DIR=./my-plugins
+export CLAUDE_CODE_NEW_INIT=true
+
+# Subprocess and streaming
+export CLAUDE_CODE_SUBPROCESS_ENV_SCRUB="SECRET_KEY,DB_PASSWORD"
+export CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=80
+export CLAUDE_STREAM_IDLE_TIMEOUT_MS=30000
+export ANTHROPIC_CUSTOM_MODEL_OPTION=my-custom-model
+export SLASH_COMMAND_TOOL_CHAR_BUDGET=50000
 ```
 
 ### Configuration Management Commands
@@ -1525,6 +1803,7 @@ Create `.claude/config.json` in your project:
 - ✅ Use `plan` for code review (read-only)
 - ✅ Use `default` for interactive development
 - ✅ Use `acceptEdits` for automation workflows
+- ✅ Use `auto` for autonomous work with safety guardrails
 - ❌ Don't use `bypassPermissions` unless absolutely necessary
 
 ### Sessions

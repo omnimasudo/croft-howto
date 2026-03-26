@@ -325,9 +325,9 @@
 ### Q9
 - **Category**: conceptual
 - **Question**: What are the valid `permissionMode` values for a subagent?
-- **Options**: A) read, write, admin | B) default, acceptEdits, bypassPermissions, plan, ignore | C) safe, normal, dangerous | D) restricted, standard, elevated
+- **Options**: A) read, write, admin | B) default, acceptEdits, bypassPermissions, plan, dontAsk, auto | C) safe, normal, dangerous | D) restricted, standard, elevated
 - **Correct**: B
-- **Explanation**: Subagents support five permission modes: default (prompts for everything), acceptEdits (auto-accepts file edits), bypassPermissions (skips all), plan (read-only), ignore (auto-denies).
+- **Explanation**: Subagents support six permission modes: default (prompts for everything), acceptEdits (auto-accepts file edits), bypassPermissions (skips all), plan (read-only), dontAsk (auto-denies unless pre-approved), auto (background classifier decides).
 - **Review**: Configuration fields section
 
 ### Q10
@@ -428,10 +428,10 @@
 
 ### Q1
 - **Category**: conceptual
-- **Question**: What are the three types of hooks in Claude Code?
-- **Options**: A) Pre, Post, and Error hooks | B) Command, HTTP, and Prompt hooks | C) Before, After, and Around hooks | D) Input, Output, and Filter hooks
+- **Question**: What are the four types of hooks in Claude Code?
+- **Options**: A) Pre, Post, Error, and Filter hooks | B) Command, HTTP, Prompt, and Agent hooks | C) Before, After, Around, and Through hooks | D) Input, Output, Filter, and Transform hooks
 - **Correct**: B
-- **Explanation**: Command hooks run shell scripts, HTTP hooks call webhook endpoints, and Prompt hooks use LLM evaluation (primarily for Stop/SubagentStop events).
+- **Explanation**: Command hooks run shell scripts, HTTP hooks call webhook endpoints, Prompt hooks use single-turn LLM evaluation, and Agent hooks use subagent-based verification.
 - **Review**: Hook types section
 
 ### Q2
@@ -493,9 +493,9 @@
 ### Q9
 - **Category**: conceptual
 - **Question**: How many hook events does Claude Code support in total?
-- **Options**: A) 6 | B) 10 | C) 16 | D) 20
+- **Options**: A) 10 | B) 16 | C) 25 | D) 30
 - **Correct**: C
-- **Explanation**: Claude Code supports 16 hook events: PreToolUse, PostToolUse, UserPromptSubmit, Stop, SubagentStop, SubagentStart, PermissionRequest, Notification, PreCompact, SessionStart, SessionEnd, WorktreeCreate, WorktreeRemove, ConfigChange, TeammateIdle, TaskCompleted.
+- **Explanation**: Claude Code supports 25 hook events: PreToolUse, PostToolUse, PostToolUseFailure, UserPromptSubmit, Stop, StopFailure, SubagentStop, SubagentStart, PermissionRequest, Notification, PreCompact, PostCompact, SessionStart, SessionEnd, WorktreeCreate, WorktreeRemove, ConfigChange, CwdChanged, FileChanged, TeammateIdle, TaskCompleted, TaskCreated, Elicitation, ElicitationResult, InstructionsLoaded.
 - **Review**: Hook events table
 
 ### Q10
@@ -680,10 +680,10 @@
 
 ### Q1
 - **Category**: conceptual
-- **Question**: What are the five permission modes in Claude Code?
-- **Options**: A) read, write, execute, admin, root | B) default, acceptEdits, plan, dontAsk, bypassPermissions | C) safe, normal, elevated, admin, unrestricted | D) view, edit, run, deploy, full
+- **Question**: What are the six permission modes in Claude Code?
+- **Options**: A) read, write, execute, admin, root, sudo | B) default, acceptEdits, plan, auto, dontAsk, bypassPermissions | C) safe, normal, elevated, admin, unrestricted, god | D) view, edit, run, deploy, full, bypass
 - **Correct**: B
-- **Explanation**: The five modes are: default (prompts for everything), acceptEdits (auto-accepts file edits), plan (read-only analysis), dontAsk (auto-denies unless pre-approved), bypassPermissions (skips all checks).
+- **Explanation**: The six modes are: default (prompts for everything), acceptEdits (auto-accepts file edits), plan (read-only analysis), auto (background classifier decides), dontAsk (auto-denies unless pre-approved), bypassPermissions (skips all checks).
 - **Review**: Permission Modes section
 
 ### Q2

@@ -97,15 +97,15 @@ graph TD
 
 | Step | Feature | Complexity | Time | Level | Dependencies | Why Learn This | Key Benefits |
 |------|---------|-----------|------|-------|--------------|----------------|--------------|
-| **1** | [Slash Commands](01-slash-commands/) | ⭐ Beginner | 30 min | Level 1 | None | Quick productivity wins | Instant automation, team standards |
+| **1** | [Slash Commands](01-slash-commands/) | ⭐ Beginner | 30 min | Level 1 | None | Quick productivity wins (55+ built-in + 5 bundled skills) | Instant automation, team standards |
 | **2** | [Memory](02-memory/) | ⭐⭐ Beginner+ | 45 min | Level 1 | None | Essential for all features | Persistent context, preferences |
 | **3** | [Checkpoints](08-checkpoints/) | ⭐⭐ Intermediate | 45 min | Level 1 | Session management | Safe exploration | Experimentation, recovery |
 | **4** | [CLI Basics](10-cli/) | ⭐⭐ Beginner+ | 30 min | Level 1 | None | Core CLI usage | Interactive & print mode |
 | **5** | [Skills](03-skills/) | ⭐⭐ Intermediate | 1 hour | Level 2 | Slash Commands | Automatic expertise | Reusable capabilities, consistency |
-| **6** | [Hooks](06-hooks/) | ⭐⭐ Intermediate | 1 hour | Level 2 | Tools, Commands | Workflow automation | Validation, quality gates |
+| **6** | [Hooks](06-hooks/) | ⭐⭐ Intermediate | 1 hour | Level 2 | Tools, Commands | Workflow automation (25 events, 4 types) | Validation, quality gates |
 | **7** | [MCP](05-mcp/) | ⭐⭐⭐ Intermediate+ | 1 hour | Level 2 | Configuration | Live data access | Real-time integration, APIs |
-| **8** | [Subagents](04-subagents/) | ⭐⭐⭐ Intermediate+ | 1.5 hours | Level 2 | Memory, Commands | Complex task handling | Delegation, specialized expertise |
-| **9** | [Advanced Features](09-advanced-features/) | ⭐⭐⭐⭐⭐ Advanced | 2-3 hours | Level 3 | All previous | Power user tools | Planning, headless, permissions |
+| **8** | [Subagents](04-subagents/) | ⭐⭐⭐ Intermediate+ | 1.5 hours | Level 2 | Memory, Commands | Complex task handling (6 built-in including Bash) | Delegation, specialized expertise |
+| **9** | [Advanced Features](09-advanced-features/) | ⭐⭐⭐⭐⭐ Advanced | 2-3 hours | Level 3 | All previous | Power user tools | Planning, Auto Mode, Channels, Voice Dictation, permissions |
 | **10** | [Plugins](07-plugins/) | ⭐⭐⭐⭐ Advanced | 2 hours | Level 3 | All previous | Complete solutions | Team onboarding, distribution |
 | **11** | [CLI Mastery](10-cli/) | ⭐⭐⭐ Advanced | 1 hour | Level 3 | Recommended: All | Master command-line usage | Scripting, CI/CD, automation |
 
@@ -234,8 +234,9 @@ Before starting Level 2, make sure you're comfortable with these Level 1 concept
 **Goal**: Automate common workflows and quality checks
 
 #### What You'll Achieve
-✅ Auto-invoke specialized capabilities
-✅ Set up event-driven automation
+✅ Auto-invoke specialized capabilities with YAML frontmatter (including `effort` and `shell` fields)
+✅ Set up event-driven automation across 25 hook events
+✅ Use all 4 hook types (command, http, prompt, agent)
 ✅ Enforce code quality standards
 ✅ Create custom hooks for your workflow
 
@@ -357,17 +358,20 @@ Before starting Level 3, make sure you're comfortable with these Level 2 concept
 
 ### Milestone 3A: Advanced Features
 
-**Topics**: Advanced Features (Planning, Permissions, Extended Thinking, Remote/Desktop/Web)
+**Topics**: Advanced Features (Planning, Permissions, Extended Thinking, Auto Mode, Channels, Voice Dictation, Remote/Desktop/Web)
 **Time**: 2-3 hours
 **Complexity**: ⭐⭐⭐⭐⭐ Advanced
 **Goal**: Master advanced workflows and power user tools
 
 #### What You'll Achieve
 ✅ Planning mode for complex features
-✅ Fine-grained permission control (default, acceptEdits, plan, dontAsk, bypassPermissions)
+✅ Fine-grained permission control with 6 modes (default, acceptEdits, plan, auto, dontAsk, bypassPermissions)
 ✅ Extended thinking via Alt+T / Option+T toggle
 ✅ Background task management
 ✅ Auto Memory for learned preferences
+✅ Auto Mode with background safety classifier
+✅ Channels for structured multi-session workflows
+✅ Voice Dictation for hands-free interaction
 ✅ Remote control, desktop app, and web sessions
 ✅ Agent Teams for multi-agent collaboration
 
@@ -377,9 +381,10 @@ Before starting Level 3, make sure you're comfortable with these Level 2 concept
 # Exercise 1: Use planning mode
 /plan Implement user authentication system
 
-# Exercise 2: Try permission modes
+# Exercise 2: Try permission modes (6 available: default, acceptEdits, plan, auto, dontAsk, bypassPermissions)
 claude --permission-mode plan "analyze this codebase"
 claude --permission-mode acceptEdits "refactor the auth module"
+claude --permission-mode auto "implement the feature"
 
 # Exercise 3: Enable extended thinking
 # Press Alt+T (Option+T on macOS) during a session to toggle
@@ -392,20 +397,32 @@ claude --permission-mode acceptEdits "refactor the auth module"
 # 5. If tests fail, rewind to checkpoint
 # 6. Try alternative approach
 
-# Exercise 5: Enable agent teams
+# Exercise 5: Try auto mode (background safety classifier)
+claude --permission-mode auto "implement user settings page"
+
+# Exercise 6: Enable agent teams
 export CLAUDE_AGENT_TEAMS=1
 # Ask Claude: "Implement feature X using a team approach"
 
-# Exercise 6: Scheduled tasks
+# Exercise 7: Scheduled tasks
 /loop 5m /check-status
 # Or use CronCreate for persistent scheduled tasks
+
+# Exercise 8: Channels for multi-session workflows
+# Use channels to organize work across sessions
+
+# Exercise 9: Voice Dictation
+# Use voice input for hands-free interaction with Claude Code
 ```
 
 #### Success Criteria
 - [ ] Used planning mode for a complex feature
-- [ ] Configured permission modes (plan, acceptEdits, dontAsk)
+- [ ] Configured permission modes (plan, acceptEdits, auto, dontAsk)
 - [ ] Toggled extended thinking with Alt+T / Option+T
+- [ ] Used auto mode with background safety classifier
 - [ ] Used background tasks for long operations
+- [ ] Explored Channels for multi-session workflows
+- [ ] Tried Voice Dictation for hands-free input
 - [ ] Understand Remote Control, Desktop App, and Web sessions
 - [ ] Enabled and used Agent Teams for collaborative tasks
 - [ ] Used `/loop` for recurring tasks or scheduled monitoring
@@ -638,8 +655,10 @@ Use these checklists to track your progress by level. Run `/self-assessment` any
 ### 🔴 Level 3: Advanced
 - [ ] Completed [09-advanced-features](09-advanced-features/)
 - [ ] Used planning mode successfully
-- [ ] Configured permission modes
+- [ ] Configured permission modes (6 modes including auto)
+- [ ] Used auto mode with safety classifier
 - [ ] Used extended thinking toggle
+- [ ] Explored Channels and Voice Dictation
 - [ ] **Milestone 3A achieved**
 - [ ] Completed [07-plugins](07-plugins/)
 - [ ] Completed [10-cli](10-cli/) advanced usage
@@ -682,13 +701,16 @@ Once you've completed all milestones:
 3. **Explore Remote Control** - Control Claude Code sessions programmatically from external tools
 4. **Try Web Sessions** - Use Claude Code through browser-based interfaces for remote development
 5. **Use the Desktop App** - Access Claude Code features through the native desktop application
-6. **Leverage Auto Memory** - Let Claude learn your preferences automatically over time
-7. **Set up Agent Teams** - Coordinate multiple agents on complex, multi-faceted tasks
-8. **Use Scheduled Tasks** - Automate recurring checks with `/loop` and cron tools
-9. **Contribute examples** - Share with the community
-10. **Mentor others** - Help teammates learn
-11. **Optimize workflows** - Continuously improve based on usage
-12. **Stay updated** - Follow Claude Code releases and new features
+6. **Use Auto Mode** - Let Claude work autonomously with a background safety classifier
+7. **Leverage Auto Memory** - Let Claude learn your preferences automatically over time
+8. **Set up Agent Teams** - Coordinate multiple agents on complex, multi-faceted tasks
+9. **Use Channels** - Organize work across structured multi-session workflows
+10. **Try Voice Dictation** - Use hands-free voice input for interaction with Claude Code
+11. **Use Scheduled Tasks** - Automate recurring checks with `/loop` and cron tools
+12. **Contribute examples** - Share with the community
+13. **Mentor others** - Help teammates learn
+14. **Optimize workflows** - Continuously improve based on usage
+15. **Stay updated** - Follow Claude Code releases and new features
 
 ---
 

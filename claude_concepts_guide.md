@@ -1349,6 +1349,8 @@ tags:
   - quality
   - security
 when_to_use: When users ask to review code, analyze code quality, or evaluate pull requests
+effort: high
+shell: bash
 ---
 
 # Code Review Skill
@@ -2807,19 +2809,35 @@ Hooks are event-driven shell commands that execute automatically in response to 
 
 ### Hook Events
 
+Claude Code supports **25 hook events** across four hook types (command, http, prompt, agent):
+
 | Hook Event | Trigger | Use Cases |
 |------------|---------|-----------|
+| **SessionStart** | Session begins/resumes/clear/compact | Environment setup, initialization |
+| **InstructionsLoaded** | CLAUDE.md or rules file loaded | Validation, transformation, augmentation |
+| **UserPromptSubmit** | User submits prompt | Input validation, prompt filtering |
 | **PreToolUse** | Before any tool runs | Validation, approval gates, logging |
-| **PostToolUse** | After any tool runs | Auto-formatting, notifications, cleanup |
-| **Stop** | When the main agent stops | Summary generation, cleanup tasks |
-| **SubagentStop** | When a subagent stops | Result validation, logging |
-| **SubagentStart** | When a subagent starts | Context injection, initialization |
-| **Notification** | On notification events | Alerting, external integrations |
-| **WorktreeCreate** | When a worktree is created | Environment setup, dependency install |
-| **WorktreeRemove** | When a worktree is removed | Cleanup, resource deallocation |
-| **ConfigChange** | When configuration changes | Validation, propagation |
-| **InstructionsLoaded** | When memory/instruction files are loaded | Validation, transformation, augmentation |
-| **Setup** | During agent initialization | Environment preparation, dependency checks |
+| **PermissionRequest** | Permission dialog shown | Auto-approve/deny flows |
+| **PostToolUse** | After tool succeeds | Auto-formatting, notifications, cleanup |
+| **PostToolUseFailure** | Tool execution fails | Error handling, logging |
+| **Notification** | Notification sent | Alerting, external integrations |
+| **SubagentStart** | Subagent spawned | Context injection, initialization |
+| **SubagentStop** | Subagent finishes | Result validation, logging |
+| **Stop** | Claude finishes responding | Summary generation, cleanup tasks |
+| **StopFailure** | API error ends turn | Error recovery, logging |
+| **TeammateIdle** | Agent team teammate idle | Work distribution, coordination |
+| **TaskCompleted** | Task marked complete | Post-task processing |
+| **TaskCreated** | Task created via TaskCreate | Task tracking, logging |
+| **ConfigChange** | Config file changes | Validation, propagation |
+| **CwdChanged** | Working directory changes | Directory-specific setup |
+| **FileChanged** | Watched file changes | File monitoring, rebuild triggers |
+| **PreCompact** | Before context compaction | State preservation |
+| **PostCompact** | After compaction completes | Post-compact actions |
+| **WorktreeCreate** | Worktree being created | Environment setup, dependency install |
+| **WorktreeRemove** | Worktree being removed | Cleanup, resource deallocation |
+| **Elicitation** | MCP server requests user input | Input validation |
+| **ElicitationResult** | User responds to elicitation | Response processing |
+| **SessionEnd** | Session terminates | Cleanup, final logging |
 
 ### Common Hooks
 
@@ -2994,6 +3012,7 @@ Control what Claude can do.
 | **default** | Standard permissions with prompts for sensitive actions | General development |
 | **acceptEdits** | Automatically accept file edits without confirmation | Trusted editing workflows |
 | **plan** | Analysis and planning only, no file modifications | Code review, architecture planning |
+| **auto** | Automatically approve safe actions, prompt only for risky ones | Balanced autonomy with safety |
 | **dontAsk** | Execute all actions without confirmation prompts | Experienced users, automation |
 | **bypassPermissions** | Full unrestricted access, no safety checks | CI/CD pipelines, trusted scripts |
 
@@ -3001,6 +3020,7 @@ Control what Claude can do.
 ```bash
 claude --permission-mode plan          # Read-only analysis
 claude --permission-mode acceptEdits   # Auto-accept edits
+claude --permission-mode auto          # Auto-approve safe actions
 claude --permission-mode dontAsk       # No confirmation prompts
 ```
 
@@ -3109,4 +3129,4 @@ Complete configuration example:
 
 *Last updated: March 2026*
 *For Claude Haiku 4.5, Sonnet 4.6, and Opus 4.6*
-*Now includes: Hooks, Checkpoints, Planning Mode, Extended Thinking, Background Tasks, Permission Modes, Headless Mode, Session Management, Auto Memory, Agent Teams, Scheduled Tasks, Chrome Integration, and Bundled Skills*
+*Now includes: Hooks, Checkpoints, Planning Mode, Extended Thinking, Background Tasks, Permission Modes (6 modes), Headless Mode, Session Management, Auto Memory, Agent Teams, Scheduled Tasks, Chrome Integration, Channels, Voice Dictation, and Bundled Skills*

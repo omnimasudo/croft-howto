@@ -9,21 +9,24 @@ Hooks are automated scripts that execute in response to specific events during C
 
 ## Overview
 
-Hooks are shell commands or LLM prompts that execute automatically when specific events occur in Claude Code. They receive JSON input via stdin and communicate results via exit codes and JSON stdout output.
+Hooks are automated actions (shell commands, HTTP webhooks, LLM prompts, or subagent evaluations) that execute automatically when specific events occur in Claude Code. They receive JSON input and communicate results via exit codes and JSON output.
 
 **Key features:**
 - Event-driven automation
 - JSON-based input/output
-- Support for command, prompt, and HTTP hook types
+- Support for command, prompt, HTTP, and agent hook types
 - Pattern matching for tool-specific hooks
 
 ## Configuration
 
 Hooks are configured in settings files with a specific structure:
 
-- `~/.claude/settings.json` - User settings (global)
-- `.claude/settings.json` - Project settings (committed)
+- `~/.claude/settings.json` - User settings (all projects)
+- `.claude/settings.json` - Project settings (shareable, committed)
 - `.claude/settings.local.json` - Local project settings (not committed)
+- Managed policy - Organization-wide settings
+- Plugin `hooks/hooks.json` - Plugin-scoped hooks
+- Skill/Agent frontmatter - Component lifetime hooks
 
 ### Basic Configuration Structure
 
@@ -52,7 +55,7 @@ Hooks are configured in settings files with a specific structure:
 |-------|-------------|---------|
 | `matcher` | Pattern to match tool names (case-sensitive) | `"Write"`, `"Edit\|Write"`, `"*"` |
 | `hooks` | Array of hook definitions | `[{ "type": "command", ... }]` |
-| `type` | Hook type: `"command"` (bash), `"prompt"` (LLM), or `"http"` (webhook) | `"command"` |
+| `type` | Hook type: `"command"` (bash), `"prompt"` (LLM), `"http"` (webhook), or `"agent"` (subagent) | `"command"` |
 | `command` | Shell command to execute | `"$CLAUDE_PROJECT_DIR/.claude/hooks/format.sh"` |
 | `timeout` | Optional timeout in seconds (default 60) | `30` |
 | `once` | If `true`, run the hook only once per session | `true` |
@@ -68,7 +71,7 @@ Hooks are configured in settings files with a specific structure:
 
 ## Hook Types
 
-Claude Code supports three hook types:
+Claude Code supports four hook types:
 
 ### Command Hooks
 
@@ -120,30 +123,55 @@ LLM-evaluated prompts where the hook content is a prompt that Claude evaluates. 
 
 The LLM evaluates the prompt and returns a structured decision (see [Prompt-Based Hooks](#prompt-based-hooks) for details).
 
+### Agent Hooks
+
+Subagent-based verification hooks that spawn a dedicated agent to evaluate conditions or perform complex checks. Unlike prompt hooks (single-turn LLM evaluation), agent hooks can use tools and perform multi-step reasoning.
+
+```json
+{
+  "type": "agent",
+  "prompt": "Verify the code changes follow our architecture guidelines. Check the relevant design docs and compare.",
+  "timeout": 120
+}
+```
+
+**Key properties:**
+- `"type": "agent"` -- identifies this as an agent hook
+- `"prompt"` -- the task description for the subagent
+- The agent can use tools (Read, Grep, Bash, etc.) to perform its evaluation
+- Returns a structured decision similar to prompt hooks
+
 ## Hook Events
 
-Claude Code supports **18 hook events**:
+Claude Code supports **25 hook events**:
 
 | Event | When Triggered | Matcher Input | Can Block | Common Use |
 |-------|---------------|---------------|-----------|------------|
-| **InstructionsLoaded** | After CLAUDE.md files loaded | (none) | No | Modify/filter instructions |
-| **Setup** | During initial setup | (none) | No | One-time initialization |
-| **PreToolUse** | Before tool execution | Tool name | Yes | Validate, modify inputs |
-| **PostToolUse** | After tool completion | Tool name | Yes (block) | Add context, feedback |
+| **SessionStart** | Session begins/resumes/clear/compact | startup/resume/clear/compact | No | Environment setup |
+| **InstructionsLoaded** | After CLAUDE.md or rules file loaded | (none) | No | Modify/filter instructions |
+| **UserPromptSubmit** | User submits prompt | (none) | Yes | Validate prompts |
+| **PreToolUse** | Before tool execution | Tool name | Yes (allow/deny/ask) | Validate, modify inputs |
 | **PermissionRequest** | Permission dialog shown | Tool name | Yes | Auto-approve/deny |
+| **PostToolUse** | After tool succeeds | Tool name | No | Add context, feedback |
+| **PostToolUseFailure** | Tool execution fails | Tool name | No | Error handling, logging |
 | **Notification** | Notification sent | Notification type | No | Custom notifications |
-| **UserPromptSubmit** | Before prompt processed | (none) | Yes | Validate prompts |
-| **Stop** | Session or subagent finishes | (none) | Yes | Task completion check |
-| **SubagentStart** | Subagent begins execution | Agent type name | No | Subagent setup |
-| **SubagentStop** | Subagent completes | Agent type name | Yes | Subagent validation |
-| **PreCompact** | Before compact operation | manual/auto | No | Pre-compact actions |
-| **SessionStart** | Session begins/resumes | startup/resume/clear/compact | No | Environment setup |
-| **SessionEnd** | Session ends (cleanup only) | (none) | No | Cleanup, final logging |
-| **WorktreeCreate** | Worktree created | (none) | No | Worktree initialization |
-| **WorktreeRemove** | Worktree removed | (none) | No | Worktree cleanup |
-| **ConfigChange** | Configuration files change | (none) | No | React to config updates |
-| **TeammateIdle** | Agent team teammate about to idle | (none) | No | Teammate coordination |
-| **TaskCompleted** | Task being marked complete | (none) | No | Post-task actions |
+| **SubagentStart** | Subagent spawned | Agent type name | No | Subagent setup |
+| **SubagentStop** | Subagent finishes | Agent type name | Yes | Subagent validation |
+| **Stop** | Claude finishes responding | (none) | Yes | Task completion check |
+| **StopFailure** | API error ends turn | (none) | No | Error recovery, logging |
+| **TeammateIdle** | Agent team teammate idle | (none) | Yes | Teammate coordination |
+| **TaskCompleted** | Task marked complete | (none) | Yes | Post-task actions |
+| **TaskCreated** | Task created via TaskCreate | (none) | No | Task tracking, logging |
+| **ConfigChange** | Config file changes | (none) | Yes (except policy) | React to config updates |
+| **CwdChanged** | Working directory changes | (none) | No | Directory-specific setup |
+| **FileChanged** | Watched file changes | (none) | No | File monitoring, rebuild |
+| **PreCompact** | Before context compaction | manual/auto | No | Pre-compact actions |
+| **PostCompact** | After compaction completes | (none) | No | Post-compact actions |
+| **WorktreeCreate** | Worktree being created | (none) | Yes (path return) | Worktree initialization |
+| **WorktreeRemove** | Worktree being removed | (none) | No | Worktree cleanup |
+| **Elicitation** | MCP server requests user input | (none) | Yes | Input validation |
+| **ElicitationResult** | User responds to elicitation | (none) | Yes | Response processing |
+| **SessionEnd** | Session terminates | (none) | No | Cleanup, final logging |
 
 ### PreToolUse
 
@@ -283,7 +311,7 @@ Runs when session starts or resumes. Can persist environment variables.
 
 **Matchers:** `startup`, `resume`, `clear`, `compact`
 
-**Special feature:** Use `CLAUDE_ENV_FILE` to persist environment variables:
+**Special feature:** Use `CLAUDE_ENV_FILE` to persist environment variables (also available in `CwdChanged` and `FileChanged` hooks):
 
 ```bash
 #!/bin/bash
@@ -457,9 +485,10 @@ All hooks receive JSON input via stdin:
 | Variable | Availability | Description |
 |----------|-------------|-------------|
 | `CLAUDE_PROJECT_DIR` | All hooks | Absolute path to project root |
-| `CLAUDE_ENV_FILE` | SessionStart only | File path for persisting env vars |
-| `CLAUDE_CODE_REMOTE` | All hooks | `"true"` if running in web environment |
+| `CLAUDE_ENV_FILE` | SessionStart, CwdChanged, FileChanged | File path for persisting env vars |
+| `CLAUDE_CODE_REMOTE` | All hooks | `"true"` if running in remote environments |
 | `${CLAUDE_PLUGIN_ROOT}` | Plugin hooks | Path to plugin directory |
+| `${CLAUDE_PLUGIN_DATA}` | Plugin hooks | Path to plugin data directory |
 | `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS` | SessionEnd hooks | Configurable timeout in milliseconds for SessionEnd hooks (overrides default) |
 
 ## Prompt-Based Hooks
@@ -888,6 +917,7 @@ Plugins can include hooks in their `hooks/hooks.json` file:
 
 **Environment Variables in Plugin Hooks:**
 - `${CLAUDE_PLUGIN_ROOT}` - Path to the plugin directory
+- `${CLAUDE_PLUGIN_DATA}` - Path to the plugin data directory
 
 This allows plugins to include custom validation and automation hooks.
 

@@ -218,11 +218,11 @@ Event-driven automation scripts that execute automatically.
 
 **Usage**: Configured in settings, executed automatically
 
-**Hook Types**:
-- Tool Hooks: PreToolUse:*, PostToolUse:*
-- Session Hooks: Stop, SubagentStop, SubagentStart
-- Agent Hooks: InstructionsLoaded, Setup
-- Lifecycle Hooks: Notification, ConfigChange, WorktreeCreate, WorktreeRemove
+**Hook Types** (4 types, 25 events):
+- Tool Hooks: PreToolUse, PostToolUse, PostToolUseFailure, PermissionRequest
+- Session Hooks: SessionStart, SessionEnd, Stop, StopFailure, SubagentStart, SubagentStop
+- Task Hooks: UserPromptSubmit, TaskCompleted, TaskCreated, TeammateIdle
+- Lifecycle Hooks: ConfigChange, CwdChanged, FileChanged, PreCompact, PostCompact, WorktreeCreate, WorktreeRemove, Notification, InstructionsLoaded, Elicitation, ElicitationResult
 
 ---
 
@@ -395,6 +395,7 @@ Advanced capabilities for complex workflows.
 - **default**: Ask for approval on risky actions
 - **acceptEdits**: Auto-accept file edits, ask for others
 - **plan**: Read-only analysis, no modifications
+- **auto**: Automatically approve safe actions, prompt for risky ones
 - **dontAsk**: Accept all actions except risky ones
 - **bypassPermissions**: Accept all (requires `--dangerously-skip-permissions`)
 
@@ -741,6 +742,7 @@ chmod +x ~/.claude/hooks/*.sh
 # Use permission modes
 claude --permission-mode plan          # For code review (read-only)
 claude --permission-mode acceptEdits   # Auto-accept edits
+claude --permission-mode auto          # Auto-approve safe actions
 
 # Run in headless mode for CI/CD
 claude -p "Run tests and report results"

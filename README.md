@@ -458,10 +458,11 @@ Configure hooks in `~/.claude/settings.json`:
 
 **Usage**: Hooks execute automatically on events
 
-**Hook Types**:
-- **Tool Hooks**: `PreToolUse:*`, `PostToolUse:*`
-- **Session Hooks**: `Stop`, `SubagentStop`, `SubagentStart`
-- **Lifecycle Hooks**: `Notification`, `ConfigChange`, `WorktreeCreate`, `WorktreeRemove`
+**Hook Types** (4 types, 25 events):
+- **Tool Hooks**: `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `PermissionRequest`
+- **Session Hooks**: `SessionStart`, `SessionEnd`, `Stop`, `StopFailure`, `SubagentStart`, `SubagentStop`
+- **Task Hooks**: `UserPromptSubmit`, `TaskCompleted`, `TaskCreated`, `TeammateIdle`
+- **Lifecycle Hooks**: `ConfigChange`, `CwdChanged`, `FileChanged`, `PreCompact`, `PostCompact`, `WorktreeCreate`, `WorktreeRemove`, `Notification`, `InstructionsLoaded`, `Elicitation`, `ElicitationResult`
 
 </details>
 

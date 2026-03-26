@@ -21,6 +21,9 @@
 | Keybindings | Keyboard shortcut customization | [code.claude.com/docs/en/keybindings](https://code.claude.com/docs/en/keybindings) |
 | Desktop App | Native desktop application | [code.claude.com/docs/en/desktop](https://code.claude.com/docs/en/desktop) |
 | Remote Control | Remote session control | [code.claude.com/docs/en/remote-control](https://code.claude.com/docs/en/remote-control) |
+| Auto Mode | Automatic permission management | [code.claude.com/docs/en/auto-mode](https://code.claude.com/docs/en/auto-mode) |
+| Channels | Multi-channel communication | [code.claude.com/docs/en/channels](https://code.claude.com/docs/en/channels) |
+| Voice Dictation | Voice input for Claude Code | [code.claude.com/docs/en/voice-dictation](https://code.claude.com/docs/en/voice-dictation) |
 
 ## Anthropic Engineering Blog
 
@@ -236,9 +239,9 @@ These steps capture the core recommendations for smooth workflows with Claude Co
 | **Web Sessions** | Access Claude Code through browser-based interfaces for remote development | [CLI Reference](10-cli/) |
 | **Desktop App** | Native desktop application for Claude Code with enhanced UI | [Claude Code Docs](https://code.claude.com/docs/en/desktop) |
 | **Extended Thinking** | Deep reasoning toggle via `Alt+T`/`Option+T` or `MAX_THINKING_TOKENS` env var | [Advanced Features](09-advanced-features/) |
-| **Permission Modes** | Fine-grained control: default, acceptEdits, plan, dontAsk, bypassPermissions | [Advanced Features](09-advanced-features/) |
+| **Permission Modes** | Fine-grained control: default, acceptEdits, plan, auto, dontAsk, bypassPermissions | [Advanced Features](09-advanced-features/) |
 | **7-Tier Memory** | Managed Policy, Project, Project Rules, User, User Rules, Local, Auto Memory | [Memory Guide](02-memory/) |
-| **Hook Events** | PreToolUse, PostToolUse, Stop, SubagentStop, SubagentStart, Notification, and more | [Hooks Guide](06-hooks/) |
+| **Hook Events** | 25 events: PreToolUse, PostToolUse, PostToolUseFailure, Stop, StopFailure, SubagentStart, SubagentStop, Notification, Elicitation, and more | [Hooks Guide](06-hooks/) |
 | **Agent Teams** | Coordinate multiple agents working together on complex tasks | [Subagents Guide](04-subagents/) |
 | **Scheduled Tasks** | Set up recurring tasks with `/loop` and cron tools | [Advanced Features](09-advanced-features/) |
 | **Chrome Integration** | Browser automation with headless Chromium | [Advanced Features](09-advanced-features/) |

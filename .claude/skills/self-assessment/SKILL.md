@@ -317,7 +317,7 @@ Use these specific recommendations when a topic is a gap:
 - Done when: A hook blocks dangerous commands before execution
 
 **Hooks (score 1 — review)**:
-- Focus on: All 16 hook events, prompt-type hooks for Stop/SubagentStop, component-scoped hooks in SKILL.md frontmatter, HTTP hooks with allowedEnvVars, `CLAUDE_ENV_FILE` for SessionStart
+- Focus on: All 25 hook events (including PostToolUseFailure, StopFailure, TaskCreated, CwdChanged, FileChanged, PostCompact, Elicitation, ElicitationResult), 4 hook types (command, http, prompt, agent), component-scoped hooks in SKILL.md frontmatter, HTTP hooks with allowedEnvVars, `CLAUDE_ENV_FILE` for SessionStart/CwdChanged/FileChanged
 - Done when: You can create a prompt-based Stop hook and a component-scoped hook in a skill
 
 **MCP (score 0)**:

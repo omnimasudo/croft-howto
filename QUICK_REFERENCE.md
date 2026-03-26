@@ -96,6 +96,7 @@ chmod +x ~/.claude/hooks/*.sh
 # acceptEdits    - Auto-accept file edits, ask for others
 # plan           - Read-only analysis, no modifications
 # dontAsk        - Accept all actions except risky ones
+# auto           - Background classifier decides permissions automatically
 # bypassPermissions - Accept all actions (requires --dangerously-skip-permissions)
 
 # Session management
@@ -112,16 +113,16 @@ claude -r "session"    # Resume session by name/ID
 
 | Feature | Install Path | Usage |
 |---------|-------------|-------|
-| **Slash Commands** | `.claude/commands/*.md` | `/command-name` |
+| **Slash Commands (55+)** | `.claude/commands/*.md` | `/command-name` |
 | **Memory** | `./CLAUDE.md` | Auto-loaded |
 | **Skills** | `.claude/skills/*/SKILL.md` | Auto-invoked |
 | **Subagents** | `.claude/agents/*.md` | Auto-delegated |
 | **MCP** | `.mcp.json` (project) or `~/.claude.json` (user) | `/mcp__server__action` |
-| **Hooks** | `~/.claude/hooks/*.sh` | Event-triggered |
+| **Hooks (25 events)** | `~/.claude/hooks/*.sh` | Event-triggered (4 types) |
 | **Plugins** | Via `/plugin install` | Bundles all |
 | **Checkpoints** | Built-in | `Esc+Esc` or `/rewind` |
 | **Planning Mode** | Built-in | `/plan <task>` |
-| **Permission Modes** | Built-in | `--allowedTools`, `--permission-mode` |
+| **Permission Modes (6)** | Built-in | `--allowedTools`, `--permission-mode` |
 | **Sessions** | Built-in | `/session <command>` |
 | **Background Tasks** | Built-in | Run in background |
 | **Remote Control** | Built-in | WebSocket API |
@@ -129,7 +130,7 @@ claude -r "session"    # Resume session by name/ID
 | **Git Worktrees** | Built-in | `/worktree` |
 | **Auto Memory** | Built-in | Auto-saves to CLAUDE.md |
 | **Task List** | Built-in | `/task list` |
-| **Bundled Skills** | Built-in | `/simplify`, `/loop`, `/claude-api` |
+| **Bundled Skills (5)** | Built-in | `/simplify`, `/loop`, `/claude-api`, `/voice`, `/browse` |
 
 ---
 
@@ -188,7 +189,7 @@ vim CLAUDE.md
 
 ### Automation & Hooks
 ```bash
-# Install hooks
+# Install hooks (25 events, 4 types: command, http, prompt, agent)
 mkdir -p ~/.claude/hooks
 cp 06-hooks/*.sh ~/.claude/hooks/
 chmod +x ~/.claude/hooks/*.sh
@@ -197,6 +198,10 @@ chmod +x ~/.claude/hooks/*.sh
 # - Pre-commit tests: pre-commit.sh
 # - Auto-format code: format-code.sh
 # - Security scanning: security-scan.sh
+
+# Auto Mode for fully autonomous workflows
+claude --enable-auto-mode -p "Refactor and test the auth module"
+# Or cycle modes interactively with Shift+Tab
 ```
 
 ### Safe Refactoring
@@ -224,6 +229,9 @@ claude -p "Run all tests and generate report"
 
 # With permission mode for CI
 claude -p "Run tests" --permission-mode dontAsk
+
+# With Auto Mode for fully autonomous CI tasks
+claude --enable-auto-mode -p "Run tests and fix failures"
 
 # With hooks for automation
 # See 09-advanced-features/README.md
@@ -265,25 +273,26 @@ export CLAUDE_AGENT_TEAMS=1
 ```
 Your Project/
 ├── .claude/
-│   ├── commands/        # Slash commands go here
-│   ├── agents/          # Subagents go here
-│   ├── skills/          # Project skills go here
-│   └── settings.json    # Project settings (hooks, etc.)
-├── .mcp.json            # MCP configuration (project scope)
-├── CLAUDE.md            # Project memory
+│   ├── commands/              # Slash commands go here
+│   ├── agents/                # Subagents go here
+│   ├── skills/                # Project skills go here
+│   └── settings.json          # Project settings (hooks, etc.)
+├── .mcp.json                  # MCP configuration (project scope)
+├── CLAUDE.md                  # Project memory
 └── src/
     └── api/
-        └── CLAUDE.md    # Directory-specific memory
+        └── CLAUDE.md          # Directory-specific memory
 
 User Home/
 ├── .claude/
-│   ├── commands/        # Personal commands
-│   ├── agents/          # Personal agents
-│   ├── skills/          # Personal skills
-│   ├── hooks/           # Hook scripts
-│   ├── settings.json    # User settings
-│   └── CLAUDE.md        # Personal memory
-└── .claude.json         # Personal MCP config (user scope)
+│   ├── commands/              # Personal commands
+│   ├── agents/                # Personal agents
+│   ├── skills/                # Personal skills
+│   ├── hooks/                 # Hook scripts
+│   ├── settings.json          # User settings
+│   ├── managed-settings.d/    # Managed settings (enterprise/org)
+│   └── CLAUDE.md              # Personal memory
+└── .claude.json               # Personal MCP config (user scope)
 ```
 
 ---
@@ -377,6 +386,13 @@ cp -r 03-skills/code-review ~/.claude/skills/
 
 | Feature | Description | Usage |
 |---------|-------------|-------|
+| **Auto Mode** | Fully autonomous operation with background classifier | `--enable-auto-mode` flag, `Shift+Tab` to cycle modes |
+| **Channels** | Discord and Telegram integration | `--channels` flag, Discord/Telegram bots |
+| **Voice Dictation** | Speak commands and context to Claude | `/voice` command |
+| **Hooks (25 events)** | Expanded hook system with 4 types | command, http, prompt, agent hook types |
+| **MCP Elicitation** | MCP servers can request user input at runtime | Auto-prompted when server needs clarification |
+| **WebSocket MCP** | WebSocket transport for MCP connections | Configure in `.mcp.json` with `ws://` URLs |
+| **Plugin LSP** | Language Server Protocol support for plugins | `userConfig`, `${CLAUDE_PLUGIN_DATA}` variable |
 | **Remote Control** | Control Claude Code via WebSocket API | `claude --remote` for external integrations |
 | **Web Sessions** | Browser-based Claude Code interface | `claude web` to launch |
 | **Desktop App** | Native desktop application | Download from claude.ai/download |
@@ -424,14 +440,16 @@ echo $GITHUB_TOKEN
 
 | Need | Use This | Example |
 |------|----------|---------|
-| Quick shortcut | Slash Command | `01-slash-commands/optimize.md` |
+| Quick shortcut | Slash Command (55+) | `01-slash-commands/optimize.md` |
 | Team standards | Memory | `02-memory/project-CLAUDE.md` |
 | Auto workflow | Skill | `03-skills/code-review/` |
 | Specialized task | Subagent | `04-subagents/code-reviewer.md` |
-| External data | MCP | `05-mcp/github-mcp.json` |
-| Event automation | Hook | `06-hooks/pre-commit.sh` |
-| Complete solution | Plugin | `07-plugins/pr-review/` |
+| External data | MCP (+ Elicitation, WebSocket) | `05-mcp/github-mcp.json` |
+| Event automation | Hook (25 events, 4 types) | `06-hooks/pre-commit.sh` |
+| Complete solution | Plugin (+ LSP support) | `07-plugins/pr-review/` |
 | Safe experiment | Checkpoint | `08-checkpoints/checkpoint-examples.md` |
+| Fully autonomous | Auto Mode | `--enable-auto-mode` or `Shift+Tab` |
+| Chat integrations | Channels | `--channels` (Discord, Telegram) |
 | CI/CD pipeline | CLI | `10-cli/README.md` |
 
 ---

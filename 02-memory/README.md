@@ -49,6 +49,13 @@ The `/init` command is the fastest way to set up project memory in Claude Code. 
 - Sets up the foundation for context persistence across sessions
 - Provides a template structure for documenting your project standards
 
+**Enhanced interactive mode:** Set `CLAUDE_CODE_NEW_INIT=true` to enable a multi-phase interactive flow that walks you through project setup step by step:
+
+```bash
+CLAUDE_CODE_NEW_INIT=true claude
+/init
+```
+
 **When to use `/init`:**
 
 - Starting a new project with Claude Code
@@ -219,27 +226,31 @@ Claude Code uses a multi-tier hierarchical memory system. Memory files are autom
 
 1. **Managed Policy** - Organization-wide instructions
    - macOS: `/Library/Application Support/ClaudeCode/CLAUDE.md`
-   - Linux: `/etc/claude-code/CLAUDE.md`
-   - Windows: `C:\ProgramData\ClaudeCode\CLAUDE.md`
+   - Linux/WSL: `/etc/claude-code/CLAUDE.md`
+   - Windows: `C:\Program Files\ClaudeCode\CLAUDE.md`
 
-2. **Project Memory** - Team-shared context (version controlled)
+2. **Managed Drop-ins** - Alphabetically merged policy files (v2.1.83+)
+   - `managed-settings.d/` directory alongside the managed policy CLAUDE.md
+   - Files are merged in alphabetical order for modular policy management
+
+3. **Project Memory** - Team-shared context (version controlled)
    - `./.claude/CLAUDE.md` or `./CLAUDE.md` (in repository root)
 
-3. **Project Rules** - Modular, topic-specific project instructions
+4. **Project Rules** - Modular, topic-specific project instructions
    - `./.claude/rules/*.md`
 
-4. **User Memory** - Personal preferences (all projects)
+5. **User Memory** - Personal preferences (all projects)
    - `~/.claude/CLAUDE.md`
 
-5. **User-Level Rules** - Personal rules (all projects)
+6. **User-Level Rules** - Personal rules (all projects)
    - `~/.claude/rules/*.md`
 
-6. **Local Project Memory** - Personal project-specific preferences
+7. **Local Project Memory** - Personal project-specific preferences
    - `./CLAUDE.local.md`
 
 > **Note**: `CLAUDE.local.md` is not mentioned in the [official documentation](https://code.claude.com/docs/en/memory) as of March 2026. It may still work as a legacy feature. For new projects, consider using `~/.claude/CLAUDE.md` (user-level) or `.claude/rules/` (project-level, path-scoped) instead.
 
-7. **Auto Memory** - Claude's automatic notes and learnings
+8. **Auto Memory** - Claude's automatic notes and learnings
    - `~/.claude/projects/<project>/memory/`
 
 **Memory Discovery Behavior:**
@@ -248,7 +259,8 @@ Claude searches for memory files in this order, with earlier locations taking pr
 
 ```mermaid
 graph TD
-    A["Managed Policy<br/>/Library/.../ClaudeCode/CLAUDE.md"] -->|highest priority| B["Project Memory<br/>./CLAUDE.md"]
+    A["Managed Policy<br/>/Library/.../ClaudeCode/CLAUDE.md"] -->|highest priority| A2["Managed Drop-ins<br/>managed-settings.d/"]
+    A2 --> B["Project Memory<br/>./CLAUDE.md"]
     B --> C["Project Rules<br/>./.claude/rules/*.md"]
     C --> D["User Memory<br/>~/.claude/CLAUDE.md"]
     D --> E["User Rules<br/>~/.claude/rules/*.md"]
@@ -259,6 +271,7 @@ graph TD
     H -->|imports| I["@docs/api-standards.md"]
 
     style A fill:#fce4ec,stroke:#333,color:#333
+    style A2 fill:#fce4ec,stroke:#333,color:#333
     style B fill:#e1f5fe,stroke:#333,color:#333
     style C fill:#e1f5fe,stroke:#333,color:#333
     style D fill:#f3e5f5,stroke:#333,color:#333
@@ -288,6 +301,26 @@ Patterns are matched against paths relative to the project root. This is particu
 - Monorepos with many sub-projects, where only some are relevant
 - Repositories that contain vendored or third-party CLAUDE.md files
 - Reducing noise in Claude's context window by excluding stale or unrelated instructions
+
+## Settings File Hierarchy
+
+Claude Code settings (including `autoMemoryDirectory`, `claudeMdExcludes`, and other configuration) are resolved from a five-level hierarchy, with higher levels taking precedence:
+
+| Level | Location | Scope |
+|-------|----------|-------|
+| 1 (Highest) | Managed policy (system-level) | Organization-wide enforcement |
+| 2 | `managed-settings.d/` (v2.1.83+) | Modular policy drop-ins, merged alphabetically |
+| 3 | `~/.claude/settings.json` | User preferences |
+| 4 | `.claude/settings.json` | Project-level (committed to git) |
+| 5 (Lowest) | `.claude/settings.local.json` | Local overrides (git-ignored) |
+
+**Platform-specific configuration (v2.1.51+):**
+
+Settings can also be configured via:
+- **macOS**: Property list (plist) files
+- **Windows**: Windows Registry
+
+These platform-native mechanisms are read alongside JSON settings files and follow the same precedence rules.
 
 ## Modular Rules System
 
@@ -350,8 +383,9 @@ Rules in `.claude/rules/` support two organizational features:
 | Location | Scope | Priority | Shared | Access | Best For |
 |----------|-------|----------|--------|--------|----------|
 | `/Library/Application Support/ClaudeCode/CLAUDE.md` (macOS) | Managed Policy | 1 (Highest) | Organization | System | Company-wide policies |
-| `/etc/claude-code/CLAUDE.md` (Linux) | Managed Policy | 1 (Highest) | Organization | System | Organization standards |
-| `C:\ProgramData\ClaudeCode\CLAUDE.md` (Windows) | Managed Policy | 1 (Highest) | Organization | System | Corporate guidelines |
+| `/etc/claude-code/CLAUDE.md` (Linux/WSL) | Managed Policy | 1 (Highest) | Organization | System | Organization standards |
+| `C:\Program Files\ClaudeCode\CLAUDE.md` (Windows) | Managed Policy | 1 (Highest) | Organization | System | Corporate guidelines |
+| `managed-settings.d/*.md` (alongside policy) | Managed Drop-ins | 1.5 | Organization | System | Modular policy files (v2.1.83+) |
 | `./CLAUDE.md` or `./.claude/CLAUDE.md` | Project Memory | 2 | Team | Git | Team standards, shared architecture |
 | `./.claude/rules/*.md` | Project Rules | 3 | Team | Git | Path-specific, modular rules |
 | `~/.claude/CLAUDE.md` | User Memory | 4 | Individual | Filesystem | Personal preferences (all projects) |
@@ -440,17 +474,35 @@ npm install -g @anthropic-ai/claude-code@latest
 By default, auto memory is stored in `~/.claude/projects/<project>/memory/`. You can change this location using the `autoMemoryDirectory` setting (available since **v2.1.74**):
 
 ```jsonc
-// In ~/.claude/settings.json or .claude/settings.json
+// In ~/.claude/settings.json or .claude/settings.local.json (user/local settings only)
 {
   "autoMemoryDirectory": "/path/to/custom/memory/directory"
 }
 ```
+
+> **Note**: `autoMemoryDirectory` can only be set in user-level (`~/.claude/settings.json`) or local settings (`.claude/settings.local.json`), not in project or managed policy settings.
 
 This is useful when you want to:
 
 - Store auto memory in a shared or synced location
 - Separate auto memory from the default Claude configuration directory
 - Use a project-specific path outside the default hierarchy
+
+### Worktree and Repository Sharing
+
+All worktrees and subdirectories within the same git repository share a single auto memory directory. This means switching between worktrees or working in different subdirectories of the same repo will read and write to the same memory files.
+
+### Subagent Memory
+
+Subagents (spawned via tools like Task or parallel execution) can have their own memory context. Use the `memory` frontmatter field in the subagent definition to specify which memory scopes to load:
+
+```yaml
+memory: user      # Load user-level memory only
+memory: project   # Load project-level memory only
+memory: local     # Load local memory only
+```
+
+This allows subagents to operate with focused context rather than inheriting the full memory hierarchy.
 
 ### Controlling Auto Memory
 
@@ -1089,12 +1141,13 @@ For the most up-to-date information, refer to the official Claude Code documenta
 **Memory Hierarchy Precedence:**
 
 1. Managed Policy (highest precedence)
-2. Project Memory
-3. Project Rules (`.claude/rules/`)
-4. User Memory
-5. User-Level Rules (`~/.claude/rules/`)
-6. Local Project Memory
-7. Auto Memory (lowest precedence)
+2. Managed Drop-ins (`managed-settings.d/`, v2.1.83+)
+3. Project Memory
+4. Project Rules (`.claude/rules/`)
+5. User Memory
+6. User-Level Rules (`~/.claude/rules/`)
+7. Local Project Memory
+8. Auto Memory (lowest precedence)
 
 ## Related Concepts Links
 

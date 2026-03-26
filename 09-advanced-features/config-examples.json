@@ -39,7 +39,7 @@
           "temperature": 0.3
         },
         "permissions": {
-          "mode": "readonly"
+          "mode": "plan"
         },
         "extendedThinking": {
           "enabled": true,
@@ -140,7 +140,7 @@
           "temperature": 0.2
         },
         "permissions": {
-          "mode": "readonly"
+          "mode": "plan"
         },
         "extendedThinking": {
           "enabled": true,
@@ -224,6 +224,28 @@
         },
         "permissions": {
           "mode": "confirm"
+        }
+      }
+    },
+
+    "autonomous": {
+      "name": "Autonomous Development",
+      "description": "Configuration for autonomous work with auto mode safety checks",
+      "config": {
+        "general": {
+          "model": "claude-sonnet-4-6",
+          "temperature": 0.5
+        },
+        "permissions": {
+          "mode": "auto"
+        },
+        "sandbox": {
+          "enabled": true,
+          "failIfUnavailable": false
+        },
+        "backgroundTasks": {
+          "enabled": true,
+          "maxConcurrentTasks": 3
         }
       }
     },

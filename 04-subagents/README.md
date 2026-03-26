@@ -24,13 +24,14 @@ Subagents are specialized AI assistants that Claude Code can delegate tasks to. 
 13. [Restrict Spawnable Subagents](#restrict-spawnable-subagents)
 14. [`claude agents` CLI Command](#claude-agents-cli-command)
 15. [Agent Teams (Experimental)](#agent-teams-experimental)
-16. [Architecture](#architecture)
-17. [Context Management](#context-management)
-18. [When to Use Subagents](#when-to-use-subagents)
-19. [Best Practices](#best-practices)
-20. [Example Subagents in This Folder](#example-subagents-in-this-folder)
-21. [Installation Instructions](#installation-instructions)
-22. [Related Concepts](#related-concepts)
+16. [Plugin Subagent Security](#plugin-subagent-security)
+17. [Architecture](#architecture)
+18. [Context Management](#context-management)
+19. [When to Use Subagents](#when-to-use-subagents)
+20. [Best Practices](#best-practices)
+21. [Example Subagents in This Folder](#example-subagents-in-this-folder)
+22. [Installation Instructions](#installation-instructions)
+23. [Related Concepts](#related-concepts)
 
 ---
 
@@ -66,14 +67,14 @@ Each subagent operates independently with a clean slate, receiving only the spec
 
 Subagent files can be stored in multiple locations with different scopes:
 
-| Type | Location | Scope | Priority |
-|------|----------|-------|----------|
-| **Project subagents** | `.claude/agents/` | Current project | Highest |
-| **User subagents** | `~/.claude/agents/` | All projects | Lower |
-| **Plugin agents** | `plugins/agents/` | Via plugins | Varies |
-| **CLI-defined** | Via `--agents` flag | Session-specific | Medium |
+| Priority | Type | Location | Scope |
+|----------|------|----------|-------|
+| 1 (highest) | **CLI-defined** | Via `--agents` flag (JSON) | Session only |
+| 2 | **Project subagents** | `.claude/agents/` | Current project |
+| 3 | **User subagents** | `~/.claude/agents/` | All projects |
+| 4 (lowest) | **Plugin agents** | Plugin `agents/` directory | Via plugins |
 
-When duplicate names exist, project-level subagents take priority over user-level ones.
+When duplicate names exist, higher-priority sources take precedence.
 
 ---
 
@@ -96,7 +97,9 @@ skills: skill1, skill2  # Optional - skills to preload into context
 mcpServers: server1  # Optional - MCP servers to make available
 memory: user  # Optional - persistent memory scope (user, project, local)
 background: false  # Optional - run as background task
+effort: high  # Optional - reasoning effort (low, medium, high, max)
 isolation: worktree  # Optional - git worktree isolation
+initialPrompt: "Start by analyzing the codebase"  # Optional - auto-submitted first turn
 hooks:  # Optional - component-scoped hooks
   PreToolUse:
     - matcher: "Bash"
@@ -116,17 +119,19 @@ to solving problems.
 |-------|----------|-------------|
 | `name` | Yes | Unique identifier (lowercase letters and hyphens) |
 | `description` | Yes | Natural language description of purpose. Include "use PROACTIVELY" to encourage automatic invocation |
-| `tools` | No | Comma-separated list of specific tools. Omit to inherit all tools. Supports `Task(agent_name)` syntax to restrict spawnable subagents |
+| `tools` | No | Comma-separated list of specific tools. Omit to inherit all tools. Supports `Agent(agent_name)` syntax to restrict spawnable subagents |
 | `disallowedTools` | No | Comma-separated list of tools the subagent must not use |
-| `model` | No | Model to use: `sonnet`, `opus`, `haiku`, or `inherit`. Defaults to configured subagent model |
-| `permissionMode` | No | `default`, `acceptEdits`, `bypassPermissions`, `plan`, `ignore` |
+| `model` | No | Model to use: `sonnet`, `opus`, `haiku`, full model ID, or `inherit`. Defaults to configured subagent model |
+| `permissionMode` | No | `default`, `acceptEdits`, `dontAsk`, `bypassPermissions`, `plan` |
 | `maxTurns` | No | Maximum number of agentic turns the subagent can take |
 | `skills` | No | Comma-separated list of skills to preload. Injects full skill content into the subagent's context at startup |
 | `mcpServers` | No | MCP servers to make available to the subagent |
 | `hooks` | No | Component-scoped hooks (PreToolUse, PostToolUse, Stop) |
 | `memory` | No | Persistent memory directory scope: `user`, `project`, or `local` |
 | `background` | No | Set to `true` to always run this subagent as a background task |
+| `effort` | No | Reasoning effort level: `low`, `medium`, `high`, or `max` |
 | `isolation` | No | Set to `worktree` to give the subagent its own git worktree |
+| `initialPrompt` | No | Auto-submitted first turn when the subagent runs as the main agent |
 
 ### Tool Configuration Options
 
@@ -187,11 +192,12 @@ claude --agents '{
 **Priority of Agent Definitions:**
 
 Agent definitions are loaded with this priority order (first match wins):
-1. **CLI-defined** - `--agents` flag (session-specific)
-2. **User-level** - `~/.claude/agents/` (all projects)
-3. **Project-level** - `.claude/agents/` (current project)
+1. **CLI-defined** - `--agents` flag (session only, JSON)
+2. **Project-level** - `.claude/agents/` (current project)
+3. **User-level** - `~/.claude/agents/` (all projects)
+4. **Plugin-level** - Plugin `agents/` directory
 
-This allows CLI definitions to override both user and project agents for a single session.
+This allows CLI definitions to override all other sources for a single session.
 
 ---
 
@@ -339,6 +345,36 @@ You can explicitly request a specific subagent:
 > Use the test-runner subagent to fix failing tests
 > Have the code-reviewer subagent look at my recent changes
 > Ask the debugger subagent to investigate this error
+```
+
+### @-Mention Invocation
+
+Use the `@` prefix to guarantee a specific subagent is invoked (bypasses automatic delegation heuristics):
+
+```
+> @"code-reviewer (agent)" review the auth module
+```
+
+### Session-Wide Agent
+
+Run an entire session using a specific agent as the main agent:
+
+```bash
+# Via CLI flag
+claude --agent code-reviewer
+
+# Via settings.json
+{
+  "agent": "code-reviewer"
+}
+```
+
+### Listing Available Agents
+
+Use the `claude agents` command to list all configured agents from all sources:
+
+```bash
+claude agents
 ```
 
 ---
@@ -591,7 +627,23 @@ Control how teammate activity is displayed:
 claude --teammate-mode tmux
 ```
 
+You can also set the display mode in `settings.json`:
+
+```json
+{
+  "teammateMode": "tmux"
+}
+```
+
 > **Note**: Split-pane mode requires tmux or iTerm2. It is not available in VS Code terminal, Windows Terminal, or Ghostty.
+
+### Navigation
+
+Use `Shift+Down` to navigate between teammates in split-pane mode.
+
+### Team Configuration
+
+Team configurations are stored at `~/.claude/teams/{team-name}/config.json`.
 
 ### Architecture
 
@@ -673,6 +725,18 @@ Agent Teams introduce two additional [hook events](../06-hooks/):
 
 ---
 
+## Plugin Subagent Security
+
+Plugin-provided subagents have restricted frontmatter capabilities for security. The following fields are **not allowed** in plugin subagent definitions:
+
+- `hooks` - Cannot define lifecycle hooks
+- `mcpServers` - Cannot configure MCP servers
+- `permissionMode` - Cannot override permission settings
+
+This prevents plugins from escalating privileges or executing arbitrary commands through subagent hooks.
+
+---
+
 ## Architecture
 
 ### High-Level Architecture
@@ -751,6 +815,14 @@ graph TB
 
 - **Context efficiency** - Agents preserve main context, enabling longer sessions
 - **Latency** - Subagents start with clean slate and may add latency gathering initial context
+
+### Key Behaviors
+
+- **No nested spawning** - Subagents cannot spawn other subagents
+- **Background permissions** - Background subagents auto-deny any permissions that are not pre-approved
+- **Backgrounding** - Press `Ctrl+B` to background a currently running task
+- **Transcripts** - Subagent transcripts are stored at `~/.claude/projects/{project}/{sessionId}/subagents/agent-{agentId}.jsonl`
+- **Auto-compaction** - Subagent context auto-compacts at ~95% capacity (override with `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` environment variable)
 
 ---
 
@@ -1064,6 +1136,6 @@ graph TD
 
 ---
 
-*Last updated: February 2026*
+*Last updated: March 2026*
 
 *This guide covers complete subagent configuration, delegation patterns, and best practices for Claude Code.*

@@ -99,10 +99,18 @@ claude mcp add --transport stdio myserver --env KEY=value -- npx server
 
 ### SSE Transport (Deprecated)
 
-Server-Sent Events transport is deprecated but still supported:
+Server-Sent Events transport is deprecated in favor of `http` but still supported:
 
 ```bash
 claude mcp add --transport sse legacy-server https://example.com/sse
+```
+
+### WebSocket Transport
+
+WebSocket transport for persistent bidirectional connections:
+
+```bash
+claude mcp add --transport ws realtime-server wss://example.com/mcp
 ```
 
 ### Windows-Specific Note
@@ -131,6 +139,7 @@ claude mcp add --transport http my-service https://my-service.example.com/mcp \
 | Feature | Description |
 |---------|-------------|
 | **Interactive OAuth** | Use `/mcp` to trigger the browser-based OAuth flow |
+| **Pre-configured OAuth clients** | Built-in OAuth clients for common services like Notion, Stripe, and others (v2.1.30+) |
 | **Pre-configured credentials** | `--client-id`, `--client-secret`, `--callback-port` flags for automated setup |
 | **Token storage** | Tokens are stored securely in your system keychain |
 | **Step-up auth** | Supports step-up authentication for privileged operations |
@@ -160,6 +169,8 @@ The URL must use `https://`. This option requires Claude Code v2.1.64 or later.
 ### Claude.ai MCP Connectors
 
 MCP servers configured in your Claude.ai account are automatically available in Claude Code. This means any MCP connections you set up through the Claude.ai web interface will be accessible without additional configuration.
+
+Claude.ai MCP connectors are also available in `--print` mode (v2.1.83+), enabling non-interactive and scripted usage.
 
 To disable Claude.ai MCP servers in Claude Code, set the `ENABLE_CLAUDEAI_MCP_SERVERS` environment variable to `false`:
 
@@ -205,6 +216,28 @@ When MCP tool descriptions exceed 10% of the context window, Claude Code automat
 ## Dynamic Tool Updates
 
 Claude Code supports MCP `list_changed` notifications. When an MCP server dynamically adds, removes, or modifies its available tools, Claude Code receives the update and adjusts its tool list automatically -- no reconnection or restart required.
+
+## MCP Elicitation
+
+MCP servers can request structured input from the user via interactive dialogs (v2.1.49+). This allows an MCP server to ask for additional information mid-workflow -- for example, prompting for a confirmation, selecting from a list of options, or filling in required fields -- adding interactivity to MCP server interactions.
+
+## Tool Description and Instruction Cap
+
+As of v2.1.84, Claude Code enforces a **2 KB cap** on tool descriptions and instructions per MCP server. This prevents individual servers from consuming excessive context with overly verbose tool definitions, reducing context bloat and keeping interactions efficient.
+
+## MCP Prompts as Slash Commands
+
+MCP servers can expose prompts that appear as slash commands in Claude Code. Prompts are accessible using the naming convention:
+
+```
+/mcp__<server>__<prompt>
+```
+
+For example, if a server named `github` exposes a prompt called `review`, you can invoke it as `/mcp__github__review`.
+
+## Server Deduplication
+
+When the same MCP server is defined at multiple scopes (local, project, user), the local configuration takes precedence. This allows you to override project-level or user-level MCP settings with local customizations without conflicts.
 
 ## MCP Resources via @ Mentions
 
@@ -661,6 +694,23 @@ Use the `${CLAUDE_PLUGIN_ROOT}` variable to reference paths relative to the plug
   }
 }
 ```
+
+## Subagent-Scoped MCP
+
+MCP servers can be defined inline within agent frontmatter using the `mcpServers:` key, scoping them to a specific subagent rather than the entire project. This is useful when an agent needs access to a particular MCP server that other agents in the workflow do not require.
+
+```yaml
+---
+mcpServers:
+  my-tool:
+    type: http
+    url: https://my-tool.example.com/mcp
+---
+
+You are an agent with access to my-tool for specialized operations.
+```
+
+Subagent-scoped MCP servers are only available within that agent's execution context and are not shared with the parent or sibling agents.
 
 ## MCP Output Limits
 

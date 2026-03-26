@@ -7,7 +7,7 @@
 
 > Quick reference guide to all Claude Code features: commands, agents, skills, plugins, and hooks.
 
-**Navigation**: [Commands](#slash-commands) | [Subagents](#subagents) | [Skills](#skills) | [Plugins](#plugins) | [MCP Servers](#mcp-servers) | [Hooks](#hooks) | [Memory](#memory-files) | [New Features](#new-features-march-2026)
+**Navigation**: [Commands](#slash-commands) | [Permission Modes](#permission-modes) | [Subagents](#subagents) | [Skills](#skills) | [Plugins](#plugins) | [MCP Servers](#mcp-servers) | [Hooks](#hooks) | [Memory](#memory-files) | [New Features](#new-features-march-2026)
 
 ---
 
@@ -15,14 +15,14 @@
 
 | Feature | Built-in | Examples | Total | Reference |
 |---------|----------|----------|-------|-----------|
-| **Slash Commands** | 55 | 8 | 63 | [01-slash-commands/](01-slash-commands/) |
+| **Slash Commands** | 55+ | 8 | 63+ | [01-slash-commands/](01-slash-commands/) |
 | **Subagents** | 6 | 10 | 16 | [04-subagents/](04-subagents/) |
 | **Skills** | 5 bundled | 4 | 9 | [03-skills/](03-skills/) |
 | **Plugins** | - | 3 | 3 | [07-plugins/](07-plugins/) |
 | **MCP Servers** | 1 | 8 | 9 | [05-mcp/](05-mcp/) |
-| **Hooks** | 18 events | 7 | 7 | [06-hooks/](06-hooks/) |
+| **Hooks** | 25 events | 7 | 7 | [06-hooks/](06-hooks/) |
 | **Memory** | 7 types | 3 | 3 | [02-memory/](02-memory/) |
-| **Total** | **92** | **43** | **110** | |
+| **Total** | **99** | **43** | **117** | |
 
 ---
 
@@ -111,6 +111,25 @@ cp 01-slash-commands/*.md .claude/commands/
 
 ---
 
+## Permission Modes
+
+Claude Code supports 6 permission modes that control how tool use is authorized.
+
+| Mode | Description | When to Use |
+|------|-------------|-------------|
+| `default` | Prompt for each tool call | Standard interactive use |
+| `acceptEdits` | Auto-accept file edits, prompt for others | Trusted editing workflows |
+| `plan` | Read-only tools only, no writes | Planning and exploration |
+| `auto` | Accept all tools without prompting | Fully autonomous operation (Research Preview) |
+| `bypassPermissions` | Skip all permission checks | CI/CD, headless environments |
+| `dontAsk` | Skip tools that would require permission | Non-interactive scripting |
+
+> **Note**: `auto` mode is a Research Preview feature (March 2026). Use `bypassPermissions` only in trusted, sandboxed environments.
+
+**Reference**: [Official Docs](https://code.claude.com/docs/en/permissions)
+
+---
+
 ## Subagents
 
 Specialized AI assistants with isolated contexts for specific tasks.
@@ -125,6 +144,18 @@ Specialized AI assistants with isolated contexts for specific tasks.
 | **Bash** | Command execution | Bash | Inherits model | Git operations, terminal tasks |
 | **statusline-setup** | Status line configuration | Bash, Read, Write | Sonnet 4.6 | Configure status line display |
 | **Claude Code Guide** | Help and documentation | Read, Glob, Grep | Haiku 4.5 | Getting help, learning features |
+
+### Subagent Configuration Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Agent identifier |
+| `description` | string | What the agent does |
+| `model` | string | Model override (e.g., `haiku-4.5`) |
+| `tools` | array | Allowed tools list |
+| `effort` | string | Reasoning effort level (`low`, `medium`, `high`) |
+| `initialPrompt` | string | System prompt injected at agent start |
+| `disallowedTools` | array | Tools explicitly denied to this agent |
 
 ### Custom Subagents (Examples)
 
@@ -175,6 +206,18 @@ Auto-invoked capabilities with instructions, scripts, and templates.
 ├── scripts/          # Helper scripts
 └── templates/        # Output templates
 ```
+
+### Skill Frontmatter Fields
+
+Skills support YAML frontmatter in `SKILL.md` for configuration:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Skill display name |
+| `description` | string | What the skill does |
+| `autoInvoke` | array | Trigger phrases for auto-invocation |
+| `effort` | string | Reasoning effort level (`low`, `medium`, `high`) |
+| `shell` | string | Shell to use for scripts (`bash`, `zsh`, `sh`) |
 
 **Reference**: [03-skills/](03-skills/) | [Official Docs](https://code.claude.com/docs/en/skills)
 
@@ -287,24 +330,31 @@ Event-driven automation that executes shell commands on Claude Code events.
 
 | Event | Description | When Triggered | Use Cases |
 |-------|-------------|----------------|-----------|
-| `PreToolUse` | Before tool execution | Before any tool runs | Validation, logging |
-| `PostToolUse` | After tool completion | After any tool completes | Formatting, notifications |
-| `PermissionRequest` | Permission dialog shown | Before sensitive actions | Custom approval flows |
-| `Notification` | Notification sent | Claude sends notification | External alerts |
+| `SessionStart` | Session begins/resumes | Session initialization | Setup tasks |
+| `InstructionsLoaded` | Instructions loaded | CLAUDE.md or rules file loaded | Custom instruction handling |
 | `UserPromptSubmit` | Before prompt processing | User sends message | Input validation |
-| `Stop` | Agent finishes responding | Response complete | Cleanup, reporting |
-| `SubagentStart` | Subagent begins | Subagent task starts | Initialize subagent context |
+| `PreToolUse` | Before tool execution | Before any tool runs | Validation, logging |
+| `PermissionRequest` | Permission dialog shown | Before sensitive actions | Custom approval flows |
+| `PostToolUse` | After tool succeeds | After any tool completes | Formatting, notifications |
+| `PostToolUseFailure` | Tool execution fails | After tool error | Error handling, logging |
+| `Notification` | Notification sent | Claude sends notification | External alerts |
+| `SubagentStart` | Subagent spawned | Subagent task starts | Initialize subagent context |
 | `SubagentStop` | Subagent finishes | Subagent task complete | Chain actions |
-| `PreCompact` | Before compact operation | Context compression | State preservation |
-| `SessionStart` | Session begins | Session initialization | Setup tasks |
-| `SessionEnd` | Session ends | Session termination | Cleanup, save state |
-| `WorktreeCreate` | Worktree created | Git worktree created | Setup worktree environment |
-| `WorktreeRemove` | Worktree removed | Git worktree removed | Cleanup worktree resources |
-| `ConfigChange` | Configuration updated | Settings modified | React to config changes |
-| `InstructionsLoaded` | Instructions loaded | Memory files processed | Custom instruction handling |
-| `Setup` | Agent setup | Agent initialization | Environment configuration |
+| `Stop` | Claude finishes responding | Response complete | Cleanup, reporting |
+| `StopFailure` | API error ends turn | API error occurs | Error recovery, logging |
 | `TeammateIdle` | Teammate agent idle | Agent team coordination | Distribute work |
-| `TaskCompleted` | Task finished | Background task done | Post-task processing |
+| `TaskCompleted` | Task marked complete | Task done | Post-task processing |
+| `TaskCreated` | Task created via TaskCreate | New task created | Task tracking, logging |
+| `ConfigChange` | Configuration updated | Settings modified | React to config changes |
+| `CwdChanged` | Working directory changes | Directory changed | Directory-specific setup |
+| `FileChanged` | Watched file changes | File modified | File monitoring, rebuild |
+| `PreCompact` | Before compact operation | Context compression | State preservation |
+| `PostCompact` | After compaction completes | Compaction done | Post-compact actions |
+| `WorktreeCreate` | Worktree being created | Git worktree created | Setup worktree environment |
+| `WorktreeRemove` | Worktree being removed | Git worktree removed | Cleanup worktree resources |
+| `Elicitation` | MCP server requests input | MCP elicitation | Input validation |
+| `ElicitationResult` | User responds to elicitation | User responds | Response processing |
+| `SessionEnd` | Session terminates | Session termination | Cleanup, save state |
 
 ### Example Hooks
 
@@ -395,6 +445,15 @@ cp 02-memory/personal-CLAUDE.md ~/.claude/CLAUDE.md
 | **Scheduled Tasks** | Set up recurring tasks with `/loop` and cron tools | Use `/loop 5m /command` or CronCreate tool |
 | **Chrome Integration** | Browser automation with headless Chromium | Use `--chrome` flag or `/chrome` command |
 | **Keyboard Customization** | Customize keybindings including chord support | Use `/keybindings` or edit `~/.claude/keybindings.json` |
+| **Auto Mode** | Fully autonomous operation without permission prompts (Research Preview) | Use `--mode auto` or `/permissions auto`; March 2026 |
+| **Channels** | Multi-channel communication (Telegram, Slack, etc.) (Research Preview) | Configure channel plugins; March 2026 |
+| **Voice Dictation** | Voice input for prompts | Use microphone icon or voice keybinding |
+| **Agent Hook Type** | Hooks that spawn a subagent instead of running a shell command | Set `"type": "agent"` in hook configuration |
+| **Prompt Hook Type** | Hooks that inject prompt text into the conversation | Set `"type": "prompt"` in hook configuration |
+| **MCP Elicitation** | MCP servers can request user input during tool execution | Handle via `Elicitation` and `ElicitationResult` hook events |
+| **WebSocket MCP Transport** | WebSocket-based transport for MCP server connections | Use `"transport": "websocket"` in MCP server config |
+| **Plugin LSP Support** | Language Server Protocol integration via plugins | Configure LSP servers in `plugin.json` for editor features |
+| **Managed Drop-ins** | Organization-managed drop-in configurations (v2.1.83) | Admin-configured via managed policies; auto-applied to all users |
 
 ---
 

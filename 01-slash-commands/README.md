@@ -18,78 +18,103 @@ Slash commands are shortcuts that control Claude's behavior during an interactiv
 
 ## Built-in Commands Reference
 
-Built-in commands are shortcuts for common actions. Type `/` in Claude Code to see the full list, or type `/` followed by any letters to filter.
+Built-in commands are shortcuts for common actions. There are **55+ built-in commands** and **5 bundled skills** available. Type `/` in Claude Code to see the full list, or type `/` followed by any letters to filter.
 
 | Command | Purpose |
 |---------|---------|
-| `/add-dir` | Add additional working directories |
-| `/agents` | Manage custom AI subagents for specialized tasks |
-| `/btw <question>` | Side question without adding to conversation |
+| `/add-dir <path>` | Add working directory |
+| `/agents` | Manage agent configurations |
+| `/branch [name]` | Branch conversation into a new session (alias: `/fork`). Note: `/fork` renamed to `/branch` in v2.1.77 |
+| `/btw <question>` | Side question without adding to history |
 | `/chrome` | Configure Chrome browser integration |
-| `/clear` | Clear conversation history |
+| `/clear` | Clear conversation (aliases: `/reset`, `/new`) |
+| `/color [color\|default]` | Set prompt bar color |
 | `/compact [instructions]` | Compact conversation with optional focus instructions |
-| `/config` | Open the Settings interface (Config tab) |
-| `/context` | Visualize context usage with actionable optimization suggestions |
-| `/copy` | Copy the last assistant response to clipboard |
+| `/config` | Open Settings (alias: `/settings`) |
+| `/context` | Visualize context usage as colored grid |
+| `/copy [N]` | Copy assistant response to clipboard; `w` writes to file |
 | `/cost` | Show token usage statistics |
-| `/desktop` | Hand off CLI session to Desktop app (macOS/Windows) |
+| `/desktop` | Continue in Desktop app (alias: `/app`) |
 | `/diff` | Interactive diff viewer for uncommitted changes |
-| `/doctor` | Checks the health of your Claude Code installation |
-| `/exit` | Exit the REPL |
+| `/doctor` | Diagnose installation health |
+| `/effort [low\|medium\|high\|max\|auto]` | Set effort level. `max` requires Opus 4.6 |
+| `/exit` | Exit the REPL (alias: `/quit`) |
 | `/export [filename]` | Export the current conversation to a file or clipboard |
 | `/extra-usage` | Configure extra usage for rate limits |
-| `/fast` | Toggle fast mode (same model, faster output) |
+| `/fast [on\|off]` | Toggle fast mode |
 | `/feedback` | Submit feedback (alias: `/bug`) |
-| `/fork` | Fork the current session into a new conversation |
-| `/help` | Get usage help |
-| `/hooks` | Manage hook configurations for tool events |
-| `/ide` | Manage IDE integrations and show status |
-| `/init` | Initialize project with `CLAUDE.md` guide |
-| `/insights` | Analyze session patterns and friction points |
-| `/install-github-app` | Set up Claude GitHub Actions for a repository |
-| `/install-slack-app` | Install Claude Slack app |
+| `/help` | Show help |
+| `/hooks` | View hook configurations |
+| `/ide` | Manage IDE integrations |
+| `/init` | Initialize `CLAUDE.md`. Set `CLAUDE_CODE_NEW_INIT=true` for interactive flow |
+| `/insights` | Generate session analysis report |
+| `/install-github-app` | Set up GitHub Actions app |
+| `/install-slack-app` | Install Slack app |
 | `/keybindings` | Open keybindings configuration |
 | `/login` | Switch Anthropic accounts |
 | `/logout` | Sign out from your Anthropic account |
-| `/mcp` | Manage MCP server connections and OAuth authentication |
-| `/memory` | Edit `CLAUDE.md` memory files |
-| `/mobile` | QR code for Claude mobile app (aliases: `/ios`, `/android`) |
-| `/model` | Select or change the AI model |
+| `/mcp` | Manage MCP servers and OAuth |
+| `/memory` | Edit `CLAUDE.md`, toggle auto-memory |
+| `/mobile` | QR code for mobile app (aliases: `/ios`, `/android`) |
+| `/model [model]` | Select model with left/right arrows for effort |
 | `/passes` | Share free week of Claude Code |
-| `/permissions` | View or update permissions |
-| `/plan` | Enter plan mode directly from the prompt |
-| `/plugin` | Manage Claude Code plugins |
-| `/pr-comments` | View pull request comments |
-| `/privacy-settings` | View and update your privacy settings |
-| `/release-notes` | View release notes |
-| `/reload-plugins` | Reload active plugins without restart |
-| `/remote-control` | Make session available for remote control (alias: `/rc`) |
-| `/remote-env` | Configure remote session environment (claude.ai subscribers) |
-| `/rename <name>` | Rename the current session |
-| `/resume [session]` | Resume a conversation by ID or name |
-| `/review` | **Deprecated** — install the `code-review` plugin instead: `claude plugin install code-review@claude-code-marketplace` |
-| `/rewind` | Rewind the conversation and/or code |
-| `/sandbox` | Enable sandboxed bash tool with filesystem and network isolation |
-| `/security-review` | Complete a security review of pending changes |
+| `/permissions` | View/update permissions (alias: `/allowed-tools`) |
+| `/plan [description]` | Enter plan mode |
+| `/plugin` | Manage plugins |
+| `/pr-comments [PR]` | Fetch GitHub PR comments |
+| `/privacy-settings` | Privacy settings (Pro/Max only) |
+| `/release-notes` | View changelog |
+| `/reload-plugins` | Reload active plugins |
+| `/remote-control` | Remote control from claude.ai (alias: `/rc`) |
+| `/remote-env` | Configure default remote environment |
+| `/rename [name]` | Rename session |
+| `/resume [session]` | Resume conversation (alias: `/continue`) |
+| `/review` | **Deprecated** — install the `code-review` plugin instead |
+| `/rewind` | Rewind conversation and/or code (alias: `/checkpoint`) |
+| `/sandbox` | Toggle sandbox mode |
+| `/schedule [description]` | Create/manage scheduled tasks |
+| `/security-review` | Analyze branch for security vulnerabilities |
 | `/skills` | List available skills |
-| `/stats` | Visualize daily usage, session history, streaks, and model preferences |
-| `/status` | Open the Settings interface (Status tab) |
-| `/statusline` | Set up Claude Code's status line UI |
-| `/stickers` | Order Claude Code stickers |
-| `/tasks` | List and manage background tasks |
-| `/teleport` | Resume remote session from claude.ai by session ID |
-| `/terminal-setup` | Install Shift+Enter key binding for newlines |
-| `/theme` | Change the color theme |
-| `/upgrade` | Open upgrade page |
-| `/usage` | Show plan usage limits and rate limit status |
-| `/vim` | Enter vim mode for alternating insert and command modes |
+| `/stats` | Visualize daily usage, sessions, streaks |
+| `/status` | Show version, model, account |
+| `/statusline` | Configure status line |
+| `/tasks` | List/manage background tasks |
+| `/terminal-setup` | Configure terminal keybindings |
+| `/theme` | Change color theme |
+| `/vim` | Toggle Vim/Normal modes |
+| `/voice` | Toggle push-to-talk voice dictation |
+
+### Bundled Skills
+
+These skills ship with Claude Code and are invoked like slash commands:
+
+| Skill | Purpose |
+|-------|---------|
+| `/batch <instruction>` | Orchestrate large-scale parallel changes using worktrees |
+| `/claude-api` | Load Claude API reference for project language |
+| `/debug [description]` | Enable debug logging |
+| `/loop [interval] <prompt>` | Run prompt repeatedly on interval |
+| `/simplify [focus]` | Review changed files for code quality |
+
+### Deprecated Commands
+
+| Command | Status |
+|---------|--------|
+| `/review` | Deprecated — replaced by `code-review` plugin |
+| `/output-style` | Deprecated since v2.1.73 |
+| `/fork` | Renamed to `/branch` (alias still works, v2.1.77) |
 
 ### Recent Changes
 
+- `/fork` renamed to `/branch` with `/fork` kept as alias (v2.1.77)
+- `/output-style` deprecated (v2.1.73)
+- `/review` deprecated in favor of the `code-review` plugin
+- `/effort` command added with `max` level requiring Opus 4.6
+- `/voice` command added for push-to-talk voice dictation
+- `/schedule` command added for creating/managing scheduled tasks
+- `/color` command added for prompt bar customization
 - `/model` picker now shows human-readable labels (e.g., "Sonnet 4.6") instead of raw model IDs
-- `/rename` auto-generates a session name from conversation context when called without arguments
-- `/rename` now updates the terminal tab title by default
-- `/resume` picker increased initial session count from 10 to 50
+- `/resume` supports `/continue` alias
 - MCP prompts are available as `/mcp__<server>__<prompt>` commands (see [MCP Prompts as Commands](#mcp-prompts-as-commands))
 
 ## Custom Commands (Now Skills)

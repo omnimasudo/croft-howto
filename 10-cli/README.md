@@ -39,7 +39,9 @@ graph TD
 | `claude mcp` | Configure MCP servers | See [MCP documentation](../05-mcp/) |
 | `claude mcp serve` | Run Claude Code as an MCP server | `claude mcp serve` |
 | `claude agents` | List all configured subagents | `claude agents` |
-| `claude remote-control` | Start Remote Control session | `claude remote-control` |
+| `claude auto-mode defaults` | Print auto mode default rules as JSON | `claude auto-mode defaults` |
+| `claude remote-control` | Start Remote Control server | `claude remote-control` |
+| `claude plugin` | Manage plugins (install, enable, disable) | `claude plugin install my-plugin` |
 | `claude auth login` | Log in (supports `--email`, `--sso`) | `claude auth login --email user@example.com` |
 | `claude auth logout` | Log out of current account | `claude auth logout` |
 | `claude auth status` | Check auth status (exit 0 if logged in, 1 if not) | `claude auth status` |
@@ -53,10 +55,17 @@ graph TD
 | `-r, --resume` | Resume specific session by ID or name | `claude --resume auth-refactor` |
 | `-v, --version` | Output version number | `claude -v` |
 | `-w, --worktree` | Start in isolated git worktree | `claude -w` |
+| `-n, --name` | Session display name | `claude -n "auth-refactor"` |
 | `--from-pr <number>` | Resume sessions linked to GitHub PR | `claude --from-pr 42` |
 | `--remote "task"` | Create web session on claude.ai | `claude --remote "implement API"` |
+| `--remote-control, --rc` | Interactive session with Remote Control | `claude --rc` |
 | `--teleport` | Resume web session locally | `claude --teleport` |
 | `--teammate-mode` | Agent team display mode | `claude --teammate-mode tmux` |
+| `--bare` | Minimal mode (skip hooks, skills, plugins, MCP, auto memory, CLAUDE.md) | `claude --bare` |
+| `--enable-auto-mode` | Unlock auto permission mode | `claude --enable-auto-mode` |
+| `--channels` | Subscribe to MCP channel plugins | `claude --channels discord,telegram` |
+| `--chrome` / `--no-chrome` | Enable/disable Chrome browser integration | `claude --chrome` |
+| `--effort` | Set thinking effort level | `claude --effort high` |
 | `--init` / `--init-only` | Run initialization hooks | `claude --init` |
 | `--maintenance` | Run maintenance hooks and exit | `claude --maintenance` |
 | `--disable-slash-commands` | Disable all skills and slash commands | `claude --disable-slash-commands` |
@@ -98,9 +107,10 @@ claude -p "list todos" | grep "URGENT"
 | Flag | Description | Example |
 |------|-------------|---------|
 | `--model` | Set model (sonnet, opus, haiku, or full name) | `claude --model opus` |
-| `--fallback-model` | Fallback when overloaded (print mode) | `claude -p --fallback-model sonnet "query"` |
+| `--fallback-model` | Automatic model fallback when overloaded | `claude -p --fallback-model sonnet "query"` |
 | `--agent` | Specify agent for session | `claude --agent my-custom-agent` |
 | `--agents` | Define custom subagents via JSON | See [Agents Configuration](#agents-configuration) |
+| `--effort` | Set effort level (low, medium, high, max) | `claude --effort high` |
 
 ### Model Selection Examples
 
@@ -156,12 +166,13 @@ claude -p --system-prompt-file ./prompts/code-reviewer.txt "review main.py"
 
 | Flag | Description | Example |
 |------|-------------|---------|
-| `--tools` | Specify available tools | `claude -p --tools "Bash,Edit,Read" "query"` |
+| `--tools` | Restrict available built-in tools | `claude -p --tools "Bash,Edit,Read" "query"` |
 | `--allowedTools` | Tools that execute without prompting | `"Bash(git log:*)" "Read"` |
 | `--disallowedTools` | Tools removed from context | `"Bash(rm:*)" "Edit"` |
 | `--dangerously-skip-permissions` | Skip all permission prompts | `claude --dangerously-skip-permissions` |
-| `--permission-mode` | Begin in specified permission mode | `claude --permission-mode plan` |
+| `--permission-mode` | Begin in specified permission mode | `claude --permission-mode auto` |
 | `--permission-prompt-tool` | MCP tool for permission handling | `claude -p --permission-prompt-tool mcp_auth "query"` |
+| `--enable-auto-mode` | Unlock auto permission mode | `claude --enable-auto-mode` |
 
 ### Permission Examples
 
@@ -183,11 +194,12 @@ claude --disallowedTools "Bash(rm -rf:*)" "Bash(git push --force:*)"
 
 | Flag | Description | Options | Example |
 |------|-------------|---------|---------|
-| `--output-format` | Specify output format (print mode) | text, json, stream-json | `claude -p --output-format json "query"` |
-| `--input-format` | Specify input format (print mode) | text, stream-json | `claude -p --input-format stream-json` |
+| `--output-format` | Specify output format (print mode) | `text`, `json`, `stream-json` | `claude -p --output-format json "query"` |
+| `--input-format` | Specify input format (print mode) | `text`, `stream-json` | `claude -p --input-format stream-json` |
 | `--verbose` | Enable verbose logging | | `claude --verbose` |
-| `--include-partial-messages` | Include streaming events | Requires stream-json | `claude -p --output-format stream-json --include-partial-messages "query"` |
+| `--include-partial-messages` | Include streaming events | Requires `stream-json` | `claude -p --output-format stream-json --include-partial-messages "query"` |
 | `--json-schema` | Get validated JSON matching schema | | `claude -p --json-schema '{"type":"object"}' "query"` |
+| `--max-budget-usd` | Maximum spend for print mode | | `claude -p --max-budget-usd 5.00 "query"` |
 
 ### Output Format Examples
 
@@ -211,8 +223,9 @@ claude -p --json-schema '{"type":"object","properties":{"bugs":{"type":"array"}}
 | Flag | Description | Example |
 |------|-------------|---------|
 | `--add-dir` | Add additional working directories | `claude --add-dir ../apps ../lib` |
-| `--setting-sources` | Load setting sources | `claude --setting-sources user,project` |
+| `--setting-sources` | Comma-separated setting sources | `claude --setting-sources user,project` |
 | `--settings` | Load settings from file or JSON | `claude --settings ./settings.json` |
+| `--plugin-dir` | Load plugins from directory (repeatable) | `claude --plugin-dir ./my-plugin` |
 
 ### Multi-Directory Example
 
@@ -229,7 +242,8 @@ claude --settings '{"model":"opus","verbose":true}' "complex task"
 | Flag | Description | Example |
 |------|-------------|---------|
 | `--mcp-config` | Load MCP servers from JSON | `claude --mcp-config ./mcp.json` |
-| `--strict-mcp-config` | Only use specified MCP servers | `claude --strict-mcp-config --mcp-config ./mcp.json` |
+| `--strict-mcp-config` | Only use specified MCP config | `claude --strict-mcp-config --mcp-config ./mcp.json` |
+| `--channels` | Subscribe to MCP channel plugins | `claude --channels discord,telegram` |
 
 ### MCP Examples
 
@@ -296,6 +310,13 @@ The original session remains unchanged, and the fork becomes a new independent s
 | `--enable-lsp-logging` | Enable verbose LSP logging | `claude --enable-lsp-logging` |
 | `--betas` | Beta headers for API requests | `claude --betas interleaved-thinking` |
 | `--plugin-dir` | Load plugins from directory (repeatable) | `claude --plugin-dir ./my-plugin` |
+| `--enable-auto-mode` | Unlock auto permission mode | `claude --enable-auto-mode` |
+| `--effort` | Set thinking effort level | `claude --effort high` |
+| `--bare` | Minimal mode (skip hooks, skills, plugins, MCP, auto memory, CLAUDE.md) | `claude --bare` |
+| `--channels` | Subscribe to MCP channel plugins | `claude --channels discord` |
+| `--fork-session` | Create new session ID when resuming | `claude --resume abc --fork-session` |
+| `--max-budget-usd` | Maximum spend (print mode) | `claude -p --max-budget-usd 5.00 "query"` |
+| `--json-schema` | Validated JSON output | `claude -p --json-schema '{"type":"object"}' "q"` |
 
 ### Advanced Examples
 
@@ -659,9 +680,17 @@ claude --model opusplan "design and implement the API"
 Opus 4.6 supports adaptive reasoning with effort levels:
 
 ```bash
+# Set effort level via CLI flag
+claude --effort high "complex review"
+
+# Set effort level via slash command
+/effort high
+
 # Set effort level via environment variable
-export CLAUDE_CODE_EFFORT_LEVEL=high   # low, medium, or high
+export CLAUDE_CODE_EFFORT_LEVEL=high   # low, medium, high, or max (Opus 4.6 only)
 ```
+
+The "ultrathink" keyword in prompts activates deep reasoning. The `max` effort level is exclusive to Opus 4.6.
 
 ---
 
@@ -671,17 +700,31 @@ export CLAUDE_CODE_EFFORT_LEVEL=high   # low, medium, or high
 |----------|-------------|
 | `ANTHROPIC_API_KEY` | API key for authentication |
 | `ANTHROPIC_MODEL` | Override default model |
+| `ANTHROPIC_CUSTOM_MODEL_OPTION` | Custom model option for API |
 | `ANTHROPIC_DEFAULT_OPUS_MODEL` | Override default Opus model ID |
 | `ANTHROPIC_DEFAULT_SONNET_MODEL` | Override default Sonnet model ID |
 | `ANTHROPIC_DEFAULT_HAIKU_MODEL` | Override default Haiku model ID |
 | `MAX_THINKING_TOKENS` | Set extended thinking token budget |
-| `CLAUDE_CODE_EFFORT_LEVEL` | Set effort level for Opus 4.6 (`low`/`medium`/`high`) |
+| `CLAUDE_CODE_EFFORT_LEVEL` | Set effort level (`low`/`medium`/`high`/`max`) |
+| `CLAUDE_CODE_SIMPLE` | Minimal mode, set by `--bare` flag |
 | `CLAUDE_CODE_DISABLE_AUTO_MEMORY` | Disable automatic CLAUDE.md updates |
 | `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` | Disable background task execution |
+| `CLAUDE_CODE_DISABLE_CRON` | Disable scheduled/cron tasks |
+| `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` | Disable git-related instructions |
+| `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` | Disable terminal title updates |
+| `CLAUDE_CODE_DISABLE_1M_CONTEXT` | Disable 1M token context window |
+| `CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK` | Disable non-streaming fallback |
 | `CLAUDE_CODE_ENABLE_TASKS` | Enable task list feature |
 | `CLAUDE_CODE_TASK_LIST_ID` | Named task directory shared across sessions |
 | `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION` | Toggle prompt suggestions (`true`/`false`) |
 | `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | Enable experimental agent teams |
+| `CLAUDE_CODE_NEW_INIT` | Use new initialization flow |
+| `CLAUDE_CODE_SUBAGENT_MODEL` | Model for subagent execution |
+| `CLAUDE_CODE_PLUGIN_SEED_DIR` | Directory for plugin seed files |
+| `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` | Env vars to scrub from subprocesses |
+| `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | Override auto-compaction percentage |
+| `CLAUDE_STREAM_IDLE_TIMEOUT_MS` | Stream idle timeout in milliseconds |
+| `SLASH_COMMAND_TOOL_CHAR_BUDGET` | Character budget for slash command tools |
 | `ENABLE_TOOL_SEARCH` | Enable tool search capability |
 | `MAX_MCP_OUTPUT_TOKENS` | Maximum tokens for MCP tool output |
 
@@ -715,9 +758,12 @@ claude -p --output-format json "query"
 | Quick code review | `cat file | claude -p "review"` |
 | Structured output | `claude -p --output-format json "query"` |
 | Safe exploration | `claude --permission-mode plan` |
+| Autonomous with safety | `claude --enable-auto-mode --permission-mode auto` |
 | CI/CD integration | `claude -p --max-turns 3 --output-format json` |
 | Resume work | `claude -r "session-name"` |
 | Custom model | `claude --model opus "complex task"` |
+| Minimal mode | `claude --bare "quick query"` |
+| Budget-capped run | `claude -p --max-budget-usd 2.00 "analyze code"` |
 
 ---
 

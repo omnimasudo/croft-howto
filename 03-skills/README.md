@@ -94,9 +94,13 @@ sequenceDiagram
 
 When skills share the same name across levels, higher-priority locations win: **enterprise > personal > project**. Plugin skills use a `plugin-name:skill-name` namespace, so they cannot conflict.
 
-### Automatic Discovery from Nested Directories
+### Automatic Discovery
 
-When you work with files in subdirectories, Claude Code automatically discovers skills from nested `.claude/skills/` directories. For example, if you're editing a file in `packages/frontend/`, Claude Code also looks for skills in `packages/frontend/.claude/skills/`. This supports monorepo setups where packages have their own skills.
+**Nested directories**: When you work with files in subdirectories, Claude Code automatically discovers skills from nested `.claude/skills/` directories. For example, if you're editing a file in `packages/frontend/`, Claude Code also looks for skills in `packages/frontend/.claude/skills/`. This supports monorepo setups where packages have their own skills.
+
+**`--add-dir` directories**: Skills from directories added via `--add-dir` are loaded automatically with live change detection. Any edits to skill files in those directories take effect immediately without restarting Claude Code.
+
+**Description budget**: Skill descriptions (Level 1 metadata) are capped at **2% of the context window** (fallback: **16,000 characters**). If you have many skills installed, some may be excluded. Run `/context` to check for warnings. Override the budget with the `SLASH_COMMAND_TOOL_CHAR_BUDGET` environment variable.
 
 ## Creating Custom Skills
 
@@ -145,8 +149,10 @@ disable-model-invocation: true              # Only user can invoke
 user-invocable: false                       # Hide from slash menu
 allowed-tools: Read, Grep, Glob             # Restrict tool access
 model: opus                                 # Specific model to use
+effort: high                                # Effort level override (low, medium, high, max)
 context: fork                               # Run in isolated subagent
 agent: Explore                              # Which agent type (with context: fork)
+shell: bash                                 # Shell for commands: bash (default) or powershell
 hooks:                                      # Skill-scoped hooks
   PreToolUse:
     - matcher: "Bash"
@@ -155,6 +161,21 @@ hooks:                                      # Skill-scoped hooks
           command: "./scripts/validate.sh"
 ---
 ```
+
+| Field | Description |
+|-------|-------------|
+| `name` | Lowercase letters, numbers, hyphens only (max 64 chars). Cannot contain "anthropic" or "claude". |
+| `description` | What the Skill does AND when to use it (max 1024 chars). Critical for auto-invocation matching. |
+| `argument-hint` | Hint shown in the `/` autocomplete menu (e.g., `"[filename] [format]"`). |
+| `disable-model-invocation` | `true` = only the user can invoke via `/name`. Claude will never auto-invoke. |
+| `user-invocable` | `false` = hidden from the `/` menu. Only Claude can invoke it automatically. |
+| `allowed-tools` | Comma-separated list of tools the skill may use without permission prompts. |
+| `model` | Model override while the skill is active (e.g., `opus`, `sonnet`). |
+| `effort` | Effort level override while the skill is active: `low`, `medium`, `high`, or `max`. |
+| `context` | `fork` to run the skill in a forked subagent context with its own context window. |
+| `agent` | Subagent type when `context: fork` (e.g., `Explore`, `Plan`, `general-purpose`). |
+| `shell` | Shell used for `!`command`` substitutions and scripts: `bash` (default) or `powershell`. |
+| `hooks` | Hooks scoped to this skill's lifecycle (same format as global hooks). |
 
 ## Skill Content Types
 
@@ -210,7 +231,7 @@ By default, both you and Claude can invoke any skill. Two frontmatter fields con
 
 ## String Substitutions
 
-Skills support dynamic values:
+Skills support dynamic values that are resolved before the skill content reaches Claude:
 
 | Variable | Description |
 |----------|-------------|
@@ -218,6 +239,7 @@ Skills support dynamic values:
 | `$ARGUMENTS[N]` or `$N` | Access specific argument by index (0-based) |
 | `${CLAUDE_SESSION_ID}` | Current session ID |
 | `${CLAUDE_SKILL_DIR}` | Directory containing the skill's SKILL.md file |
+| `` !`command` `` | Dynamic context injection — runs a shell command and inlines the output |
 
 **Example:**
 
@@ -257,7 +279,7 @@ agent: Explore
 Summarize this pull request...
 ```
 
-Commands execute immediately; Claude only sees the final output.
+Commands execute immediately; Claude only sees the final output. By default, commands run in `bash`. Set `shell: powershell` in frontmatter to use PowerShell instead.
 
 ## Running Skills in Subagents
 

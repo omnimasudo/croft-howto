@@ -211,6 +211,66 @@ Once configured, LSP servers provide:
 - **Hover information** — type signatures and documentation on hover
 - **Symbol listing** — browse symbols in the current file or workspace
 
+## Plugin Options (v2.1.83+)
+
+Plugins can declare user-configurable options in the manifest via `userConfig`. Values marked `sensitive: true` are stored in the system keychain rather than plain-text settings files:
+
+```json
+{
+  "name": "my-plugin",
+  "version": "1.0.0",
+  "userConfig": {
+    "apiKey": {
+      "description": "API key for the service",
+      "sensitive": true
+    },
+    "region": {
+      "description": "Deployment region",
+      "default": "us-east-1"
+    }
+  }
+}
+```
+
+## Persistent Plugin Data (`${CLAUDE_PLUGIN_DATA}`) (v2.1.78+)
+
+Plugins have access to a persistent state directory via the `${CLAUDE_PLUGIN_DATA}` environment variable. This directory is unique per plugin and survives across sessions, making it suitable for caches, databases, and other persistent state:
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "command": "node ${CLAUDE_PLUGIN_DATA}/track-usage.js"
+      }
+    ]
+  }
+}
+```
+
+The directory is created automatically when the plugin is installed. Files stored here persist until the plugin is uninstalled.
+
+## Inline Plugin via Settings (`source: 'settings'`) (v2.1.80+)
+
+Plugins can be defined inline in settings files as marketplace entries using the `source: 'settings'` field. This allows embedding a plugin definition directly without requiring a separate repository or marketplace:
+
+```json
+{
+  "pluginMarketplaces": [
+    {
+      "name": "inline-tools",
+      "source": "settings",
+      "plugins": [
+        {
+          "name": "quick-lint",
+          "source": "./local-plugins/quick-lint"
+        }
+      ]
+    }
+  ]
+}
+```
+
 ## Plugin Settings
 
 Plugins can ship a `settings.json` file to provide default configuration. This currently supports the `agent` key, which sets the main thread agent for the plugin:
@@ -394,8 +454,8 @@ Enterprise and advanced users can control marketplace behavior through settings:
 | Setting | Description |
 |---------|-------------|
 | `extraKnownMarketplaces` | Add additional marketplace sources beyond the defaults |
-| `blockedMarketplaces` | Admin-managed setting to restrict specific marketplaces |
 | `strictKnownMarketplaces` | Control which marketplaces users are allowed to add |
+| `deniedPlugins` | Admin-managed blocklist to prevent specific plugins from being installed |
 
 ### Additional Marketplace Features
 
@@ -534,11 +594,26 @@ graph LR
 | **Marketplace** | No | No | No | Yes |
 | **Distribution** | Repository | Repository | Repository | Marketplace |
 
+## Plugin CLI Commands
+
+All plugin operations are available as CLI commands:
+
+```bash
+claude plugin install <name>@<marketplace>   # Install from a marketplace
+claude plugin uninstall <name>               # Remove a plugin
+claude plugin list                           # List installed plugins
+claude plugin enable <name>                  # Enable a disabled plugin
+claude plugin disable <name>                 # Disable a plugin
+claude plugin validate                       # Validate plugin structure
+```
+
 ## Installation Methods
 
 ### From Marketplace
 ```bash
 /plugin install plugin-name
+# or from CLI:
+claude plugin install plugin-name@marketplace-name
 ```
 
 ### Enable / Disable (with auto-detected scope)
@@ -603,6 +678,40 @@ This launches Claude Code with your plugin loaded, allowing you to:
 - Validate hook execution
 - Check LSP server configurations
 - Check for any configuration errors
+
+## Hot-Reload
+
+Plugins support hot-reload during development. When you modify plugin files, Claude Code can detect changes automatically. You can also force a reload with:
+
+```bash
+/reload-plugins
+```
+
+This re-reads all plugin manifests, commands, agents, skills, hooks, and MCP/LSP configurations without restarting the session.
+
+## Managed Settings for Plugins
+
+Administrators can control plugin behavior across an organization using managed settings:
+
+| Setting | Description |
+|---------|-------------|
+| `enabledPlugins` | Allowlist of plugins that are enabled by default |
+| `deniedPlugins` | Blocklist of plugins that cannot be installed |
+| `extraKnownMarketplaces` | Add additional marketplace sources beyond the defaults |
+| `strictKnownMarketplaces` | Restrict which marketplaces users are allowed to add |
+| `allowedChannelPlugins` | Control which plugins are permitted per release channel |
+
+These settings can be applied at the organization level via managed configuration files and take precedence over user-level settings.
+
+## Plugin Security
+
+Plugin subagents run in a restricted sandbox. The following frontmatter keys are **not allowed** in plugin subagent definitions:
+
+- `hooks` -- Subagents cannot register event handlers
+- `mcpServers` -- Subagents cannot configure MCP servers
+- `permissionMode` -- Subagents cannot override the permission model
+
+This ensures that plugins cannot escalate privileges or modify the host environment beyond their declared scope.
 
 ## Publishing a Plugin
 

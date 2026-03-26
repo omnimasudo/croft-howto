@@ -1,4 +1,5 @@
 ---
+name: claude-md
 description: Create or update CLAUDE.md files following best practices for optimal AI agent onboarding
 ---
 

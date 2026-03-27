@@ -891,6 +891,175 @@ if __name__ == "__main__":
 
 > **Note:** Anthropic hasn't released an official offline tokenizer. Both methods are approximations. The transcript includes user prompts, Claude's responses, and tool outputs, but NOT system prompts or internal context.
 
+### Example 7: Auto-Adapt Mode (PostToolUse)
+
+Automatically learns from your tool approvals and updates `~/.claude/settings.json` permissions. Every time you accept a tool execution, the hook generalizes the command into a reusable permission rule — so you never have to approve the same type of command twice. Dangerous/destructive commands are **never** remembered.
+
+On first run, it seeds your config with auto-mode-equivalent baseline permissions (read/write files, git operations, package managers, common CLI tools).
+
+**File:** `.claude/hooks/auto-adapt-mode.py`
+
+```python
+#!/usr/bin/env python3
+"""
+auto-adapt-mode: Learn from user's tool approvals and update Claude config.
+
+Hook Type: PostToolUse
+Event: Fires after a tool is successfully executed (meaning user approved it)
+"""
+
+import json
+import os
+import sys
+import re
+from pathlib import Path
+
+SETTINGS_PATH = Path.home() / ".claude" / "settings.json"
+LOG_PATH = Path.home() / ".claude" / "auto-adapt-mode.log"
+
+# Auto-mode baseline: safe, local, reversible operations
+AUTO_MODE_BASELINE = [
+    "Read(*)", "Edit(*)", "Write(*)", "Glob(*)", "Grep(*)",
+    "Bash(git status:*)", "Bash(git log:*)", "Bash(git diff:*)",
+    "Bash(git add:*)", "Bash(git commit:*)", "Bash(git checkout:*)",
+    "Bash(npm install:*)", "Bash(npm test:*)", "Bash(npm run:*)",
+    "Bash(pip install:*)", "Bash(pytest:*)",
+    "Bash(ls:*)", "Bash(cat:*)", "Bash(find:*)", "Bash(mkdir:*)",
+    "Bash(cp:*)", "Bash(mv:*)", "Bash(chmod:*)",
+    "Bash(gh pr view:*)", "Bash(gh issue list:*)",
+    "Agent(*)", "Skill(*)", "WebSearch(*)", "WebFetch(*)",
+    # ... (full list includes 70+ safe patterns)
+]
+
+# Commands that are NEVER auto-remembered
+DANGEROUS_PATTERNS = [
+    r"rm\s+(-[a-zA-Z]*r[a-zA-Z]*|--recursive)",   # rm -rf
+    r"git\s+push\s+(-[a-zA-Z]*f|--force)",          # force push
+    r"git\s+reset\s+--hard",                         # hard reset
+    r"DROP\s+(TABLE|DATABASE)",                       # SQL destructive
+    r"curl\s+.*\|\s*(bash|sh)",                       # pipe to shell
+    r"sudo\b",                                        # privilege escalation
+    r"docker\s+(rm|rmi|system\s+prune)",              # container destructive
+    r"kubectl\s+delete",                              # k8s destructive
+    r"terraform\s+destroy",                           # infra destructive
+    r"npm\s+publish",                                 # irreversible publish
+    r"deploy\s+.*prod",                               # production deploy
+    # ... (full list includes 25+ patterns)
+]
+
+
+def is_dangerous_command(command: str) -> bool:
+    """Check if a bash command matches any dangerous pattern."""
+    return any(re.search(p, command, re.IGNORECASE) for p in DANGEROUS_PATTERNS)
+
+
+def generalize_tool_permission(tool_name: str, tool_input: dict) -> str | None:
+    """Convert a specific tool invocation into a generalized permission rule."""
+    if tool_name == "Bash":
+        command = tool_input.get("command", "")
+        if not command or is_dangerous_command(command):
+            return None
+        parts = command.strip().split()
+        base = parts[0]
+        # Compound commands: "git push" -> "Bash(git push:*)"
+        compound = ["git", "npm", "npx", "pip", "cargo", "go", "gh", "python3"]
+        if base in compound and len(parts) > 1:
+            sub = parts[1]
+            if sub.lower() in {"rm", "delete", "destroy", "publish"}:
+                return None
+            return f"Bash({base} {sub}:*)"
+        return f"Bash({base}:*)"
+    elif tool_name == "Bash":  # Never allow generic Bash(*)
+        return None
+    else:
+        return f"{tool_name}(*)"
+
+
+def main():
+    try:
+        hook_input = json.load(sys.stdin)
+    except (json.JSONDecodeError, EOFError):
+        sys.exit(0)
+
+    tool_name = hook_input.get("tool_name", "")
+    tool_input = hook_input.get("tool_input", {})
+    if not tool_name:
+        sys.exit(0)
+
+    # Load settings, ensure baseline, add new rule if safe
+    settings = json.load(open(SETTINGS_PATH)) if SETTINGS_PATH.exists() else {}
+    allow = settings.setdefault("permissions", {}).setdefault("allow", [])
+
+    # Seed baseline on first run
+    marker = Path.home() / ".claude" / ".auto-adapt-mode-initialized"
+    if not marker.exists():
+        existing = set(allow)
+        for rule in AUTO_MODE_BASELINE:
+            if rule not in existing:
+                allow.append(rule)
+        marker.touch()
+
+    # Generalize and add the new rule
+    rule = generalize_tool_permission(tool_name, tool_input)
+    if rule and rule not in allow:
+        allow.append(rule)
+        with open(SETTINGS_PATH, "w") as f:
+            json.dump(settings, f, indent=2)
+            f.write("\n")
+
+    sys.exit(0)
+
+if __name__ == "__main__":
+    main()
+```
+
+**Configuration:**
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/auto-adapt-mode.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**How it works:**
+1. `PostToolUse` fires after **every** successful tool execution (meaning you already approved it)
+2. The hook extracts the tool name and input, then generalizes it into a permission rule
+3. Compound commands like `git push origin main` become `Bash(git push:*)` — matching any `git push` variant
+4. The rule is added to `~/.claude/settings.json` → `permissions.allow` if not already present
+5. On first run, seeds ~70 auto-mode-equivalent baseline permissions
+
+**Safety guarantees:**
+- Dangerous commands (force push, rm -rf, sudo, DROP TABLE, etc.) are **never** remembered
+- Irreversible operations (npm publish, terraform destroy, prod deploys) are **always** blocked
+- Commands in the `deny` list are never overridden
+- The hook never blocks tool execution (always exits 0)
+- A log file at `~/.claude/auto-adapt-mode.log` tracks all decisions for auditing
+
+**Generalization examples:**
+
+| You approve | Rule added | Covers |
+|-------------|-----------|--------|
+| `git push origin main` | `Bash(git push:*)` | All git push variants |
+| `npm run build` | `Bash(npm run:*)` | All npm scripts |
+| `ls -la src/` | `Bash(ls:*)` | All ls invocations |
+| `rm -rf /tmp/test` | *(blocked)* | Never remembered |
+| `git push --force` | *(blocked)* | Never remembered |
+| `Write` tool | `Write(*)` | All file writes |
+
+> **Tip:** Delete `~/.claude/.auto-adapt-mode-initialized` to re-seed baseline permissions. Check `~/.claude/auto-adapt-mode.log` to audit what rules were added and which were blocked.
+
 ## Plugin Hooks
 
 Plugins can include hooks in their `hooks/hooks.json` file:

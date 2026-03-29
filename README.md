@@ -90,10 +90,10 @@ Run `/lesson-quiz [topic]` after each module. The quiz pinpoints what you missed
 
 ---
 
-## Trusted by 3,900+ Developers
+## Trusted by 5,900+ Developers
 
-- **3,900+ GitHub stars** from developers who use Claude Code daily
-- **460+ forks** — teams adapting this guide for their own workflows
+- **5,900+ GitHub stars** from developers who use Claude Code daily
+- **690+ forks** — teams adapting this guide for their own workflows
 - **Actively maintained** — synced with every Claude Code release (latest: v2.2.0, March 2026)
 - **Community-driven** — contributions from developers who share their real-world configurations
 

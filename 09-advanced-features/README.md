@@ -423,6 +423,34 @@ When the classifier is uncertain, auto mode falls back to prompting the user:
 
 This ensures the user always retains control when the classifier cannot confidently approve an action.
 
+### Seeding Auto-Mode-Equivalent Permissions (No Team Plan Required)
+
+If you don't have a Team plan or want a simpler approach without the background classifier, you can seed your `~/.claude/settings.json` with ~67 safe permission rules that cover the same ground as auto mode's default allow-list.
+
+**File:** `09-advanced-features/setup-auto-mode-permissions.py`
+
+```bash
+# Preview what would be added (no changes written)
+python3 09-advanced-features/setup-auto-mode-permissions.py --dry-run
+
+# Apply once — safe to re-run (skips rules already present)
+python3 09-advanced-features/setup-auto-mode-permissions.py
+```
+
+The script adds rules across these categories:
+
+| Category | Examples |
+|----------|---------|
+| Built-in tools | `Read(*)`, `Edit(*)`, `Write(*)`, `Glob(*)`, `Grep(*)`, `Agent(*)`, `WebSearch(*)` |
+| Git (read) | `Bash(git status:*)`, `Bash(git log:*)`, `Bash(git diff:*)` |
+| Git (local write) | `Bash(git add:*)`, `Bash(git commit:*)`, `Bash(git checkout:*)` |
+| Package managers | `Bash(npm install:*)`, `Bash(pip install:*)`, `Bash(cargo build:*)` |
+| Build & test | `Bash(make:*)`, `Bash(pytest:*)`, `Bash(go test:*)` |
+| Common shell | `Bash(ls:*)`, `Bash(cat:*)`, `Bash(find:*)`, `Bash(cp:*)`, `Bash(mv:*)` |
+| GitHub CLI | `Bash(gh pr view:*)`, `Bash(gh pr create:*)`, `Bash(gh issue list:*)` |
+
+Dangerous operations (`rm -rf`, `sudo`, force push, `DROP TABLE`, `terraform destroy`, etc.) are intentionally excluded. The script is idempotent — running it twice won't duplicate rules.
+
 ---
 
 ## Background Tasks

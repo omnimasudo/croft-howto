@@ -1,8 +1,3 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="../resources/logos/claude-howto-logo-dark.svg">
-  <img alt="Claude How To" src="../resources/logos/claude-howto-logo.svg">
-</picture>
-
 # MCP (Model Context Protocol)
 
 This folder contains comprehensive documentation and examples for MCP server configurations and usage with Claude Code.

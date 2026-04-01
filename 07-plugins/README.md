@@ -1,8 +1,3 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="../resources/logos/claude-howto-logo-dark.svg">
-  <img alt="Claude How To" src="../resources/logos/claude-howto-logo.svg">
-</picture>
-
 # Claude Code Plugins
 
 This folder contains complete plugin examples that bundle multiple Claude Code features into cohesive, installable packages.

@@ -1,8 +1,3 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="resources/logos/claude-howto-logo-dark.svg">
-  <img alt="Claude How To" src="resources/logos/claude-howto-logo.svg">
-</picture>
-
 # Style Guide
 
 > Conventions and formatting rules for contributing to Claude How To. Follow this guide to keep content consistent, professional, and easy to maintain.
@@ -55,7 +50,7 @@ The number reflects the learning path order from beginner to advanced.
 | **Config file** | Standard names | `.mcp.json`, `settings.json` |
 | **Memory file** | Scope-prefixed | `project-CLAUDE.md`, `personal-CLAUDE.md` |
 | **Top-level docs** | UPPER_CASE `.md` | `CATALOG.md`, `QUICK_REFERENCE.md`, `CONTRIBUTING.md` |
-| **Image assets** | Kebab-case | `pr-slash-command.png`, `claude-howto-logo.svg` |
+| **Image assets** | Kebab-case | `pr-slash-command.png`, `logo-mark.svg` |
 
 ### Rules
 
@@ -508,10 +503,7 @@ agent: Explore                     # Agent type for context: fork
 All documents that start with a logo use the `<picture>` element for dark/light mode support:
 
 ```html
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="resources/logos/claude-howto-logo-dark.svg">
-  <img alt="Claude How To" src="resources/logos/claude-howto-logo.svg">
-</picture>
+<!-- Logo example removed -->
 ```
 
 ### Screenshots

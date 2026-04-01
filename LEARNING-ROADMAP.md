@@ -739,7 +739,7 @@ Once you've completed all milestones:
 ---
 
 **Last Updated**: March 2026
-**Maintained by**: Claude How-To Contributors
+**Maintained by**: Croft How-To Contributors
 **License**: Educational purposes, free to use and adapt
 
 ---

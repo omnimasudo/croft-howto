@@ -1,7 +1,6 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="resources/logos/claude-howto-logo-dark.svg">
-  <img alt="Claude How To" src="resources/logos/claude-howto-logo.svg">
-</picture>
+
+
+# Master Claude Code in a Weekend
 
 <p align="center">
   <a href="https://github.com/trending">
@@ -15,7 +14,6 @@
 [![Version](https://img.shields.io/badge/version-2.2.0-brightgreen)](CHANGELOG.md)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-2.1+-purple)](https://code.claude.com)
 
-# Master Claude Code in a Weekend
 
 Go from typing `claude` to orchestrating agents, hooks, skills, and MCP servers — with visual tutorials, copy-paste templates, and a guided learning path.
 
@@ -26,7 +24,7 @@ Go from typing `claude` to orchestrating agents, hooks, skills, and MCP servers 
 ## Table of Contents
 
 - [The Problem](#the-problem)
-- [How Claude How To Fixes This](#how-claude-how-to-fixes-this)
+- [How Croft How To Fixes This](#how-croft-how-to-fixes-this)
 - [How It Works](#how-it-works)
 - [Not Sure Where to Start?](#-not-sure-where-to-start)
 - [Get Started in 15 Minutes](#-get-started-in-15-minutes)
@@ -49,7 +47,7 @@ You're leaving 90% of Claude Code's power on the table — and you don't know wh
 
 ---
 
-## How Claude How To Fixes This
+## How Croft How To Fixes This
 
 This isn't another feature reference. It's a **structured, visual, example-driven guide** that teaches you to use every Claude Code feature with real-world templates you can copy into your project today.
 

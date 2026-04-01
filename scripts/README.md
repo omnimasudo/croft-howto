@@ -5,7 +5,7 @@
 
 # EPUB Builder Script
 
-Build an EPUB ebook from the Claude How-To markdown files.
+Build an EPUB ebook from the Croft How-To markdown files.
 
 ## Features
 

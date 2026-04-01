@@ -3,7 +3,7 @@
 # dependencies = ["ebooklib", "markdown", "beautifulsoup4", "httpx", "pillow", "tenacity"]
 # ///
 """
-Build an EPUB from the Claude How-To markdown files.
+Build an EPUB from the Croft How-To markdown files.
 
 Usage:
     Run from the repository root directory:
@@ -998,7 +998,7 @@ def create_epub(root_path: Path, output_path: Path, verbose: bool = False) -> Pa
 def main() -> int:
     """Main entry point with CLI argument parsing."""
     parser = argparse.ArgumentParser(
-        description="Build an EPUB from Claude How-To markdown files."
+        description="Build an EPUB from Croft How-To markdown files."
     )
     parser.add_argument(
         "--root",

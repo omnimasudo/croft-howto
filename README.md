@@ -1,12 +1,9 @@
 
 
-# Master Claude Code in a Weekend
 
-<p align="center">
-  <a href="https://github.com/trending">
-    <img src="https://img.shields.io/badge/GitHub-🔥%20%231%20Trending-purple?style=for-the-badge&logo=github"/>
-  </a>
-</p>
+# Master Claude Code in a Weekend
+![Banner](resources/banner.jpeg)
+
 
 [![GitHub Stars](https://img.shields.io/github/stars/luongnv89/claude-howto?style=flat&color=gold)](https://github.com/luongnv89/claude-howto/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/luongnv89/claude-howto?style=flat)](https://github.com/luongnv89/claude-howto/network/members)
@@ -16,6 +13,8 @@
 
 
 Go from typing `claude` to orchestrating agents, hooks, skills, and MCP servers — with visual tutorials, copy-paste templates, and a guided learning path.
+
+[Follow on X](https://x.com/croftcodex)
 
 **[Get Started in 15 Minutes](#-get-started-in-15-minutes)** | **[Find Your Level](#-not-sure-where-to-start)** | **[Browse the Feature Catalog](CATALOG.md)**
 
@@ -91,17 +90,6 @@ The real power is in combining features. Learn to wire slash commands + memory +
 Run `/lesson-quiz [topic]` after each module. The quiz pinpoints what you missed so you can fill gaps fast.
 
 **[Get Started in 15 Minutes](#-get-started-in-15-minutes)**
-
----
-
-## Trusted by 5,900+ Developers
-
-- **5,900+ GitHub stars** from developers who use Claude Code daily
-- **690+ forks** — teams adapting this guide for their own workflows
-- **Actively maintained** — synced with every Claude Code release (latest: v2.2.0, March 2026)
-- **Community-driven** — contributions from developers who share their real-world configurations
-
-[![Star History Chart](https://api.star-history.com/svg?repos=luongnv89/claude-howto&type=Date)](https://star-history.com/#luongnv89/claude-howto&Date)
 
 ---
 
